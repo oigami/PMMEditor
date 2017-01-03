@@ -8,77 +8,99 @@ namespace PMMEditor.Models
 {
     public struct PmmStuct
     {
-        public string FormatId;
-        public int ViewWidth;
-        public int ViewHeight;
-        public int FrameWidth;
-        public float EditViewAngle;
-        // public byte[ /*7*/] Unknown10 { get; }
+        public string FormatId { get; set; }
+
+        public int ViewWidth { get; set; }
+
+        public int ViewHeight { get; set; }
+
+        public int FrameWidth { get; set; }
+
+        public float EditViewAngle { get; set; }
+
+        // public byte[ /*7*/] Unknown10 { get{get;set;} }
 
         #region ModelInfo
 
-        public byte ModelCount;
+        public byte ModelCount { get; set; }
 
         public struct ModelData
         {
-            public byte Number;
-            public string Name;
-            public string NameEn;
-            public string Path;
+            public byte Number { get; set; }
 
-            // public byte Unknown11 { get; }
-            public int BoneCount;
+            public string Name { get; set; }
 
-            public string[ /*BoneCount*/] BoneName;
-            public int MorphCount;
-            public string[ /*MorphCount*/] MorphName;
-            public int IkCount;
-            public int[ /*IkCount*/] IkIndex;
-            public int OpCount;
-            public int[ /*OpCount*/] OpIndex;
-            public byte DrawOrder;
-            public bool EditIsDisplay;
-            public int EditSelectedBone;
-            public int[ /*4*/] SkinPanel;
-            public byte FrameCount;
-            public bool[ /*FrameCount*/] IsFrameOpen;
-            public int VScroll;
-            public int LastFrame;
+            public string NameEn { get; set; }
+
+            public string Path { get; set; }
+
+            // public byte Unknown11 { get{get;set;} }
+            public int BoneCount { get; set; }
+
+            public string[ /*BoneCount*/] BoneName { get; set; }
+
+            public int MorphCount { get; set; }
+
+            public string[ /*MorphCount*/] MorphName { get; set; }
+
+            public int IkCount { get; set; }
+
+            public int[ /*IkCount*/] IkIndex { get; set; }
+
+            public int OpCount { get; set; }
+
+            public int[ /*OpCount*/] OpIndex { get; set; }
+
+            public byte DrawOrder { get; set; }
+
+            public bool EditIsDisplay { get; set; }
+
+            public int EditSelectedBone { get; set; }
+
+            public int[ /*4*/] SkinPanel { get; set; }
+
+            public byte FrameCount { get; set; }
+
+            public bool[ /*FrameCount*/] IsFrameOpen { get; set; }
+
+            public int VScroll { get; set; }
+
+            public int LastFrame { get; set; }
 
             #region BoneInfo
 
             public struct BoneInitFrame
             {
-                public int DataIndex; // 初期フレームのときは-1
+                public int DataIndex { get; set; } // 初期フレームのときは-1
 
-                public int FrameNumber;
+                public int FrameNumber { get; set; }
 
-                public int PreIndex;
+                public int PreIndex { get; set; }
 
-                public int NextIndex;
+                public int NextIndex { get; set; }
 
-                public byte[ /* 4 */] InterpolationX;
+                public byte[ /* 4 */] InterpolationX { get; set; }
 
-                public byte[ /* 4 */] InterpolationY;
+                public byte[ /* 4 */] InterpolationY { get; set; }
 
-                public byte[ /* 4 */] InterpolationZ;
+                public byte[ /* 4 */] InterpolationZ { get; set; }
 
-                public byte[ /* 4 */] InterpolationRotation;
+                public byte[ /* 4 */] InterpolationRotation { get; set; }
 
-                public float[ /* 3 */] Translation;
+                public float[ /* 3 */] Translation { get; set; }
 
-                public float[ /* 4 */] Quaternion;
+                public float[ /* 4 */] Quaternion { get; set; }
 
-                public bool IsSelected;
+                public bool IsSelected { get; set; }
 
-                public bool IsPhysicsDisabled;
+                public bool IsPhysicsDisabled { get; set; }
             }
 
-            public BoneInitFrame[ /*BoneCount*/] BoneInitFrames;
+            public BoneInitFrame[ /*BoneCount*/] BoneInitFrames { get; set; }
 
-            public int BoneKeyFrameCount;
+            public int BoneKeyFrameCount { get; set; }
 
-            public BoneInitFrame[ /* BoneKeyFrameCount */] BoneKeyFrames;
+            public BoneInitFrame[ /* BoneKeyFrameCount */] BoneKeyFrames { get; set; }
 
             #endregion BoneInfo
 
@@ -86,19 +108,24 @@ namespace PMMEditor.Models
 
             public struct MorphFrame
             {
-                public int DataIndex; // 初期フレームのときは-1
-                public int FrameNumber;
-                public int PreIndex;
-                public int NextIndex;
-                public float Value;
-                public bool IsSelected;
+                public int DataIndex { get; set; } // 初期フレームのときは-1
+
+                public int FrameNumber { get; set; }
+
+                public int PreIndex { get; set; }
+
+                public int NextIndex { get; set; }
+
+                public float Value { get; set; }
+
+                public bool IsSelected { get; set; }
             }
 
-            public MorphFrame[ /* MorphCount */] MorphInitFrames;
+            public MorphFrame[ /* MorphCount */] MorphInitFrames { get; set; }
 
-            public int MorphKeyFrameCount;
+            public int MorphKeyFrameCount { get; set; }
 
-            public MorphFrame[ /* MorphCount */] MorphKeyFrames;
+            public MorphFrame[ /* MorphCount */] MorphKeyFrames { get; set; }
 
             #endregion MorphInfo
 
@@ -106,21 +133,28 @@ namespace PMMEditor.Models
 
             public struct OpFrame
             {
-                public int DataIndex;
-                public int FrameNumber;
-                public int PreIndex;
-                public int NextIndex;
-                public bool IsDisplay;
-                public bool[ /* IkCount */] IsIkEnabled;
-                public KeyValuePair<int, int>[ /* OpCount */] OpData;
-                public bool IsSelected;
+                public int DataIndex { get; set; }
+
+                public int FrameNumber { get; set; }
+
+                public int PreIndex { get; set; }
+
+                public int NextIndex { get; set; }
+
+                public bool IsDisplay { get; set; }
+
+                public bool[ /* IkCount */] IsIkEnabled { get; set; }
+
+                public KeyValuePair<int, int>[ /* OpCount */] OpData { get; set; }
+
+                public bool IsSelected { get; set; }
             }
 
-            public OpFrame OpInitFrame;
+            public OpFrame OpInitFrame { get; set; }
 
-            public int OpKeyFrameCount;
+            public int OpKeyFrameCount { get; set; }
 
-            public OpFrame[ /* OpKeyFrameCount */] OpKeyFrames;
+            public OpFrame[ /* OpKeyFrameCount */] OpKeyFrames { get; set; }
 
             #endregion その他構成情報
 
@@ -128,41 +162,48 @@ namespace PMMEditor.Models
 
             public struct BoneCurrentData
             {
-                public float[] Translation;
-                public float[] Quaternion;
-                public bool IsEditUnCommited;
-                public bool IsPhysicsDisabled;
-                public bool IsRowSelected;
+                public float[] Translation { get; set; }
+
+                public float[] Quaternion { get; set; }
+
+                public bool IsEditUnCommited { get; set; }
+
+                public bool IsPhysicsDisabled { get; set; }
+
+                public bool IsRowSelected { get; set; }
             }
 
-            public BoneCurrentData[ /* BoneCount */] BoneCurrentDatas;
+            public BoneCurrentData[ /* BoneCount */] BoneCurrentDatas { get; set; }
 
-            public float[ /* MorphCount */] MorphCurrentDatas;
+            public float[ /* MorphCount */] MorphCurrentDatas { get; set; }
 
-            public bool[ /* IkCount */] IsCurrentIkEnabledDatas;
+            public bool[ /* IkCount */] IsCurrentIkEnabledDatas { get; set; }
 
             public struct OpCurrentData
             {
-                public int KeyFrameBegin;
-                public int KeyFrameEnd;
-                public int ModelIndex;
-                public int ParentBoneIndex;
+                public int KeyFrameBegin { get; set; }
+
+                public int KeyFrameEnd { get; set; }
+
+                public int ModelIndex { get; set; }
+
+                public int ParentBoneIndex { get; set; }
             }
 
-            public OpCurrentData[ /* OpCount */] OpCurrentDatas;
+            public OpCurrentData[ /* OpCount */] OpCurrentDatas { get; set; }
 
             #endregion CurrentInfo
 
-            public bool IsAddBlend; // 加算合成
+            public bool IsAddBlend { get; set; } // 加算合成
 
-            public float EdgeWidth;
+            public float EdgeWidth { get; set; }
 
-            public bool IsSelfShadowEnabled;
+            public bool IsSelfShadowEnabled { get; set; }
 
-            public byte CalcOrder;
+            public byte CalcOrder { get; set; }
         }
 
-        public ModelData[ /*ModelCount*/] ModelDatas;
+        public ModelData[ /*ModelCount*/] ModelDatas { get; set; }
 
         #endregion ModelInfo
 
@@ -170,42 +211,62 @@ namespace PMMEditor.Models
 
         public struct CameraFrame
         {
-            public int DataIndex;
-            public int FrameNumber;
-            public int PreIndex;
-            public int NextIndex;
-            public float Distance;
-            public float[] EyePosition;
-            public float[] Rotation;
-            public int LookingModelIndex; // 非選択時-1
-            public int LookingBoneIndex; // 非選択時-1
-            public byte[] InterpolationX;
-            public byte[] InterpolationY;
-            public byte[] InterpolationZ;
-            public byte[] InterpolationRotation;
-            public byte[] InterpolationDistance;
-            public byte[] InterpolationAngleView;
-            public bool IsParse;
-            public int AngleView;
-            public bool IsSelected;
+            public int DataIndex { get; set; }
+
+            public int FrameNumber { get; set; }
+
+            public int PreIndex { get; set; }
+
+            public int NextIndex { get; set; }
+
+            public float Distance { get; set; }
+
+            public float[] EyePosition { get; set; }
+
+            public float[] Rotation { get; set; }
+
+            public int LookingModelIndex { get; set; } // 非選択時-1
+
+            public int LookingBoneIndex { get; set; } // 非選択時-1
+
+            public byte[] InterpolationX { get; set; }
+
+            public byte[] InterpolationY { get; set; }
+
+            public byte[] InterpolationZ { get; set; }
+
+            public byte[] InterpolationRotation { get; set; }
+
+            public byte[] InterpolationDistance { get; set; }
+
+            public byte[] InterpolationAngleView { get; set; }
+
+            public bool IsParse { get; set; }
+
+            public int AngleView { get; set; }
+
+            public bool IsSelected { get; set; }
         }
 
 
-        public CameraFrame CameraInitFrame;
+        public CameraFrame CameraInitFrame { get; set; }
 
-        public int CameraKeyFrameCount;
+        public int CameraKeyFrameCount { get; set; }
 
-        public CameraFrame[] CameraKeyFrames;
+        public CameraFrame[] CameraKeyFrames { get; set; }
 
         public struct CCameraCurrentData
         {
-            public float[] EyePosition;
-            public float[] TargetPosition;
-            public float[] Rotation;
-            public bool IsOrthro;
+            public float[] EyePosition { get; set; }
+
+            public float[] TargetPosition { get; set; }
+
+            public float[] Rotation { get; set; }
+
+            public bool IsOrthro { get; set; }
         }
 
-        public CCameraCurrentData CameraCurrentData;
+        public CCameraCurrentData CameraCurrentData { get; set; }
 
         #endregion CameraInfo
 
@@ -213,46 +274,75 @@ namespace PMMEditor.Models
 
         public struct LightFrame
         {
-            public int DataIndex;
-            public int FrameNumber;
-            public int PreIndex;
-            public int NextIndex;
-            public float R, G, B;
-            public float X, Y, Z;
-            public bool IsSelected;
+            public int DataIndex { get; set; }
+
+            public int FrameNumber { get; set; }
+
+            public int PreIndex { get; set; }
+
+            public int NextIndex { get; set; }
+
+            public float R { get; set; }
+
+            public float G { get; set; }
+
+            public float B { get; set; }
+
+            public float X { get; set; }
+
+            public float Y { get; set; }
+
+            public float Z { get; set; }
+
+            public bool IsSelected { get; set; }
         }
 
-        public LightFrame LightInitFrame;
+        public LightFrame LightInitFrame { get; set; }
 
-        public int LightKeyFrameCount;
+        public int LightKeyFrameCount { get; set; }
 
-        public LightFrame[] LightKeyFrames;
+        public LightFrame[] LightKeyFrames { get; set; }
 
         public struct CLightCurrentData
         {
-            public float R, G, B;
-            public float X, Y, Z;
-            public bool IsSelected;
+            public float R { get; set; }
+
+            public float G { get; set; }
+
+            public float B { get; set; }
+
+            public float X { get; set; }
+
+            public float Y { get; set; }
+
+            public float Z { get; set; }
+
+            public bool IsSelected { get; set; }
         }
 
-        public CLightCurrentData LightCurrentData;
+        public CLightCurrentData LightCurrentData { get; set; }
 
         #endregion LightingInfo
 
         #region AccessoryInfo
 
-        public byte SelectAccessoryIndex;
-        public int AccessoryVScroll;
-        public byte AccessoryCount;
+        public byte SelectAccessoryIndex { get; set; }
 
-        public string[] AccessoryName;
+        public int AccessoryVScroll { get; set; }
+
+        public byte AccessoryCount { get; set; }
+
+        public string[] AccessoryName { get; set; }
 
         public struct AccessoryData
         {
-            public byte Index;
-            public string Name;
-            public string Path;
-            public byte DrawOrder;
+            public byte Index { get; set; }
+
+            public string Name { get; set; }
+
+            public string Path { get; set; }
+
+            public byte DrawOrder { get; set; }
 
             // TODO
         }
@@ -281,307 +371,242 @@ namespace PMMEditor.Models
             {
                 throw new ArgumentException("Format id is not \"Polygon Movie maker 0002\"");
             }
-            Read(out data.ViewWidth);
-            Read(out data.ViewHeight);
-            Read(out data.FrameWidth);
-            Read(out data.EditViewAngle);
+            data.ViewWidth = ReadInt();
+            data.ViewHeight = ReadInt();
+            data.FrameWidth = ReadInt();
+            data.EditViewAngle = ReadFloat();
             ReadByte(8);
 
-            Read(out data.ModelCount);
-            ReadArray(out data.ModelDatas, data.ModelCount, Read);
+            data.ModelCount = ReadByte();
+            data.ModelDatas = ReadArray(data.ModelCount, ReadModelData);
 
-            ReadInit(out data.CameraInitFrame);
-            data.CameraKeyFrameCount = ReadVArray(out data.CameraKeyFrames, ReadNormal);
-            Read(out data.CameraCurrentData);
+            data.CameraInitFrame = ReadCameraFrame(true);
+            data.CameraKeyFrames = ReadVArray(() => ReadCameraFrame(false));
+            data.CameraKeyFrameCount = data.CameraKeyFrames.Length;
+            data.CameraCurrentData = ReadCameraCurrentData();
 
-            ReadInit(out data.LightInitFrame);
-            data.LightKeyFrameCount = ReadVArray(out data.LightKeyFrames, ReadNormal);
+            data.LightInitFrame = ReadLightFrame(true);
+            data.LightKeyFrames = ReadVArray(() => ReadLightFrame(false));
+            data.LightKeyFrameCount = data.LightKeyFrames.Length;
 
             // TODO
 
             return data;
         }
 
-        private int ReadArray<T>(out T[] t, int size, ReadVArrayDelegate<T> func)
+        private T[] ReadArray<T>(int size, Func<T> func)
         {
-            t = new T[size];
+            var t = new T[size];
             for (var i = 0; i < size; i++)
             {
-                func(out t[i]);
+                t[i] = func();
             }
-            return size;
+            return t;
         }
 
-        private int ReadVArray<T>(out T[] t, ReadVArrayDelegate<T> func)
+        private T[] ReadVArray<T>(Func<T> func)
         {
-            int size;
-            Read(out size);
-            return ReadArray(out t, size, func);
+            var size = ReadInt();
+            return ReadArray(size, func);
         }
 
-        private void Read(out PmmStuct.ModelData o)
+        private PmmStuct.ModelData ReadModelData()
         {
-            o = new PmmStuct.ModelData();
-            Read(out o.Number);
-            ReadVString(out o.Name);
-            ReadVString(out o.NameEn);
+            var o = new PmmStuct.ModelData();
+            o.Number = ReadByte();
+            o.Name = ReadVString();
+            o.NameEn = ReadVString();
             o.Path = ReadFixedString(256);
             ReadByte(1);
-            o.BoneCount = ReadVArray(out o.BoneName, ReadVString);
-            o.MorphCount = ReadVArray(out o.MorphName, ReadVString);
-            o.IkCount = ReadVArray(out o.IkIndex, Read);
-            o.OpCount = ReadVArray(out o.OpIndex, Read);
+            o.BoneName = ReadVArray(ReadVString);
+            o.BoneCount = o.BoneName.Length;
+            o.MorphName = ReadVArray(ReadVString);
+            o.MorphCount = o.MorphName.Length;
+            o.IkIndex = ReadVArray(ReadInt);
+            o.IkCount = o.IkIndex.Length;
+            o.OpIndex = ReadVArray(ReadInt);
+            o.OpCount = o.OpIndex.Length;
 
-            Read(out o.DrawOrder);
-            Read(out o.EditIsDisplay);
-            Read(out o.EditSelectedBone);
-            ReadArray(out o.SkinPanel, 4, Read);
-            Read(out o.FrameCount);
-            ReadArray(out o.IsFrameOpen, o.FrameCount, Read);
-            Read(out o.VScroll);
-            Read(out o.LastFrame);
+            o.DrawOrder = ReadByte();
+            o.EditIsDisplay = ReadBool();
+            o.EditSelectedBone = ReadInt();
+            o.SkinPanel = ReadArray(4, ReadInt);
+            o.FrameCount = ReadByte();
+            o.IsFrameOpen = ReadArray(o.FrameCount, ReadBool);
+            o.VScroll = ReadInt();
+            o.LastFrame = ReadInt();
 
-            ReadArray(out o.BoneInitFrames, o.BoneCount, ReadInit);
-            o.BoneKeyFrameCount = ReadVArray(out o.BoneKeyFrames, ReadNormal);
+            o.BoneInitFrames = ReadArray(o.BoneCount, () => ReadBoneFrame(true));
+            o.BoneKeyFrames = ReadVArray(() => ReadBoneFrame(false));
+            o.BoneKeyFrameCount = o.BoneKeyFrames.Length;
 
-            ReadArray(out o.MorphInitFrames, o.MorphCount, ReadInit);
-            o.MorphKeyFrameCount = ReadVArray(out o.MorphKeyFrames, ReadNormal);
+            o.MorphInitFrames = ReadArray(o.MorphCount, () => ReadMorphFrame(true));
+            o.MorphKeyFrames = ReadVArray(() => ReadMorphFrame(false));
+            o.MorphKeyFrameCount = o.MorphKeyFrames.Length;
 
-            Read(out o.OpInitFrame, o.IkCount, o.OpCount, true);
+            o.OpInitFrame = ReadOpFrame(o.IkCount, o.OpCount, true);
 
-            Read(out o.OpKeyFrameCount);
-            o.OpKeyFrames = new PmmStuct.ModelData.OpFrame[o.OpKeyFrameCount];
-            foreach (var i in Enumerable.Range(0, o.OpKeyFrameCount))
-            {
-                Read(out o.OpKeyFrames[i], o.IkCount, o.OpCount, false);
-            }
+            o.OpKeyFrames = ReadVArray(() => ReadOpFrame(o.IkCount, o.OpCount, false));
+            o.OpKeyFrameCount = o.OpKeyFrames.Length;
 
-            ReadArray(out o.BoneCurrentDatas, o.BoneCount, Read);
-            ReadArray(out o.MorphCurrentDatas, o.MorphCount, Read);
-            ReadArray(out o.IsCurrentIkEnabledDatas, o.IkCount, Read);
-            ReadArray(out o.OpCurrentDatas, o.OpCount, Read);
-            Read(out o.IsAddBlend);
-            Read(out o.EdgeWidth);
-            Read(out o.IsSelfShadowEnabled);
-            Read(out o.CalcOrder);
+            o.BoneCurrentDatas = ReadArray(o.BoneCount, ReadBoneCurrentData);
+            o.MorphCurrentDatas = ReadArray(o.MorphCount, ReadFloat);
+            o.IsCurrentIkEnabledDatas = ReadArray(o.IkCount, ReadBool);
+            o.OpCurrentDatas = ReadArray(o.OpCount, ReadOpCurrentData);
+            o.IsAddBlend = ReadBool();
+            o.EdgeWidth = ReadFloat();
+            o.IsSelfShadowEnabled = ReadBool();
+            o.CalcOrder = ReadByte();
+            return o;
         }
-
-        private delegate void ReadVArrayDelegate<T>(out T t);
-
-        #region CurrentTypeRead
-
-        private void Read(out PmmStuct.CCameraCurrentData o)
-        {
-            o = new PmmStuct.CCameraCurrentData();
-            ReadArray(out o.EyePosition, 3, Read);
-            ReadArray(out o.TargetPosition, 3, Read);
-            ReadArray(out o.Rotation, 3, Read);
-            Read(out o.IsOrthro);
-        }
-
-        private void Read(out PmmStuct.ModelData.BoneCurrentData o)
-        {
-            o = new PmmStuct.ModelData.BoneCurrentData();
-            ReadArray(out o.Translation, 3, Read);
-            ReadArray(out o.Quaternion, 4, Read);
-            Read(out o.IsEditUnCommited);
-            Read(out o.IsPhysicsDisabled);
-            Read(out o.IsRowSelected);
-        }
-
-        private void Read(out PmmStuct.ModelData.OpCurrentData o)
-        {
-            o = new PmmStuct.ModelData.OpCurrentData();
-            Read(out o.KeyFrameBegin);
-            Read(out o.KeyFrameEnd);
-            Read(out o.ModelIndex);
-            Read(out o.ParentBoneIndex);
-        }
-
-        #endregion CurrentTypeRead
 
         #region LightingInfo
 
-        private void Read(out PmmStuct.LightFrame o, bool isInit)
+        private PmmStuct.LightFrame ReadLightFrame(bool isInit)
         {
-            o = new PmmStuct.LightFrame();
-            if (isInit)
+            var o = new PmmStuct.LightFrame
             {
-                o.DataIndex = -1;
-            }
-            else
-            {
-                Read(out o.DataIndex);
-            }
-            Read(out o.FrameNumber);
-            Read(out o.PreIndex);
-            Read(out o.NextIndex);
-            Read(out o.R);
-            Read(out o.G);
-            Read(out o.B);
-            Read(out o.X);
-            Read(out o.Y);
-            Read(out o.Z);
-            Read(out o.IsSelected);
-        }
-
-        private void ReadInit(out PmmStuct.LightFrame o)
-        {
-            Read(out o, true);
-        }
-
-        private void ReadNormal(out PmmStuct.LightFrame o)
-        {
-            Read(out o, false);
+                DataIndex = isInit ? -1 : ReadInt(),
+                FrameNumber = ReadInt(),
+                PreIndex = ReadInt(),
+                NextIndex = ReadInt(),
+                R = ReadFloat(),
+                G = ReadFloat(),
+                B = ReadFloat(),
+                X = ReadFloat(),
+                Y = ReadFloat(),
+                Z = ReadFloat(),
+                IsSelected = ReadBool()
+            };
+            return o;
         }
 
         #endregion LightingInfo
 
-        #region CameraTypeRead
-
-        private void Read(out PmmStuct.CameraFrame o, bool isInit)
-        {
-            o = new PmmStuct.CameraFrame();
-            if (isInit)
-            {
-                o.DataIndex = -1;
-            }
-            else
-            {
-                Read(out o.DataIndex);
-            }
-            Read(out o.FrameNumber);
-            Read(out o.PreIndex);
-            Read(out o.NextIndex);
-            Read(out o.Distance);
-            ReadArray(out o.EyePosition, 3, Read);
-            ReadArray(out o.Rotation, 3, Read);
-            Read(out o.LookingModelIndex);
-            Read(out o.LookingBoneIndex);
-            ReadArray(out o.InterpolationX, 4, Read);
-            ReadArray(out o.InterpolationY, 4, Read);
-            ReadArray(out o.InterpolationZ, 4, Read);
-            ReadArray(out o.InterpolationRotation, 4, Read);
-            ReadArray(out o.InterpolationDistance, 4, Read);
-            ReadArray(out o.InterpolationAngleView, 4, Read);
-            Read(out o.IsParse);
-            Read(out o.AngleView);
-            Read(out o.IsSelected);
-        }
-
-        private void ReadInit(out PmmStuct.CameraFrame o)
-        {
-            Read(out o, true);
-        }
-
-        private void ReadNormal(out PmmStuct.CameraFrame o)
-        {
-            Read(out o, false);
-        }
-
-        #endregion CameraTypeRead
-
-        #region OpTypeRead
-
-        private void Read(out PmmStuct.ModelData.OpFrame o, int ikCount, int opCount, bool isInit)
-        {
-            o = new PmmStuct.ModelData.OpFrame();
-            if (isInit)
-            {
-                o.DataIndex = -1;
-            }
-            else
-            {
-                Read(out o.DataIndex);
-            }
-            Read(out o.FrameNumber);
-            Read(out o.PreIndex);
-            Read(out o.NextIndex);
-            Read(out o.IsDisplay);
-            ReadArray(out o.IsIkEnabled, ikCount, Read);
-            ReadArray(out o.OpData, opCount, Read);
-            Read(out o.IsSelected);
-        }
-
-        private void Read(out KeyValuePair<int, int> o)
-        {
-            int a, b;
-            Read(out a);
-            Read(out b);
-            o = new KeyValuePair<int, int>(a, b);
-        }
-
-        #endregion OpTypeRead
-
         #region MorphTypeRead
 
-        private void Read(out PmmStuct.ModelData.MorphFrame o, bool isInit)
+        private PmmStuct.ModelData.MorphFrame ReadMorphFrame(bool isInit)
         {
-            o = new PmmStuct.ModelData.MorphFrame();
-            if (isInit)
+            var o = new PmmStuct.ModelData.MorphFrame
             {
-                o.DataIndex = -1;
-            }
-            else
-            {
-                Read(out o.DataIndex);
-            }
-            Read(out o.FrameNumber);
-            Read(out o.PreIndex);
-            Read(out o.NextIndex);
-            Read(out o.Value);
-            Read(out o.IsSelected);
-        }
-
-        private void ReadInit(out PmmStuct.ModelData.MorphFrame o)
-        {
-            Read(out o, true);
-        }
-
-        private void ReadNormal(out PmmStuct.ModelData.MorphFrame o)
-        {
-            Read(out o, false);
+                DataIndex = isInit ? -1 : ReadInt(),
+                FrameNumber = ReadInt(),
+                PreIndex = ReadInt(),
+                NextIndex = ReadInt(),
+                Value = ReadFloat(),
+                IsSelected = ReadBool()
+            };
+            return o;
         }
 
         #endregion MorphTypeRead
 
         #region BoneTypeRead
 
-        private void Read(out PmmStuct.ModelData.BoneInitFrame o, bool isInitFrame)
+        private PmmStuct.ModelData.BoneInitFrame ReadBoneFrame(bool isInitFrame)
         {
-            o = new PmmStuct.ModelData.BoneInitFrame();
-            if (isInitFrame)
+            var o = new PmmStuct.ModelData.BoneInitFrame
             {
-                o.DataIndex = -1;
-            }
-            else
-            {
-                Read(out o.DataIndex);
-            }
-            Read(out o.FrameNumber);
-            Read(out o.PreIndex);
-            Read(out o.NextIndex);
-            ReadArray(out o.InterpolationX, 4, Read);
-            ReadArray(out o.InterpolationY, 4, Read);
-            ReadArray(out o.InterpolationZ, 4, Read);
-            ReadArray(out o.InterpolationRotation, 4, Read);
-            ReadArray(out o.Translation, 3, Read);
-            ReadArray(out o.Quaternion, 4, Read);
-            Read(out o.IsSelected);
-            Read(out o.IsPhysicsDisabled);
+                DataIndex = isInitFrame ? -1 : ReadInt(),
+                FrameNumber = ReadInt(),
+                PreIndex = ReadInt(),
+                NextIndex = ReadInt(),
+                InterpolationX = ReadArray(4, ReadByte),
+                InterpolationY = ReadArray(4, ReadByte),
+                InterpolationZ = ReadArray(4, ReadByte),
+                InterpolationRotation = ReadArray(4, ReadByte),
+                Translation = ReadArray(3, ReadFloat),
+                Quaternion = ReadArray(4, ReadFloat),
+                IsSelected = ReadBool(),
+                IsPhysicsDisabled = ReadBool()
+            };
+            return o;
         }
 
-        private void ReadInit(out PmmStuct.ModelData.BoneInitFrame o)
+        private PmmStuct.ModelData.BoneCurrentData ReadBoneCurrentData()
         {
-            Read(out o, true);
-        }
-
-        private void ReadNormal(out PmmStuct.ModelData.BoneInitFrame o)
-        {
-            Read(out o, false);
+            return new PmmStuct.ModelData.BoneCurrentData
+            {
+                Translation = ReadArray(3, ReadFloat),
+                Quaternion = ReadArray(4, ReadFloat),
+                IsEditUnCommited = ReadBool(),
+                IsPhysicsDisabled = ReadBool(),
+                IsRowSelected = ReadBool()
+            };
         }
 
         #endregion BoneTypeRead
+
+        #region CameraTypeRead
+
+        private PmmStuct.CameraFrame ReadCameraFrame(bool isInit)
+        {
+            return new PmmStuct.CameraFrame
+            {
+                DataIndex = isInit ? -1 : ReadInt(),
+                FrameNumber = ReadInt(),
+                PreIndex = ReadInt(),
+                NextIndex = ReadInt(),
+                Distance = ReadInt(),
+                EyePosition = ReadArray(3, ReadFloat),
+                Rotation = ReadArray(3, ReadFloat),
+                LookingModelIndex = ReadInt(),
+                LookingBoneIndex = ReadInt(),
+                InterpolationX = ReadArray(4, ReadByte),
+                InterpolationY = ReadArray(4, ReadByte),
+                InterpolationZ = ReadArray(4, ReadByte),
+                InterpolationRotation = ReadArray(4, ReadByte),
+                InterpolationDistance = ReadArray(4, ReadByte),
+                InterpolationAngleView = ReadArray(4, ReadByte),
+                IsParse = ReadBool(),
+                AngleView = ReadInt(),
+                IsSelected = ReadBool()
+            };
+        }
+
+        private PmmStuct.CCameraCurrentData ReadCameraCurrentData()
+        {
+            var o = new PmmStuct.CCameraCurrentData
+            {
+                EyePosition = ReadArray(3, ReadFloat),
+                TargetPosition = ReadArray(3, ReadFloat),
+                Rotation = ReadArray(3, ReadFloat),
+                IsOrthro = ReadBool()
+            };
+            return o;
+        }
+
+        #endregion CameraTypeRead
+
+        #region OpTypeRead
+
+        private PmmStuct.ModelData.OpFrame ReadOpFrame(int ikCount, int opCount, bool isInit)
+        {
+            return new PmmStuct.ModelData.OpFrame
+            {
+                DataIndex = isInit ? -1 : ReadInt(),
+                FrameNumber = ReadInt(),
+                PreIndex = ReadInt(),
+                NextIndex = ReadInt(),
+                IsDisplay = ReadBool(),
+                IsIkEnabled = ReadArray(ikCount, ReadBool),
+                OpData = ReadArray(opCount, ReadPair),
+                IsSelected = ReadBool()
+            };
+        }
+
+        private PmmStuct.ModelData.OpCurrentData ReadOpCurrentData()
+        {
+            return new PmmStuct.ModelData.OpCurrentData
+            {
+                KeyFrameBegin = ReadInt(),
+                KeyFrameEnd = ReadInt(),
+                ModelIndex = ReadInt(),
+                ParentBoneIndex = ReadInt()
+            };
+        }
+
+        #endregion OpTypeRead
 
         #region PrimitiveTypeRead
 
@@ -595,14 +620,14 @@ namespace PMMEditor.Models
             return _buffer;
         }
 
+        private byte ReadByte()
+        {
+            return ReadByte(1)[0];
+        }
+
         private int ReadInt()
         {
             return BitConverter.ToInt32(ReadByte(4), 0);
-        }
-
-        private void Read(out int o)
-        {
-            o = ReadInt();
         }
 
         private float ReadFloat()
@@ -610,37 +635,30 @@ namespace PMMEditor.Models
             return BitConverter.ToSingle(ReadByte(4), 0);
         }
 
-        private void Read(out float o)
+        private bool ReadBool()
         {
-            o = ReadFloat();
-        }
-
-        private void Read(out byte o)
-        {
-            o = ReadByte(1)[0];
-        }
-
-        private void Read(out bool o)
-        {
-            byte tmp;
-            Read(out tmp);
-            o = tmp != 0;
+            return ReadByte() != 0;
         }
 
         #endregion PrimitiveTypeRead
 
         #region StringTypeRead
 
-        private void ReadVString(out string o)
+        private string ReadVString()
         {
-            byte size;
-            Read(out size);
-            o = ReadFixedString(size);
+            return ReadFixedString(ReadByte());
         }
 
         private string ReadFixedString(int count)
         {
             return Encoding.GetEncoding("shift_jis").GetString(ReadByte(count), 0, count);
+        }
+
+        private KeyValuePair<int, int> ReadPair()
+        {
+            var a = ReadInt();
+            var b = ReadInt();
+            return new KeyValuePair<int, int>(a, b);
         }
 
         #endregion StringTypeRead
