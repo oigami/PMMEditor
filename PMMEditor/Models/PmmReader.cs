@@ -416,7 +416,7 @@ namespace PMMEditor.Models
             o.Number = ReadByte();
             o.Name = ReadVString();
             o.NameEn = ReadVString();
-            o.Path = ReadFixedString(256);
+            o.Path = string.Concat(ReadFixedString(256).TakeWhile(s => s != '\0'));
             ReadByte(1);
             o.BoneName = ReadVArray(ReadVString);
             o.BoneCount = o.BoneName.Length;
