@@ -6,7 +6,7 @@ using System.Text;
 
 namespace PMMEditor.Models
 {
-    public struct PmmStuct
+    public class PmmStuct
     {
         public string FormatId { get; set; }
 
@@ -24,7 +24,7 @@ namespace PMMEditor.Models
 
         public byte ModelCount { get; set; }
 
-        public struct ModelData
+        public class ModelData
         {
             public byte Number { get; set; }
 
@@ -69,7 +69,7 @@ namespace PMMEditor.Models
 
             #region BoneInfo
 
-            public struct BoneInitFrame
+            public class BoneInitFrame
             {
                 public int DataIndex { get; set; } // 初期フレームのときは-1
 
@@ -106,7 +106,7 @@ namespace PMMEditor.Models
 
             #region MorphInfo
 
-            public struct MorphFrame
+            public class MorphFrame
             {
                 public int DataIndex { get; set; } // 初期フレームのときは-1
 
@@ -131,7 +131,7 @@ namespace PMMEditor.Models
 
             #region その他構成情報
 
-            public struct OpFrame
+            public class OpFrame
             {
                 public int DataIndex { get; set; }
 
@@ -160,7 +160,7 @@ namespace PMMEditor.Models
 
             #region CurrentInfo
 
-            public struct BoneCurrentData
+            public class BoneCurrentData
             {
                 public float[] Translation { get; set; }
 
@@ -179,7 +179,7 @@ namespace PMMEditor.Models
 
             public bool[ /* IkCount */] IsCurrentIkEnabledDatas { get; set; }
 
-            public struct OpCurrentData
+            public class OpCurrentData
             {
                 public int KeyFrameBegin { get; set; }
 
@@ -194,6 +194,8 @@ namespace PMMEditor.Models
 
             #endregion CurrentInfo
 
+            #region PostInfo
+
             public bool IsAddBlend { get; set; } // 加算合成
 
             public float EdgeWidth { get; set; }
@@ -201,6 +203,8 @@ namespace PMMEditor.Models
             public bool IsSelfShadowEnabled { get; set; }
 
             public byte CalcOrder { get; set; }
+
+            #endregion PostInfo
         }
 
         public ModelData[ /*ModelCount*/] ModelDatas { get; set; }
@@ -209,7 +213,7 @@ namespace PMMEditor.Models
 
         #region CameraInfo
 
-        public struct CameraFrame
+        public class CameraFrame
         {
             public int DataIndex { get; set; }
 
@@ -255,7 +259,7 @@ namespace PMMEditor.Models
 
         public CameraFrame[] CameraKeyFrames { get; set; }
 
-        public struct CCameraCurrentData
+        public class CCameraCurrentData
         {
             public float[] EyePosition { get; set; }
 
@@ -272,7 +276,7 @@ namespace PMMEditor.Models
 
         #region LightingInfo
 
-        public struct LightFrame
+        public class LightFrame
         {
             public int DataIndex { get; set; }
 
@@ -303,7 +307,7 @@ namespace PMMEditor.Models
 
         public LightFrame[] LightKeyFrames { get; set; }
 
-        public struct CLightCurrentData
+        public class CLightCurrentData
         {
             public float R { get; set; }
 
@@ -334,7 +338,7 @@ namespace PMMEditor.Models
 
         public string[] AccessoryName { get; set; }
 
-        public struct AccessoryData
+        public class AccessoryData
         {
             public byte Index { get; set; }
 
