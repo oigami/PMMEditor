@@ -25,9 +25,9 @@ namespace PMMEditor.Views
         public static readonly DependencyProperty ValueWidthProperty =
             DependencyProperty.Register(
                                         nameof(ValueWidth),
-                                        typeof(int),
+                                        typeof(double),
                                         typeof(NameAndValueText),
-                                        new PropertyMetadata(0));
+                                        new PropertyMetadata(double.NaN));
 
         public NameAndValueText()
         {
@@ -46,9 +46,9 @@ namespace PMMEditor.Views
             set { SetValue(TextProperty, value); }
         }
 
-        public int ValueWidth
+        public double ValueWidth
         {
-            get { return (int) GetValue(ValueWidthProperty); }
+            get { return (double) GetValue(ValueWidthProperty); }
             set { SetValue(ValueWidthProperty, value); }
         }
     }

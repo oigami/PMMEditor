@@ -62,7 +62,7 @@ namespace PMMEditor.ViewModels
 
         #region ModelList変更通知プロパティ
 
-        public PmmStuct.ModelData[] ModelList => PmmStruct.ModelDatas;
+        public PmmStuct.ModelData[] ModelList => PmmStruct?.ModelDatas;
 
         #endregion ModelList変更通知プロパティ
 
@@ -76,6 +76,10 @@ namespace PMMEditor.ViewModels
 
             set
             {
+                if (_SelectedModel == value)
+                {
+                    return;
+                }
                 _SelectedModel = value;
                 RaisePropertyChanged();
             }
