@@ -551,7 +551,7 @@ namespace PMMEditor.Models
                 FrameNumber = ReadInt(),
                 PreIndex = ReadInt(),
                 NextIndex = ReadInt(),
-                Distance = ReadInt(),
+                Distance = ReadFloat(),
                 EyePosition = ReadArray(3, ReadFloat),
                 Rotation = ReadArray(3, ReadFloat),
                 LookingModelIndex = ReadInt(),
