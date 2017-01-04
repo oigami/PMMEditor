@@ -345,7 +345,7 @@ namespace PMMEditor.Models
 
         #region AccessoryInfo
 
-        public byte SelectAccessoryIndex { get; set; }
+        public byte SelectedAccessoryIndex { get; set; }
 
         public int AccessoryVScroll { get; set; }
 
