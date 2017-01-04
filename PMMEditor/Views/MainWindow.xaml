@@ -100,15 +100,64 @@
             HorizontalAlignment="Center" />
 
           <Grid Grid.Column="2">
-            <TextBox
-              Height="23"
-              VerticalAlignment="Top"
-              Text="{Binding SelectedModel.Path}"
-              TextWrapping="Wrap" />
-
-            <TabControl Margin="0,28,0,0">
+            <TabControl>
               <TabItem Header="Header">
-                <Grid />
+                <VirtualizingStackPanel Orientation="Vertical">
+                  <TextBox
+                    Height="auto"
+                    VerticalAlignment="Top"
+                    Text="{Binding SelectedModel.Path}"
+                    TextWrapping="Wrap" />
+                  <VirtualizingStackPanel
+                    Margin="0,5"
+                    Orientation="Horizontal">
+                    <v:NameAndValueText
+                      VerticalAlignment="Top"
+                      Text="Name:"
+                      ValueWidth="150"
+                      Value="{Binding SelectedModel.Name}" />
+                    <v:NameAndValueText
+                      VerticalAlignment="Top"
+                      Text="English:"
+                      ValueWidth="150"
+                      Value="{Binding SelectedModel.NameEn}" />
+                  </VirtualizingStackPanel>
+                  <VirtualizingStackPanel
+                    Margin="0,5"
+                    Orientation="Horizontal">
+                    <v:NameAndValueText
+                      VerticalAlignment="Top"
+                      Text="Number:"
+                      ValueWidth="40"
+                      Value="{Binding SelectedModel.Number}" />
+                    <v:NameAndValueText
+                      VerticalAlignment="Top"
+                      Text="DrawOrder:"
+                      ValueWidth="40"
+                      Value="{Binding SelectedModel.DrawOrder}" />
+                    <v:NameAndValueText
+                      VerticalAlignment="Top"
+                      Text="CalcOrder:"
+                      ValueWidth="40"
+                      Value="{Binding SelectedModel.CalcOrder}" />
+                    <v:NameAndValueText
+                      VerticalAlignment="Top"
+                      Text="LastFrame:"
+                      ValueWidth="40"
+                      Value="{Binding SelectedModel.LastFrame}" />
+                  </VirtualizingStackPanel>
+
+                  <VirtualizingStackPanel
+                    Margin="0,5"
+                    Orientation="Horizontal">
+                    <v:NameAndValueText
+                      VerticalAlignment="Top"
+                      Text="EditIsDisplay:"
+                      ValueWidth="40"
+                      Value="{Binding SelectedModel.EditIsDisplay}" />
+                  </VirtualizingStackPanel>
+
+                </VirtualizingStackPanel>
               </TabItem>
 
               <TabItem Header="Bone">
@@ -192,13 +241,129 @@
                     </ListView>
                   </Grid>
                 </Grid>
-
               </TabItem>
-              <TabItem Header="Morph" />
+              <TabItem Header="Morph">
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="140" />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="500*" />
+                  </Grid.ColumnDefinitions>
+                  <Grid Grid.Column="0">
+                    <ListBox
+                      Margin="0,25,0,0"
+                      DisplayMemberPath=""
+                      ItemsSource="{Binding SelectedModel.MorphName}"
+                      VirtualizingPanel.ScrollUnit="Pixel" />
+                  </Grid>
+                  <GridSplitter
+                    Grid.Column="1"
+                    Width="5"
+                    HorizontalAlignment="Center" />
+                  <Grid Grid.Column="2">
+                    <ListView
+                      ItemsSource="{Binding SelectedModel.MorphKeyFrames}"
+                      ScrollViewer.CanContentScroll="True"
+                      ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                      ScrollViewer.PanningMode="Both"
+                      ScrollViewer.VerticalScrollBarVisibility="Visible"
+                      VirtualizingPanel.IsVirtualizing="True"
+                      VirtualizingPanel.ScrollUnit="Pixel"
+                      VirtualizingPanel.VirtualizationMode="Recycling">
+                      <ListView.View>
+                        <GridView AllowsColumnReorder="False">
+                          <GridViewColumn
+                            DisplayMemberBinding="{Binding DataIndex, Mode=OneTime}"
+                            Header="DataIndex" />
+                          <GridViewColumn
+                            DisplayMemberBinding="{Binding FrameNumber, Mode=OneTime}"
+                            Header="FrameNumber" />
+                          <GridViewColumn
+                            DisplayMemberBinding="{Binding PreIndex, Mode=OneTime}"
+                            Header="PreIndex" />
+                          <GridViewColumn
+                            DisplayMemberBinding="{Binding NextIndex, Mode=OneTime}"
+                            Header="NextIndex" />
+                          <GridViewColumn
+                            DisplayMemberBinding="{Binding Value, Mode=OneTime}"
+                            Header="Value" />
+                          <GridViewColumn
+                            DisplayMemberBinding="{Binding IsSelected, Mode=OneTime}"
+                            Header="IsSelected" />
+                        </GridView>
+                      </ListView.View>
+                    </ListView>
+                  </Grid>
+                </Grid>
+              </TabItem>
               <TabItem Header="Visible,IK,ExternalParent" />
             </TabControl>
           </Grid>
         </Grid>
+      </TabItem>
+      <TabItem Header="Camera">
+        <ListView
+          ItemsSource="{Binding PmmStruct.CameraKeyFrames}"
+          ScrollViewer.CanContentScroll="True"
+          ScrollViewer.HorizontalScrollBarVisibility="Visible"
+          ScrollViewer.PanningMode="Both"
+          ScrollViewer.VerticalScrollBarVisibility="Visible"
+          VirtualizingPanel.IsVirtualizing="True"
+          VirtualizingPanel.ScrollUnit="Pixel"
+          VirtualizingPanel.VirtualizationMode="Recycling">
+          <ListView.View>
+            <GridView AllowsColumnReorder="False">
+              <GridViewColumn
+                DisplayMemberBinding="{Binding DataIndex, Mode=OneTime}"
+                Header="DataIndex" />
+              <GridViewColumn
+                DisplayMemberBinding="{Binding FrameNumber, Mode=OneTime}"
+                Header="FrameNumber" />
+              <GridViewColumn
+                DisplayMemberBinding="{Binding PreIndex, Mode=OneTime}"
+                Header="PreIndex" />
+              <GridViewColumn
+                DisplayMemberBinding="{Binding NextIndex, Mode=OneTime}"
+                Header="NextIndex" />
+              <GridViewColumn
+                DisplayMemberBinding="{Binding Distance, Mode=OneTime}"
+                Header="Distance" />
+              <GridViewColumn
+                DisplayMemberBinding="{Binding AngleView, Mode=OneTime}"
+                Header="AngleView" />
+              <GridViewColumn
+                DisplayMemberBinding="{Binding InterpolationX, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                Header="InterpolationX" />
+              <GridViewColumn
+                DisplayMemberBinding="{Binding InterpolationY, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                Header="InterpolationY" />
+              <GridViewColumn
+                DisplayMemberBinding="{Binding InterpolationZ, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                Header="InterpolationZ" />
+              <GridViewColumn
+                DisplayMemberBinding="{Binding InterpolationRotation, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                Header="InterpolationRotation" />
+              <GridViewColumn
+                DisplayMemberBinding="{Binding InterpolationDistance, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                Header="InterpolationDistance" />
+              <GridViewColumn
+                DisplayMemberBinding="{Binding InterpolationAngleView, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                Header="InterpolationAngleView" />
+              <GridViewColumn
+                DisplayMemberBinding="{Binding LookingModelIndex, Mode=OneTime}"
+                Header="LookingModelIndex" />
+              <GridViewColumn
+                DisplayMemberBinding="{Binding LookingBoneIndex, Mode=OneTime}"
+                Header="LookingBoneIndex" />
+              <GridViewColumn
+                DisplayMemberBinding="{Binding IsParse, Mode=OneTime}"
+                Header="IsParse" />
+              <GridViewColumn
+                DisplayMemberBinding="{Binding IsSelected, Mode=OneTime}"
+                Header="IsSelected" />
+            </GridView>
+          </ListView.View>
+        </ListView>
       </TabItem>
     </TabControl>
 
