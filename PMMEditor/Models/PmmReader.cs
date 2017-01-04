@@ -18,7 +18,21 @@ namespace PMMEditor.Models
 
         public float EditViewAngle { get; set; }
 
-        // public byte[ /*7*/] Unknown10 { get{get;set;} }
+        public bool IsEditCameraLightAccessory { get; set; }
+
+        public bool IsOpenCameraPanel { get; set; }
+
+        public bool IsOpenLightPanel { get; set; }
+
+        public bool IsOpenAccessoryPanel { get; set; }
+
+        public bool IsOpenBonePanel { get; set; }
+
+        public bool IsOpenMorphPanel { get; set; }
+
+        public bool IsOpenSelfShadowPanel { get; set; }
+
+        public byte SelectedModelIndex { get; set; }
 
         #region ModelInfo
 
@@ -34,7 +48,8 @@ namespace PMMEditor.Models
 
             public string Path { get; set; }
 
-            // public byte Unknown11 { get{get;set;} }
+            public byte KeyFrameEditorTopLevelRows { get; set; }
+
             public int BoneCount { get; set; }
 
             public string[ /*BoneCount*/] BoneName { get; set; }
@@ -379,7 +394,14 @@ namespace PMMEditor.Models
             data.ViewHeight = ReadInt();
             data.FrameWidth = ReadInt();
             data.EditViewAngle = ReadFloat();
-            ReadByte(8);
+            data.IsEditCameraLightAccessory = ReadBool();
+            data.IsOpenCameraPanel = ReadBool();
+            data.IsOpenLightPanel = ReadBool();
+            data.IsOpenAccessoryPanel = ReadBool();
+            data.IsOpenBonePanel = ReadBool();
+            data.IsOpenMorphPanel = ReadBool();
+            data.IsOpenSelfShadowPanel = ReadBool();
+            data.SelectedModelIndex = ReadByte();
 
             data.ModelCount = ReadByte();
             data.ModelDatas = ReadArray(data.ModelCount, ReadModelData);
@@ -421,7 +443,7 @@ namespace PMMEditor.Models
             o.Name = ReadVString();
             o.NameEn = ReadVString();
             o.Path = string.Concat(ReadFixedString(256).TakeWhile(s => s != '\0'));
-            ReadByte(1);
+            o.KeyFrameEditorTopLevelRows = ReadByte();
             o.BoneName = ReadVArray(ReadVString);
             o.BoneCount = o.BoneName.Length;
             o.MorphName = ReadVArray(ReadVString);
@@ -658,6 +680,10 @@ namespace PMMEditor.Models
             return Encoding.GetEncoding("shift_jis").GetString(ReadByte(count), 0, count);
         }
 
+        #endregion StringTypeRead
+
+        #region TheOtherTypeRead
+
         private KeyValuePair<int, int> ReadPair()
         {
             var a = ReadInt();
@@ -665,6 +691,6 @@ namespace PMMEditor.Models
             return new KeyValuePair<int, int>(a, b);
         }
 
-        #endregion StringTypeRead
+        #endregion TheOtherTypeRead
     }
 }
