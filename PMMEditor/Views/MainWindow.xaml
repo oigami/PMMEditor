@@ -25,7 +25,9 @@
 
     <!--  WindowのContentRenderedイベントのタイミングでViewModelのInitializeメソッドが呼ばれます  -->
     <i:EventTrigger EventName="ContentRendered">
-      <l:LivetCallMethodAction MethodName="Initialize" MethodTarget="{Binding}" />
+      <l:LivetCallMethodAction
+        MethodName="Initialize"
+        MethodTarget="{Binding}" />
     </i:EventTrigger>
 
     <!--  Windowが閉じたタイミングでViewModelのDisposeメソッドが呼ばれます  -->
@@ -121,7 +123,9 @@
                       Height="20"
                       VerticalAlignment="Top"
                       Orientation="Horizontal">
-                      <TextBlock VerticalAlignment="Center" Text="Bone Count: " />
+                      <TextBlock
+                        VerticalAlignment="Center"
+                        Text="Bone Count: " />
                       <TextBlock
                         Width="38"
                         VerticalAlignment="Center"
@@ -153,16 +157,36 @@
                       VirtualizingPanel.VirtualizationMode="Recycling">
                       <ListView.View>
                         <GridView AllowsColumnReorder="False">
-                          <GridViewColumn DisplayMemberBinding="{Binding DataIndex, Mode=OneTime}" Header="DataIndex" />
-                          <GridViewColumn DisplayMemberBinding="{Binding FrameNumber, Mode=OneTime}" Header="FrameNumber" />
-                          <GridViewColumn DisplayMemberBinding="{Binding PreIndex, Mode=OneTime}" Header="PreIndex" />
-                          <GridViewColumn DisplayMemberBinding="{Binding NextIndex, Mode=OneTime}" Header="NextIndex" />
-                          <GridViewColumn DisplayMemberBinding="{Binding InterpolationX, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}" Header="InterpolationX" />
-                          <GridViewColumn DisplayMemberBinding="{Binding InterpolationY, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}" Header="InterpolationY" />
-                          <GridViewColumn DisplayMemberBinding="{Binding InterpolationZ, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}" Header="InterpolationZ" />
-                          <GridViewColumn DisplayMemberBinding="{Binding InterpolationRotation, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}" Header="InterpolationRotation" />
-                          <GridViewColumn DisplayMemberBinding="{Binding IsPhysicsDisabled, Mode=OneTime}" Header="IsPhysicsDisabled" />
-                          <GridViewColumn DisplayMemberBinding="{Binding IsSelected, Mode=OneTime}" Header="IsSelected" />
+                          <GridViewColumn
+                            DisplayMemberBinding="{Binding DataIndex, Mode=OneTime}"
+                            Header="DataIndex" />
+                          <GridViewColumn
+                            DisplayMemberBinding="{Binding FrameNumber, Mode=OneTime}"
+                            Header="FrameNumber" />
+                          <GridViewColumn
+                            DisplayMemberBinding="{Binding PreIndex, Mode=OneTime}"
+                            Header="PreIndex" />
+                          <GridViewColumn
+                            DisplayMemberBinding="{Binding NextIndex, Mode=OneTime}"
+                            Header="NextIndex" />
+                          <GridViewColumn
+                            DisplayMemberBinding="{Binding InterpolationX, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                            Header="InterpolationX" />
+                          <GridViewColumn
+                            DisplayMemberBinding="{Binding InterpolationY, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                            Header="InterpolationY" />
+                          <GridViewColumn
+                            DisplayMemberBinding="{Binding InterpolationZ, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                            Header="InterpolationZ" />
+                          <GridViewColumn
+                            DisplayMemberBinding="{Binding InterpolationRotation, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                            Header="InterpolationRotation" />
+                          <GridViewColumn
+                            DisplayMemberBinding="{Binding IsPhysicsDisabled, Mode=OneTime}"
+                            Header="IsPhysicsDisabled" />
+                          <GridViewColumn
+                            DisplayMemberBinding="{Binding IsSelected, Mode=OneTime}"
+                            Header="IsSelected" />
                         </GridView>
                       </ListView.View>
                     </ListView>
