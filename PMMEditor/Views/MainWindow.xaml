@@ -42,40 +42,103 @@
   <Grid>
     <TabControl Margin="0,10,0,0">
       <TabItem Header="Header">
-        <Grid Background="#FFE5E5E5">
-          <TextBlock
-            Width="81"
-            Height="22"
-            Margin="10,11,0,0"
+        <VirtualizingStackPanel
+          Background="#FFE5E5E5"
+          Orientation="Vertical">
+          <VirtualizingStackPanel
+            Margin="0,5,5,0"
+            Orientation="Horizontal">
+            <v:NameAndValueText
+              VerticalAlignment="Top"
+              Text="ViewWidth:"
+              ValueWidth="60"
+              Value="{Binding PmmStruct.ViewWidth}" />
+            <v:NameAndValueText
+              VerticalAlignment="Top"
+              Text="ViewHeight:"
+              ValueWidth="60"
+              Value="{Binding PmmStruct.ViewHeight}" />
+
+          </VirtualizingStackPanel>
+          <VirtualizingStackPanel
+            Margin="0,5,5,0"
+            Orientation="Horizontal">
+            <v:NameAndValueText
+              VerticalAlignment="Top"
+              Text="FrameWidth:"
+              ValueWidth="60"
+              Value="{Binding PmmStruct.FrameWidth}" />
+            <v:NameAndValueText
+              VerticalAlignment="Top"
+              Text="EditViewAngle:"
+              ValueWidth="60"
+              Value="{Binding PmmStruct.EditViewAngle}" />
+
+          </VirtualizingStackPanel>
+          <VirtualizingStackPanel
+            Margin="0,5,5,0"
+            Orientation="Horizontal">
+            <v:NameAndValueText
+              VerticalAlignment="Top"
+              Text="IsEditCameraLightAccessory:"
+              ValueWidth="60"
+              Value="{Binding PmmStruct.IsEditCameraLightAccessory}" />
+          </VirtualizingStackPanel>
+          <GroupBox
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Text="View Width"
-            TextWrapping="Wrap" />
-          <TextBox
-            Width="120"
-            Height="23"
-            Margin="96,10,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Text="{Binding PmmStruct.ViewWidth}"
-            TextWrapping="Wrap" />
-          <TextBlock
-            Width="81"
-            Height="22"
-            Margin="10,39,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Text="View Height"
-            TextWrapping="Wrap" />
-          <TextBox
-            Width="120"
-            Height="23"
-            Margin="96,38,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Text="{Binding PmmStruct.ViewHeight}"
-            TextWrapping="Wrap" />
-        </Grid>
+            Header="IsOpenPanel">
+            <VirtualizingStackPanel>
+              <VirtualizingStackPanel
+                Margin="0,5,5,0"
+                Orientation="Horizontal">
+                <v:NameAndValueText
+                  VerticalAlignment="Top"
+                  Text="Camera:"
+                  ValueWidth="60"
+                  Value="{Binding PmmStruct.IsOpenCameraPanel}" />
+                <v:NameAndValueText
+                  VerticalAlignment="Top"
+                  Text="Light:"
+                  ValueWidth="60"
+                  Value="{Binding PmmStruct.IsOpenLightPanel}" />
+                <v:NameAndValueText
+                  VerticalAlignment="Top"
+                  Text="Accessory:"
+                  ValueWidth="60"
+                  Value="{Binding PmmStruct.IsOpenAccessoryPanel}" />
+              </VirtualizingStackPanel>
+              <VirtualizingStackPanel
+                Margin="0,5,5,0"
+                Orientation="Horizontal">
+                <v:NameAndValueText
+                  VerticalAlignment="Top"
+                  Text="Bone:"
+                  ValueWidth="60"
+                  Value="{Binding PmmStruct.IsOpenBonePanel}" />
+                <v:NameAndValueText
+                  VerticalAlignment="Top"
+                  Text="Morph:"
+                  ValueWidth="60"
+                  Value="{Binding PmmStruct.IsOpenMorphPanel}" />
+                <v:NameAndValueText
+                  VerticalAlignment="Top"
+                  Text="SelfShadow:"
+                  ValueWidth="60"
+                  Value="{Binding PmmStruct.IsOpenSelfShadowPanel}" />
+              </VirtualizingStackPanel>
+            </VirtualizingStackPanel>
+          </GroupBox>
+          <VirtualizingStackPanel
+                Margin="0,5,5,0"
+                Orientation="Horizontal">
+            <v:NameAndValueText
+                  VerticalAlignment="Top"
+                  Text="SelectedModelIndex:"
+                  ValueWidth="60"
+                  Value="{Binding PmmStruct.SelectedModelIndex}" />
+          </VirtualizingStackPanel>
+        </VirtualizingStackPanel>
       </TabItem>
       <TabItem Header="Model">
         <Grid Background="#FFE5E5E5">
