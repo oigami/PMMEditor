@@ -699,7 +699,7 @@ namespace PMMEditor.Models
             data.AccessoryNumberRenderAfterModel = ReadInt();
             data.GroundShadowBrightness = ReadFloat();
             data.IsTransparentGroundShadow = ReadBool();
-            data.IsPhysicsGroundEnabled = ReadBool();
+            data.PhysicsMode = ReadByte();
 
             data.GravityCurrentData = ReadGravityCurrentData();
             data.GravityInitFrame = ReadGravityKeyFrame(true);
