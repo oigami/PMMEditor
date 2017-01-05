@@ -664,25 +664,6 @@ namespace PMMEditor.Models
             return data;
         }
 
-        #region ArrayTypeRead
-
-        private T[] ReadArray<T>(int size, Func<T> func)
-        {
-            var t = new T[size];
-            for (var i = 0; i < size; i++)
-            {
-                t[i] = func();
-            }
-            return t;
-        }
-
-        private T[] ReadVArray<T>(Func<T> func)
-        {
-            var size = ReadInt();
-            return ReadArray(size, func);
-        }
-
-        #endregion ArrayTypeRead
 
         private PmmStuct.ModelData ReadModelData()
         {
@@ -974,6 +955,26 @@ namespace PMMEditor.Models
         }
 
         #endregion PrimitiveTypeRead
+
+        #region ArrayTypeRead
+
+        private T[] ReadArray<T>(int size, Func<T> func)
+        {
+            var t = new T[size];
+            for (var i = 0; i < size; i++)
+            {
+                t[i] = func();
+            }
+            return t;
+        }
+
+        private T[] ReadVArray<T>(Func<T> func)
+        {
+            var size = ReadInt();
+            return ReadArray(size, func);
+        }
+
+        #endregion ArrayTypeRead
 
         #region StringTypeRead
 
