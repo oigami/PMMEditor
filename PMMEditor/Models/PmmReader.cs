@@ -499,6 +499,8 @@ namespace PMMEditor.Models
         {
             public int DataIndex { get; set; }
 
+            public int FrameNumber { get; set; }
+
             public int PreIndex { get; set; }
 
             public int NextIndex { get; set; }
@@ -536,6 +538,8 @@ namespace PMMEditor.Models
         {
             public int DataIndex { get; set; }
 
+            public int FrameNumber { get; set; }
+
             public int PreIndex { get; set; }
 
             public int NextIndex { get; set; }
@@ -547,6 +551,8 @@ namespace PMMEditor.Models
             public bool IsSelected { get; set; }
         }
 
+        public SelfShadowFrame SelfShadowInitFrame { get; set; }
+
         public int SelfShadowKeyFrameCount { get; set; }
 
         public SelfShadowFrame[] SelfShadowKeyFrames { get; set; }
@@ -555,11 +561,11 @@ namespace PMMEditor.Models
 
         #region AnotherInfo
 
-        public float EgeColorR { get; set; }
+        public float EdgeColorR { get; set; }
 
-        public float EgeColorG { get; set; }
+        public float EdgeColorG { get; set; }
 
-        public float EgeColorB { get; set; }
+        public float EdgeColorB { get; set; }
 
 
         public bool IsBlackBackground { get; set; }
@@ -713,6 +719,7 @@ namespace PMMEditor.Models
             return new PmmStuct.GravityKeyFrame
             {
                 DataIndex = isInit ? -1 : ReadInt(),
+                FrameNumber = ReadInt(),
                 PreIndex = ReadInt(),
                 NextIndex = ReadInt(),
                 IsAddNoize = ReadBool(),
