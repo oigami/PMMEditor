@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -36,8 +37,6 @@ namespace PMMEditor.Models
 
         #region ModelInfo
 
-        public byte ModelCount { get; set; }
-
         public class ModelData
         {
             public byte Number { get; set; }
@@ -50,21 +49,13 @@ namespace PMMEditor.Models
 
             public byte KeyFrameEditorTopLevelRows { get; set; }
 
-            public int BoneCount { get; set; }
+            public List<string> BoneName { get; set; }
 
-            public string[ /*BoneCount*/] BoneName { get; set; }
+            public List<string> MorphName { get; set; }
 
-            public int MorphCount { get; set; }
+            public List<int> IkIndex { get; set; }
 
-            public string[ /*MorphCount*/] MorphName { get; set; }
-
-            public int IkCount { get; set; }
-
-            public int[ /*IkCount*/] IkIndex { get; set; }
-
-            public int OpCount { get; set; }
-
-            public int[ /*OpCount*/] OpIndex { get; set; }
+            public List<int> OpIndex { get; set; }
 
             public byte DrawOrder { get; set; }
 
@@ -74,9 +65,7 @@ namespace PMMEditor.Models
 
             public int[ /*4*/] SkinPanel { get; set; }
 
-            public byte FrameCount { get; set; }
-
-            public bool[ /*FrameCount*/] IsFrameOpen { get; set; }
+            public List<bool> IsFrameOpen { get; set; }
 
             public int VScroll { get; set; }
 
@@ -111,11 +100,9 @@ namespace PMMEditor.Models
                 public bool IsPhysicsDisabled { get; set; }
             }
 
-            public BoneInitFrame[ /*BoneCount*/] BoneInitFrames { get; set; }
+            public List<BoneInitFrame> BoneInitFrames { get; set; }
 
-            public int BoneKeyFrameCount { get; set; }
-
-            public BoneInitFrame[ /* BoneKeyFrameCount */] BoneKeyFrames { get; set; }
+            public List<BoneInitFrame> BoneKeyFrames { get; set; }
 
             #endregion BoneInfo
 
@@ -136,11 +123,9 @@ namespace PMMEditor.Models
                 public bool IsSelected { get; set; }
             }
 
-            public MorphFrame[ /* MorphCount */] MorphInitFrames { get; set; }
+            public List<MorphFrame> MorphInitFrames { get; set; }
 
-            public int MorphKeyFrameCount { get; set; }
-
-            public MorphFrame[ /* MorphCount */] MorphKeyFrames { get; set; }
+            public List<MorphFrame> MorphKeyFrames { get; set; }
 
             #endregion MorphInfo
 
@@ -158,18 +143,16 @@ namespace PMMEditor.Models
 
                 public bool IsDisplay { get; set; }
 
-                public bool[ /* IkCount */] IsIkEnabled { get; set; }
+                public List<bool> IsIkEnabled { get; set; }
 
-                public KeyValuePair<int, int>[ /* OpCount */] OpData { get; set; }
+                public List<KeyValuePair<int, int>> OpData { get; set; }
 
                 public bool IsSelected { get; set; }
             }
 
             public OpFrame OpInitFrame { get; set; }
 
-            public int OpKeyFrameCount { get; set; }
-
-            public OpFrame[ /* OpKeyFrameCount */] OpKeyFrames { get; set; }
+            public List<OpFrame> OpKeyFrames { get; set; }
 
             #endregion その他構成情報
 
@@ -188,11 +171,11 @@ namespace PMMEditor.Models
                 public bool IsRowSelected { get; set; }
             }
 
-            public BoneCurrentData[ /* BoneCount */] BoneCurrentDatas { get; set; }
+            public List<BoneCurrentData> BoneCurrentDatas { get; set; }
 
-            public float[ /* MorphCount */] MorphCurrentDatas { get; set; }
+            public List<float> MorphCurrentDatas { get; set; }
 
-            public bool[ /* IkCount */] IsCurrentIkEnabledDatas { get; set; }
+            public List<bool> IsCurrentIkEnabledDatas { get; set; }
 
             public class OpCurrentData
             {
@@ -205,7 +188,7 @@ namespace PMMEditor.Models
                 public int ParentBoneIndex { get; set; }
             }
 
-            public OpCurrentData[ /* OpCount */] OpCurrentDatas { get; set; }
+            public List<OpCurrentData> OpCurrentDatas { get; set; }
 
             #endregion CurrentInfo
 
@@ -222,7 +205,7 @@ namespace PMMEditor.Models
             #endregion PostInfo
         }
 
-        public ModelData[ /*ModelCount*/] ModelDatas { get; set; }
+        public List<ModelData> ModelDatas { get; set; }
 
         #endregion ModelInfo
 
@@ -270,9 +253,7 @@ namespace PMMEditor.Models
 
         public CameraFrame CameraInitFrame { get; set; }
 
-        public int CameraKeyFrameCount { get; set; }
-
-        public CameraFrame[] CameraKeyFrames { get; set; }
+        public List<CameraFrame> CameraKeyFrames { get; set; }
 
         public class CCameraCurrentData
         {
@@ -318,9 +299,7 @@ namespace PMMEditor.Models
 
         public LightFrame LightInitFrame { get; set; }
 
-        public int LightKeyFrameCount { get; set; }
-
-        public LightFrame[] LightKeyFrames { get; set; }
+        public List<LightFrame> LightKeyFrames { get; set; }
 
         public class CLightCurrentData
         {
@@ -349,9 +328,7 @@ namespace PMMEditor.Models
 
         public int AccessoryVScroll { get; set; }
 
-        public byte AccessoryCount { get; set; }
-
-        public string[] AccessoryName { get; set; }
+        public List<string> AccessoryName { get; set; }
 
         public class AccessoryData
         {
@@ -397,16 +374,14 @@ namespace PMMEditor.Models
 
             public KeyFrame InitFrame { get; set; }
 
-            public int KeyFrameCount { get; set; }
-
-            public KeyFrame[] KeyFrames { get; set; }
+            public List<KeyFrame> KeyFrames { get; set; }
 
             public DataBody CurrentData { get; set; }
 
             public bool IsAddBlend { get; set; }
         }
 
-        public AccessoryData[] AccessoryDatas { get; set; }
+        public List<AccessoryData> AccessoryDatas { get; set; }
 
         #endregion AccessoryInfo
 
@@ -522,9 +497,7 @@ namespace PMMEditor.Models
 
         public GravityKeyFrame GravityInitFrame { get; set; }
 
-        public int GravityKeyFrameCount { get; set; }
-
-        public GravityKeyFrame[] GravityKeyFrames { get; set; }
+        public List<GravityKeyFrame> GravityKeyFrames { get; set; }
 
         #endregion GravityInfo
 
@@ -553,9 +526,7 @@ namespace PMMEditor.Models
 
         public SelfShadowFrame SelfShadowInitFrame { get; set; }
 
-        public int SelfShadowKeyFrameCount { get; set; }
-
-        public SelfShadowFrame[] SelfShadowKeyFrames { get; set; }
+        public List<SelfShadowFrame> SelfShadowKeyFrames { get; set; }
 
         #endregion SelfShadowInfo
 
@@ -601,11 +572,9 @@ namespace PMMEditor.Models
             public int SelectorChoice { get; set; }
         }
 
-        public CSelectorChoiceData[] SelectorChoiceDatas { get; set; }
+        public List<CSelectorChoiceData> SelectorChoiceDatas { get; set; }
 
         #endregion SelectorChoiceInfo
-
-        // TODO
     }
 
     public class PmmReader
@@ -642,28 +611,22 @@ namespace PMMEditor.Models
             data.IsOpenSelfShadowPanel = ReadBool();
             data.SelectedModelIndex = ReadByte();
 
-            data.ModelCount = ReadByte();
-            data.ModelDatas = ReadArray(data.ModelCount, ReadModelData);
+            var modelCount = ReadByte();
+            data.ModelDatas = ReadList(modelCount, ReadModelData);
 
             data.CameraInitFrame = ReadCameraFrame(true);
-            data.CameraKeyFrames = ReadVArray(() => ReadCameraFrame(false));
-            data.CameraKeyFrameCount = data.CameraKeyFrames.Length;
+            data.CameraKeyFrames = ReadVList(() => ReadCameraFrame(false));
             data.CameraCurrentData = ReadCameraCurrentData();
 
             data.LightInitFrame = ReadLightFrame(true);
-            data.LightKeyFrames = ReadVArray(() => ReadLightFrame(false));
-            data.LightKeyFrameCount = data.LightKeyFrames.Length;
+            data.LightKeyFrames = ReadVList(() => ReadLightFrame(false));
             data.LightCurrentData = ReadLightCurrentData();
 
             data.SelectedAccessoryIndex = ReadByte();
             data.AccessoryVScroll = ReadInt();
-            data.AccessoryCount = ReadByte();
-            data.AccessoryName = new string[data.AccessoryCount];
-            foreach (var i in Enumerable.Range(0, data.AccessoryCount))
-            {
-                data.AccessoryName[i] = ReadFixedStringTerminationChar(100);
-            }
-            data.AccessoryDatas = ReadArray(data.AccessoryCount, ReadAccessory);
+            var accessoryCount = ReadByte();
+            data.AccessoryName = ReadList(accessoryCount, () => ReadFixedStringTerminationChar(100));
+            data.AccessoryDatas = ReadList(accessoryCount, ReadAccessory);
 
             data.CurrentFramePosition = ReadInt();
             data.HScrollPosition = ReadInt();
@@ -703,14 +666,12 @@ namespace PMMEditor.Models
 
             data.GravityCurrentData = ReadGravityCurrentData();
             data.GravityInitFrame = ReadGravityKeyFrame(true);
-            data.GravityKeyFrames = ReadVArray(() => ReadGravityKeyFrame(false));
-            data.GravityKeyFrameCount = data.GravityKeyFrames.Length;
+            data.GravityKeyFrames = ReadVList(() => ReadGravityKeyFrame(false));
 
             data.IsShowSelfShadow = ReadBool();
             data.SelfShadowCurrentData = ReadFloat();
             data.SelfShadowInitFrame = ReadSelfShadowKeyFrame(true);
-            data.SelfShadowKeyFrames = ReadVArray(() => ReadSelfShadowKeyFrame(false));
-            data.SelfShadowKeyFrameCount = data.SelfShadowKeyFrames.Length;
+            data.SelfShadowKeyFrames = ReadVList(() => ReadSelfShadowKeyFrame(false));
 
             data.EdgeColorR = ReadInt();
             data.EdgeColorG = ReadInt();
@@ -721,7 +682,7 @@ namespace PMMEditor.Models
             data.CameraCurrentLookingAtModel = ReadInt();
             data.CameraCurrentLookingAtBone = ReadInt();
 
-            ReadArray(4 * 4, ReadFloat);
+            ReadList(4 * 4, ReadFloat);
 
             data.IsViewLookAtEnabled = ReadBool();
 
@@ -731,7 +692,7 @@ namespace PMMEditor.Models
             data.FrameTextbox = ReadInt();
 
             data.SelectorChoiceSelectionFollowing = ReadByte();
-            data.SelectorChoiceDatas = ReadArray(data.ModelDatas.Length, ReadSelectorChoice);
+            data.SelectorChoiceDatas = ReadList(data.ModelDatas.Count, ReadSelectorChoice);
 
             if (_stream.ReadByte() != -1)
             {
@@ -817,41 +778,33 @@ namespace PMMEditor.Models
             o.NameEn = ReadVString();
             o.Path = ReadFixedStringTerminationChar(256);
             o.KeyFrameEditorTopLevelRows = ReadByte();
-            o.BoneName = ReadVArray(ReadVString);
-            o.BoneCount = o.BoneName.Length;
-            o.MorphName = ReadVArray(ReadVString);
-            o.MorphCount = o.MorphName.Length;
-            o.IkIndex = ReadVArray(ReadInt);
-            o.IkCount = o.IkIndex.Length;
-            o.OpIndex = ReadVArray(ReadInt);
-            o.OpCount = o.OpIndex.Length;
+            o.BoneName = ReadVList(ReadVString);
+            o.MorphName = ReadVList(ReadVString);
+            o.IkIndex = ReadVList(ReadInt);
+            o.OpIndex = ReadVList(ReadInt);
 
             o.DrawOrder = ReadByte();
             o.EditIsDisplay = ReadBool();
             o.EditSelectedBone = ReadInt();
             o.SkinPanel = ReadArray(4, ReadInt);
-            o.FrameCount = ReadByte();
-            o.IsFrameOpen = ReadArray(o.FrameCount, ReadBool);
+            o.IsFrameOpen = ReadList(ReadByte(), ReadBool);
             o.VScroll = ReadInt();
             o.LastFrame = ReadInt();
 
-            o.BoneInitFrames = ReadArray(o.BoneCount, () => ReadBoneFrame(true));
-            o.BoneKeyFrames = ReadVArray(() => ReadBoneFrame(false));
-            o.BoneKeyFrameCount = o.BoneKeyFrames.Length;
+            o.BoneInitFrames = ReadList(o.BoneName.Count, () => ReadBoneFrame(true));
+            o.BoneKeyFrames = ReadVList(() => ReadBoneFrame(false));
 
-            o.MorphInitFrames = ReadArray(o.MorphCount, () => ReadMorphFrame(true));
-            o.MorphKeyFrames = ReadVArray(() => ReadMorphFrame(false));
-            o.MorphKeyFrameCount = o.MorphKeyFrames.Length;
+            o.MorphInitFrames = ReadList(o.MorphName.Count, () => ReadMorphFrame(true));
+            o.MorphKeyFrames = ReadVList(() => ReadMorphFrame(false));
 
-            o.OpInitFrame = ReadOpFrame(o.IkCount, o.OpCount, true);
+            o.OpInitFrame = ReadOpFrame(o.IkIndex.Count, o.OpIndex.Count, true);
 
-            o.OpKeyFrames = ReadVArray(() => ReadOpFrame(o.IkCount, o.OpCount, false));
-            o.OpKeyFrameCount = o.OpKeyFrames.Length;
+            o.OpKeyFrames = ReadVList(() => ReadOpFrame(o.IkIndex.Count, o.OpIndex.Count, false));
 
-            o.BoneCurrentDatas = ReadArray(o.BoneCount, ReadBoneCurrentData);
-            o.MorphCurrentDatas = ReadArray(o.MorphCount, ReadFloat);
-            o.IsCurrentIkEnabledDatas = ReadArray(o.IkCount, ReadBool);
-            o.OpCurrentDatas = ReadArray(o.OpCount, ReadOpCurrentData);
+            o.BoneCurrentDatas = ReadList(o.BoneName.Count, ReadBoneCurrentData);
+            o.MorphCurrentDatas = ReadList(o.MorphName.Count, ReadFloat);
+            o.IsCurrentIkEnabledDatas = ReadList(o.IkIndex.Count, ReadBool);
+            o.OpCurrentDatas = ReadList(o.OpIndex.Count, ReadOpCurrentData);
             o.IsAddBlend = ReadBool();
             o.EdgeWidth = ReadFloat();
             o.IsSelfShadowEnabled = ReadBool();
@@ -896,8 +849,7 @@ namespace PMMEditor.Models
             o.Path = ReadFixedStringTerminationChar(256);
             o.DrawOrder = ReadByte();
             o.InitFrame = ReadAccessoryKeyFrame(true);
-            o.KeyFrames = ReadVArray(() => ReadAccessoryKeyFrame(false));
-            o.KeyFrameCount = o.KeyFrames.Length;
+            o.KeyFrames = ReadVList(() => ReadAccessoryKeyFrame(false));
             var tmp = new PmmStuct.AccessoryData.DataBody();
             ReadAccessoryDataBody(ref tmp);
             o.CurrentData = tmp;
@@ -1049,8 +1001,8 @@ namespace PMMEditor.Models
                 PreIndex = ReadInt(),
                 NextIndex = ReadInt(),
                 IsDisplay = ReadBool(),
-                IsIkEnabled = ReadArray(ikCount, ReadBool),
-                OpData = ReadArray(opCount, ReadPair),
+                IsIkEnabled = ReadList(ikCount, ReadBool),
+                OpData = ReadList(opCount, ReadPair),
                 IsSelected = ReadBool()
             };
         }
@@ -1118,6 +1070,22 @@ namespace PMMEditor.Models
         {
             var size = ReadInt();
             return ReadArray(size, func);
+        }
+
+        private List<T> ReadList<T>(int size, Func<T> func)
+        {
+            var t = new List<T>(size);
+            for (var i = 0; i < size; i++)
+            {
+                t.Add(func());
+            }
+            return t;
+        }
+
+        private List<T> ReadVList<T>(Func<T> func)
+        {
+            var size = ReadInt();
+            return ReadList(size, func);
         }
 
         #endregion ArrayTypeRead
