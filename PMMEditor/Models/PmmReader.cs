@@ -624,7 +624,7 @@ namespace PMMEditor.Models
         {
             var data = new PmmStuct();
             _stream = new MemoryStream(_binaryData);
-            data.FormatId = string.Concat(ReadFixedString(30).TakeWhile(s => s != '\0'));
+            data.FormatId = ReadFixedStringTerminationChar(30);
             if (data.FormatId != "Polygon Movie maker 0002")
             {
                 throw new ArgumentException("Format id is not \"Polygon Movie maker 0002\"");
@@ -661,7 +661,7 @@ namespace PMMEditor.Models
             data.AccessoryName = new string[data.AccessoryCount];
             foreach (var i in Enumerable.Range(0, data.AccessoryCount))
             {
-                data.AccessoryName[i] = string.Concat(ReadFixedString(100).TakeWhile(s => s != '\0'));
+                data.AccessoryName[i] = ReadFixedStringTerminationChar(100);
             }
             data.AccessoryDatas = ReadArray(data.AccessoryCount, ReadAccessory);
 
@@ -815,7 +815,7 @@ namespace PMMEditor.Models
             o.Number = ReadByte();
             o.Name = ReadVString();
             o.NameEn = ReadVString();
-            o.Path = string.Concat(ReadFixedString(256).TakeWhile(s => s != '\0'));
+            o.Path = ReadFixedStringTerminationChar(256);
             o.KeyFrameEditorTopLevelRows = ReadByte();
             o.BoneName = ReadVArray(ReadVString);
             o.BoneCount = o.BoneName.Length;
