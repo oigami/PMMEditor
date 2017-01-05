@@ -695,11 +695,52 @@ namespace PMMEditor.Models
             data.IsTransparentGroundShadow = ReadBool();
             data.IsPhysicsGroundEnabled = ReadBool();
 
+            data.GravityCurrentData = ReadGravityCurrentData();
+            data.GravityInitFrame = ReadGravityKeyFrame(true);
+            data.GravityKeyFrames = ReadVArray(() => ReadGravityKeyFrame(false));
+            data.GravityKeyFrameCount = data.GravityKeyFrames.Length;
+
+
             // TODO
 
             return data;
         }
 
+        #region GravityTypeRead
+
+        private PmmStuct.GravityKeyFrame ReadGravityKeyFrame(bool isInit)
+        {
+            return new PmmStuct.GravityKeyFrame
+            {
+                DataIndex = isInit ? -1 : ReadInt(),
+                PreIndex = ReadInt(),
+                NextIndex = ReadInt(),
+                IsAddNoize = ReadBool(),
+                NoizeAmount = ReadInt(),
+                Acceleration = ReadFloat(),
+                DirectionX = ReadFloat(),
+                DirectionY = ReadFloat(),
+                DirectionZ = ReadFloat(),
+                IsSelected = ReadBool()
+            };
+        }
+
+        private PmmStuct.CGravityCurrentData ReadGravityCurrentData()
+        {
+            return new PmmStuct.CGravityCurrentData
+            {
+                Acceleration = ReadFloat(),
+                NoizeAmount = ReadInt(),
+                DirectionX = ReadFloat(),
+                DirectionY = ReadFloat(),
+                DirectionZ = ReadFloat(),
+                IsAddNoize = ReadBool()
+            };
+        }
+
+        #endregion GravityTypeRead
+
+        #region ModelTypeRead
 
         private PmmStuct.ModelData ReadModelData()
         {
@@ -750,6 +791,8 @@ namespace PMMEditor.Models
             o.CalcOrder = ReadByte();
             return o;
         }
+
+        #endregion ModelTypeRead
 
         #region AccessoryTypeRead
 
