@@ -706,11 +706,71 @@ namespace PMMEditor.Models
             data.GravityKeyFrames = ReadVArray(() => ReadGravityKeyFrame(false));
             data.GravityKeyFrameCount = data.GravityKeyFrames.Length;
 
+            data.IsShowSelfShadow = ReadBool();
+            data.SelfShadowCurrentData = ReadFloat();
+            data.SelfShadowInitFrame = ReadSelfShadowKeyFrame(true);
+            data.SelfShadowKeyFrames = ReadVArray(() => ReadSelfShadowKeyFrame(false));
+            data.SelfShadowKeyFrameCount = data.SelfShadowKeyFrames.Length;
 
-            // TODO
+            data.EdgeColorR = ReadInt();
+            data.EdgeColorG = ReadInt();
+            data.EdgeColorB = ReadInt();
+
+            data.IsBlackBackground = ReadBool();
+
+            data.CameraCurrentLookingAtModel = ReadInt();
+            data.CameraCurrentLookingAtBone = ReadInt();
+
+            ReadArray(4 * 4, ReadFloat);
+
+            data.IsViewLookAtEnabled = ReadBool();
+
+            ReadByte();
+
+            data.IsPhysicsGroundEnabled = ReadBool();
+            data.FrameTextbox = ReadInt();
+
+            data.SelectorChoiceSelectionFollowing = ReadByte();
+            data.SelectorChoiceDatas = ReadArray(data.ModelDatas.Length, ReadSelectorChoice);
+
+            if (_stream.ReadByte() != -1)
+            {
+                throw new Exception("Tail Error.");
+            }
 
             return data;
         }
+
+        #region SelectorChoiceTypeRead
+
+        private PmmStuct.CSelectorChoiceData ReadSelectorChoice()
+        {
+            return new PmmStuct.CSelectorChoiceData
+            {
+                ModelIndex = ReadByte(),
+                SelectorChoice = ReadInt()
+            };
+        }
+
+        #endregion SelectorChoiceTypeRead
+
+        #region SelfShadowTypeRead
+
+        private PmmStuct.SelfShadowFrame ReadSelfShadowKeyFrame(bool isInit)
+        {
+            return new PmmStuct.SelfShadowFrame
+            {
+                DataIndex = isInit ? -1 : ReadInt(),
+                FrameNumber = ReadInt(),
+                PreIndex = ReadInt(),
+                NextIndex = ReadInt(),
+                Mode = ReadByte(),
+                Distance = ReadFloat(),
+                IsSelected = ReadBool()
+            };
+        }
+
+        #endregion SelfShadowTypeRead
 
         #region GravityTypeRead
 
