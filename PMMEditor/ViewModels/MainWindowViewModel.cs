@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Livet;
 using PMMEditor.Models;
 
@@ -62,7 +63,7 @@ namespace PMMEditor.ViewModels
 
         #region ModelList変更通知プロパティ
 
-        public PmmStuct.ModelData[] ModelList => PmmStruct?.ModelDatas;
+        public List<PmmStuct.ModelData> ModelList => PmmStruct?.ModelDatas;
 
         #endregion ModelList変更通知プロパティ
 
