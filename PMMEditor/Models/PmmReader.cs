@@ -659,6 +659,42 @@ namespace PMMEditor.Models
             }
             data.AccessoryDatas = ReadArray(data.AccessoryCount, ReadAccessory);
 
+            data.CurrentFramePosition = ReadInt();
+            data.HScrollPosition = ReadInt();
+            data.HScrollScale = ReadInt();
+            data.BoneOperationKind = ReadInt();
+            data.LookingAt = ReadByte();
+            data.IsRepeat = ReadBool();
+            data.IsPlayFromFrame = ReadBool();
+            data.IsPlayToFrame = ReadBool();
+            data.PlayStartFrame = ReadInt();
+            data.PlayEndFrame = ReadInt();
+
+            data.IsWaveEnabled = ReadBool();
+            data.WavePath = ReadFixedStringTerminationChar(256);
+
+            data.AviOffsetX = ReadInt();
+            data.AviOffsetY = ReadInt();
+            data.AviScale = ReadFloat();
+            data.AviPath = ReadFixedStringTerminationChar(256);
+            data.IsShowAvi = ReadInt() == 1;
+
+            data.BackgroundImageOffsetX = ReadInt();
+            data.BackgroundImageOffsetY = ReadInt();
+            data.BackgroundImageScale = ReadInt();
+            data.BackgroundImagePath = ReadFixedStringTerminationChar(256);
+            data.IsShowBackgroundImage = ReadBool();
+
+            data.IsShowInfomation = ReadBool();
+            data.IsSHowAxis = ReadBool();
+            data.IsShowGroundShadow = ReadBool();
+            data.FpsLimit = ReadFloat();
+            data.ScreenCaptureMode = ReadInt();
+            data.AccessoryNumberRenderAfterModel = ReadInt();
+            data.GroundShadowBrightness = ReadFloat();
+            data.IsTransparentGroundShadow = ReadBool();
+            data.IsPhysicsGroundEnabled = ReadBool();
+
             // TODO
 
             return data;
