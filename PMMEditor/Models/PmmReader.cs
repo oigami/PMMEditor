@@ -363,10 +363,243 @@ namespace PMMEditor.Models
 
             public byte DrawOrder { get; set; }
 
-            // TODO
+            public class DataBody
+            {
+                public byte Opacity { get; set; }
+
+                public bool IsVisible { get; set; }
+
+                public int ParentModelIndex { get; set; }
+
+                public int ParentBoneIndex { get; set; }
+
+                public float[] Translation { get; set; }
+
+                public float[] Rotation { get; set; }
+
+                public float Scale { get; set; }
+
+                public bool IsShadowEnabled { get; set; }
+            }
+
+            public class KeyFrame : DataBody
+            {
+                public int DataIndex { get; set; }
+
+                public int FrameNumber { get; set; }
+
+                public int PreNumber { get; set; }
+
+                public int NextNumber { get; set; }
+
+                public bool IsSelected { get; set; }
+            }
+
+            public KeyFrame InitFrame { get; set; }
+
+            public int KeyFrameCount { get; set; }
+
+            public KeyFrame[] KeyFrames { get; set; }
+
+            public DataBody CurrentData { get; set; }
+
+            public bool IsAddBlend { get; set; }
         }
 
+        public AccessoryData[] AccessoryDatas { get; set; }
+
         #endregion AccessoryInfo
+
+        #region AnotherInfo
+
+        public int CurrentFramePosition { get; set; }
+
+        public int HScrollPosition { get; set; }
+
+        public int HScrollScale { get; set; }
+
+        public int BoneOperationKind { get; set; } // 0:選択 1:box選択 2:何も選択していない 3:回転 4:移動
+
+        public byte LookingAt { get; set; } // 0:なし 1:モデル 2:ボーン
+
+        public bool IsRepeat { get; set; }
+
+        public bool IsPlayFromFrame { get; set; }
+
+        public bool IsPlayToFrame { get; set; }
+
+        public int PlayStartFrame { get; set; }
+
+        public int PlayEndFrame { get; set; }
+
+        public bool IsWaveEnabled { get; set; }
+
+        public string WavePath { get; set; }
+
+        public int AviOffsetX { get; set; }
+
+        public int AviOffsetY { get; set; }
+
+        public float AviScale { get; set; }
+
+        public string AviPath { get; set; }
+
+        public bool IsShowAvi { get; set; } // バイナリ上では4バイト(01 00 00 00)で表示 それ以外は非表示
+
+        public int BackgroundImageOffsetX { get; set; }
+
+        public int BackgroundImageOffsetY { get; set; }
+
+        public float BackgroundImageScale { get; set; }
+
+        public string BackgroundImagePath { get; set; }
+
+        public bool IsShowBackgroundImage { get; set; }
+
+        public bool IsShowInfomation { get; set; }
+
+        public bool IsSHowAxis { get; set; }
+
+        public bool IsShowGroundShadow { get; set; }
+
+        public float FpsLimit { get; set; }
+
+        public int ScreenCaptureMode { get; set; }
+
+        public int AccessoryNumberRenderAfterModel { get; set; }
+
+        public float GroundShadowBrightness { get; set; }
+
+        public bool IsTransparentGroundShadow { get; set; }
+
+        public byte PhysicsMode { get; set; } // 1:常に 2:オンオフモード 3:トレース 0:演算しない
+
+        #endregion AnotherInfo
+
+        #region GravityInfo
+
+        public class CGravityCurrentData
+        {
+            public float Acceleration { get; set; }
+
+            public int NoizeAmount { get; set; }
+
+            public float DirectionX { get; set; }
+
+            public float DirectionY { get; set; }
+
+            public float DirectionZ { get; set; }
+
+            public bool IsAddNoize { get; set; }
+        }
+
+        public CGravityCurrentData GravityCurrentData { get; set; }
+
+        public class GravityKeyFrame
+        {
+            public int DataIndex { get; set; }
+
+            public int PreIndex { get; set; }
+
+            public int NextIndex { get; set; }
+
+            public bool IsAddNoize { get; set; }
+
+            public int NoizeAmount { get; set; }
+
+            public float Acceleration { get; set; }
+
+            public float DirectionX { get; set; }
+
+            public float DirectionY { get; set; }
+
+            public float DirectionZ { get; set; }
+
+            public bool IsSelected { get; set; }
+        }
+
+        public GravityKeyFrame GravityInitFrame { get; set; }
+
+        public int GravityKeyFrameCount { get; set; }
+
+        public GravityKeyFrame[] GravityKeyFrames { get; set; }
+
+        #endregion GravityInfo
+
+        #region SelfShadowInfo
+
+        public bool IsShowSelfShadow { get; set; }
+
+        public float SelfShadowCurrentData { get; set; }
+
+        public class SelfShadowFrame
+        {
+            public int DataIndex { get; set; }
+
+            public int PreIndex { get; set; }
+
+            public int NextIndex { get; set; }
+
+            public byte Mode { get; set; }
+
+            public float Distance { get; set; }
+
+            public bool IsSelected { get; set; }
+        }
+
+        public int SelfShadowKeyFrameCount { get; set; }
+
+        public SelfShadowFrame[] SelfShadowKeyFrames { get; set; }
+
+        #endregion SelfShadowInfo
+
+        #region AnotherInfo
+
+        public float EgeColorR { get; set; }
+
+        public float EgeColorG { get; set; }
+
+        public float EgeColorB { get; set; }
+
+
+        public bool IsBlackBackground { get; set; }
+
+        public int CameraCurrentLookingAtModel { get; set; }
+
+        public int CameraCurrentLookingAtBone { get; set; }
+
+        #endregion AnotherInfo
+
+        #region AnotherInfo
+
+        public float[] Unknown1_12 { get; set; }
+
+        public bool IsViewLookAtEnabled { get; set; }
+
+        public byte Unknown2 { get; set; }
+
+        public bool IsPhysicsGroundEnabled { get; set; }
+
+        public int FrameTextbox { get; set; }
+
+        #endregion AnotherInfo
+
+        #region SelectorChoiceInfo
+
+        public byte SelectorChoiceSelectionFollowing { get; set; }
+
+        public class CSelectorChoiceData
+        {
+            public byte ModelIndex { get; set; }
+
+            public int SelectorChoice { get; set; }
+        }
+
+        public CSelectorChoiceData[] SelectorChoiceDatas { get; set; }
+
+        #endregion SelectorChoiceInfo
+
+        // TODO
     }
 
     public class PmmReader
@@ -414,11 +647,24 @@ namespace PMMEditor.Models
             data.LightInitFrame = ReadLightFrame(true);
             data.LightKeyFrames = ReadVArray(() => ReadLightFrame(false));
             data.LightKeyFrameCount = data.LightKeyFrames.Length;
+            data.LightCurrentData = ReadLightCurrentData();
+
+            data.SelectedAccessoryIndex = ReadByte();
+            data.AccessoryVScroll = ReadInt();
+            data.AccessoryCount = ReadByte();
+            data.AccessoryName = new string[data.AccessoryCount];
+            foreach (var i in Enumerable.Range(0, data.AccessoryCount))
+            {
+                data.AccessoryName[i] = string.Concat(ReadFixedString(100).TakeWhile(s => s != '\0'));
+            }
+            data.AccessoryDatas = ReadArray(data.AccessoryCount, ReadAccessory);
 
             // TODO
 
             return data;
         }
+
+        #region ArrayTypeRead
 
         private T[] ReadArray<T>(int size, Func<T> func)
         {
@@ -435,6 +681,8 @@ namespace PMMEditor.Models
             var size = ReadInt();
             return ReadArray(size, func);
         }
+
+        #endregion ArrayTypeRead
 
         private PmmStuct.ModelData ReadModelData()
         {
@@ -486,7 +734,66 @@ namespace PMMEditor.Models
             return o;
         }
 
-        #region LightingInfo
+        #region AccessoryTypeRead
+
+        private void ReadAccessoryDataBody<T>(ref T o) where T : PmmStuct.AccessoryData.DataBody
+        {
+            var tmp = ReadByte();
+            o.Opacity = (byte) (tmp & 0x7f);
+            o.IsVisible = (tmp & 0x80) != 0;
+            o.ParentModelIndex = ReadInt();
+            o.ParentBoneIndex = ReadInt();
+            o.Translation = ReadArray(3, ReadFloat);
+            o.Rotation = ReadArray(3, ReadFloat);
+            o.Scale = ReadFloat();
+            o.IsShadowEnabled = ReadBool();
+        }
+
+        private PmmStuct.AccessoryData.KeyFrame ReadAccessoryKeyFrame(bool isInit)
+        {
+            var o = new PmmStuct.AccessoryData.KeyFrame();
+            o.DataIndex = isInit ? -1 : ReadInt();
+            o.FrameNumber = ReadInt();
+            o.PreNumber = ReadInt();
+            o.NextNumber = ReadInt();
+            ReadAccessoryDataBody(ref o);
+            o.IsSelected = ReadBool();
+            return o;
+        }
+
+        private PmmStuct.AccessoryData ReadAccessory()
+        {
+            var o = new PmmStuct.AccessoryData();
+            o.Index = ReadByte();
+            o.Name = ReadFixedStringTerminationChar(100);
+            o.Path = ReadFixedStringTerminationChar(256);
+            o.DrawOrder = ReadByte();
+            o.InitFrame = ReadAccessoryKeyFrame(true);
+            o.KeyFrames = ReadVArray(() => ReadAccessoryKeyFrame(false));
+            o.KeyFrameCount = o.KeyFrames.Length;
+            var tmp = new PmmStuct.AccessoryData.DataBody();
+            ReadAccessoryDataBody(ref tmp);
+            o.CurrentData = tmp;
+            o.IsAddBlend = ReadBool();
+            return o;
+        }
+
+        #endregion AccessoryTypeRead
+
+        #region LightingTypeRead
+
+        private PmmStuct.CLightCurrentData ReadLightCurrentData()
+        {
+            return new PmmStuct.CLightCurrentData
+            {
+                R = ReadFloat(),
+                G = ReadFloat(),
+                B = ReadFloat(),
+                X = ReadFloat(),
+                Y = ReadFloat(),
+                Z = ReadFloat()
+            };
+        }
 
         private PmmStuct.LightFrame ReadLightFrame(bool isInit)
         {
@@ -507,7 +814,7 @@ namespace PMMEditor.Models
             return o;
         }
 
-        #endregion LightingInfo
+        #endregion LightingTypeRead
 
         #region MorphTypeRead
 
@@ -678,6 +985,11 @@ namespace PMMEditor.Models
         private string ReadFixedString(int count)
         {
             return Encoding.GetEncoding("shift_jis").GetString(ReadByte(count), 0, count);
+        }
+
+        private string ReadFixedStringTerminationChar(int count)
+        {
+            return string.Concat(ReadFixedString(count).TakeWhile(s => s != '\0'));
         }
 
         #endregion StringTypeRead
