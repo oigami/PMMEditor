@@ -365,9 +365,9 @@ namespace PMMEditor.Models
 
                 public int FrameNumber { get; set; }
 
-                public int PreNumber { get; set; }
+                public int PreIndex { get; set; }
 
-                public int NextNumber { get; set; }
+                public int NextIndex { get; set; }
 
                 public bool IsSelected { get; set; }
             }
@@ -834,8 +834,8 @@ namespace PMMEditor.Models
             var o = new PmmStuct.AccessoryData.KeyFrame();
             o.DataIndex = isInit ? -1 : ReadInt();
             o.FrameNumber = ReadInt();
-            o.PreNumber = ReadInt();
-            o.NextNumber = ReadInt();
+            o.PreIndex = ReadInt();
+            o.NextIndex = ReadInt();
             ReadAccessoryDataBody(ref o);
             o.IsSelected = ReadBool();
             return o;
