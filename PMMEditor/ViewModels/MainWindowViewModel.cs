@@ -90,6 +90,30 @@ namespace PMMEditor.ViewModels
 
         #endregion ModelTab
 
+        #region AccessoryTab
+
+        #region SelectedAccessory変更通知プロパティ
+
+        private PmmStuct.AccessoryData _SelectedAccessory;
+
+        public PmmStuct.AccessoryData SelectedAccessory
+        {
+            get { return _SelectedAccessory; }
+            set
+            {
+                if (_SelectedAccessory == value)
+                {
+                    return;
+                }
+                _SelectedAccessory = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion
+
+        #endregion
+
         #region PmmStruct変更通知プロパティ
 
         private PmmStuct _PmmStruct;
