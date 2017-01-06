@@ -342,7 +342,7 @@ namespace PMMEditor.Models
 
             public class DataBody
             {
-                public byte Opacity { get; set; }
+                public byte Transparency { get; set; }
 
                 public bool IsVisible { get; set; }
 
@@ -819,8 +819,8 @@ namespace PMMEditor.Models
         private void ReadAccessoryDataBody<T>(ref T o) where T : PmmStuct.AccessoryData.DataBody
         {
             var tmp = ReadByte();
-            o.Opacity = (byte) (tmp & 0x7f);
-            o.IsVisible = (tmp & 0x80) != 0;
+            o.Transparency = (byte) (tmp & 0xfe);
+            o.IsVisible = (tmp & 0x01) != 0;
             o.ParentModelIndex = ReadInt();
             o.ParentBoneIndex = ReadInt();
             o.Translation = ReadArray(3, ReadFloat);
