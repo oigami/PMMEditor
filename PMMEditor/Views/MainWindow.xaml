@@ -7,6 +7,7 @@
   xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
   xmlns:v="clr-namespace:PMMEditor.Views"
   xmlns:vm="clr-namespace:PMMEditor.ViewModels"
+  xmlns:dx="clr-namespace:PMMEditor.SharpDxControl"
   Title="MainWindow"
   Width="640"
   Height="480">
@@ -501,6 +502,13 @@
 
           </Grid>
         </Grid>
+      </TabItem>
+      <TabItem Header="test">
+        <vm:Test >
+          <i:Interaction.Behaviors>
+            <dx:SharpDxControlUnloadingEventBehavior />
+          </i:Interaction.Behaviors>
+        </vm:Test>
       </TabItem>
     </TabControl>
   </Grid>
