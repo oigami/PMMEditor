@@ -2,21 +2,25 @@
   x:Class="PMMEditor.Views.MainWindow"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
   xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
   xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:v="clr-namespace:PMMEditor.Views"
   xmlns:vm="clr-namespace:PMMEditor.ViewModels"
   Title="MainWindow"
   Width="640"
-  Height="480">
+  Height="480"
+  mc:Ignorable="d">
+
+  <Window.Resources>
+    <v:ByteArrayToStringConverter x:Key="ByteArrayToStringConverter" />
+  </Window.Resources>
 
   <Window.DataContext>
     <vm:MainWindowViewModel />
   </Window.DataContext>
-  <Window.Resources>
-    <v:ByteArrayToStringConverter x:Key="ByteArrayToStringConverter" />
-  </Window.Resources>
   <i:Interaction.Triggers>
 
     <!--  Viewに特別な要件が存在しない限りは、トリガーやアクションの自作にこだわらず積極的にコードビハインドを使いましょう  -->
@@ -38,9 +42,14 @@
     <!--  WindowのCloseキャンセル処理に対応する場合は、WindowCloseCancelBehaviorの使用を検討してください  -->
 
   </i:Interaction.Triggers>
-
-  <Grid>
-    <TabControl Margin="0,10,0,0">
+  <DockPanel>
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Header="File(_F)">
+        <MenuItem Header="Open pmm" />
+        <MenuItem Header="Save as" />
+      </MenuItem>
+    </Menu>
+    <TabControl>
       <TabItem Header="Header">
         <VirtualizingStackPanel
           Background="#FFE5E5E5"
@@ -282,16 +291,16 @@
                             DisplayMemberBinding="{Binding NextIndex, Mode=OneTime}"
                             Header="NextIndex" />
                           <GridViewColumn
-                            DisplayMemberBinding="{Binding InterpolationX, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                            DisplayMemberBinding="{Binding InterpolationX, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneTime}"
                             Header="InterpolationX" />
                           <GridViewColumn
-                            DisplayMemberBinding="{Binding InterpolationY, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                            DisplayMemberBinding="{Binding InterpolationY, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneTime}"
                             Header="InterpolationY" />
                           <GridViewColumn
-                            DisplayMemberBinding="{Binding InterpolationZ, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                            DisplayMemberBinding="{Binding InterpolationZ, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneTime}"
                             Header="InterpolationZ" />
                           <GridViewColumn
-                            DisplayMemberBinding="{Binding InterpolationRotation, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                            DisplayMemberBinding="{Binding InterpolationRotation, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneTime}"
                             Header="InterpolationRotation" />
                           <GridViewColumn
                             DisplayMemberBinding="{Binding IsPhysicsDisabled, Mode=OneTime}"
@@ -395,22 +404,22 @@
                 DisplayMemberBinding="{Binding AngleView, Mode=OneTime}"
                 Header="AngleView" />
               <GridViewColumn
-                DisplayMemberBinding="{Binding InterpolationX, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                DisplayMemberBinding="{Binding InterpolationX, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneTime}"
                 Header="InterpolationX" />
               <GridViewColumn
-                DisplayMemberBinding="{Binding InterpolationY, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                DisplayMemberBinding="{Binding InterpolationY, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneTime}"
                 Header="InterpolationY" />
               <GridViewColumn
-                DisplayMemberBinding="{Binding InterpolationZ, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                DisplayMemberBinding="{Binding InterpolationZ, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneTime}"
                 Header="InterpolationZ" />
               <GridViewColumn
-                DisplayMemberBinding="{Binding InterpolationRotation, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                DisplayMemberBinding="{Binding InterpolationRotation, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneTime}"
                 Header="InterpolationRotation" />
               <GridViewColumn
-                DisplayMemberBinding="{Binding InterpolationDistance, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                DisplayMemberBinding="{Binding InterpolationDistance, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneTime}"
                 Header="InterpolationDistance" />
               <GridViewColumn
-                DisplayMemberBinding="{Binding InterpolationAngleView, Mode=OneTime, Converter={StaticResource ByteArrayToStringConverter}}"
+                DisplayMemberBinding="{Binding InterpolationAngleView, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneTime}"
                 Header="InterpolationAngleView" />
               <GridViewColumn
                 DisplayMemberBinding="{Binding LookingModelIndex, Mode=OneTime}"
@@ -503,6 +512,6 @@
         </Grid>
       </TabItem>
     </TabControl>
-  </Grid>
+  </DockPanel>
 </Window>
 
