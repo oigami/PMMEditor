@@ -1,7 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Windows;
 using Livet;
 using PMMEditor.Models;
+using Livet.Commands;
+using Livet.EventListeners;
+using Microsoft.Win32;
 
 namespace PMMEditor.ViewModels
 {
@@ -48,22 +53,39 @@ namespace PMMEditor.ViewModels
          * LivetのViewModelではプロパティ変更通知(RaisePropertyChanged)やDispatcherCollectionを使ったコレクション変更通知は
          * 自動的にUIDispatcher上での通知に変換されます。変更通知に際してUIDispatcherを操作する必要はありません。
          */
-        private Model _model;
+        private readonly Model _model = new Model();
+        private PropertyChangedEventListener _listener;
 
 
         public void Initialize()
         {
-            _model = new Model();
-            PmmStruct =
-                new PmmReader(File.ReadAllBytes("C:/tool/MikuMikuDance_v926x64/UserFile/サンプル（きしめんAllStar).pmm")).Read();
-            RaisePropertyChanged(nameof(ModelList));
+            _listener = new PropertyChangedEventListener(_model)
+            {
+                nameof(_model.PmmStruct),
+                (_, __) =>
+                {
+                    RaisePropertyChanged(nameof(ModelList));
+                    RaisePropertyChanged(nameof(PmmStruct));
+                }
+            };
+
+#if DEBUG
+            try
+            {
+                _model.OpenPmm(File.ReadAllBytes("C:/tool/MikuMikuDance_v926x64/UserFile/サンプル（きしめんAllStar).pmm"));
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message + "\n\n" + e.StackTrace);
+            }
+#endif
         }
 
         #region ModelTab
 
         #region ModelList変更通知プロパティ
 
-        public List<PmmStuct.ModelData> ModelList => PmmStruct?.ModelDatas;
+        public List<PmmStuct.ModelData> ModelList => _model.PmmStruct?.ModelDatas;
 
         #endregion ModelList変更通知プロパティ
 
@@ -116,19 +138,30 @@ namespace PMMEditor.ViewModels
 
         #region PmmStruct変更通知プロパティ
 
-        private PmmStuct _PmmStruct;
+        public PmmStuct PmmStruct => _model.PmmStruct;
 
-        public PmmStuct PmmStruct
+        #endregion
+
+        #region OpenPmmCommand
+
+        private ViewModelCommand _OpenPmmCommand;
+
+        public ViewModelCommand OpenPmmCommand => _OpenPmmCommand ?? (_OpenPmmCommand = new ViewModelCommand(OpenPmm));
+
+        private void OpenPmm()
         {
-            get { return _PmmStruct; }
-
-            set
+            var ofd = new OpenFileDialog
             {
-                _PmmStruct = value;
-                RaisePropertyChanged();
+                Filter = "pmm file(*.pmm)|*.pmm|all file(*.*)|*.*",
+                FilterIndex = 1,
+                Title = "Choose .pmm"
+            };
+            if (ofd.ShowDialog() == true)
+            {
+                _model.OpenPmm(File.ReadAllBytes(ofd.FileName));
             }
         }
 
-        #endregion PmmStruct変更通知プロパティ
+        #endregion
     }
 }
