@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using Livet;
 using PMMEditor.Models;
@@ -159,6 +160,27 @@ namespace PMMEditor.ViewModels
             if (ofd.ShowDialog() == true)
             {
                 _model.OpenPmm(File.ReadAllBytes(ofd.FileName));
+            }
+        }
+
+        #endregion
+
+        #region SavePmmCommand
+
+        private ViewModelCommand _SavePmmCommand;
+
+        public ViewModelCommand SavePmmCommand => _SavePmmCommand ?? (_SavePmmCommand = new ViewModelCommand(SavePmm));
+
+        private async void SavePmm()
+        {
+            var ofd = new SaveFileDialog
+            {
+                Filter = "pmm file(*.pmm)|*.pmm|json file(*.json)|*.json|all file(*.*)|*.*",
+                FilterIndex = 1
+            };
+            if (ofd.ShowDialog() == true)
+            {
+                await _model.SavePmmJson(ofd.FileName, true);
             }
         }
 

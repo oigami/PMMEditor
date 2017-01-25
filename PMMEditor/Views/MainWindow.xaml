@@ -45,8 +45,12 @@
   <DockPanel>
     <Menu DockPanel.Dock="Top">
       <MenuItem Header="File(_F)">
-        <MenuItem Header="Open pmm" Command="{Binding OpenPmmCommand}"/>
-        <MenuItem Header="Save as" />
+        <MenuItem
+          Command="{Binding OpenPmmCommand}"
+          Header="Open pmm" />
+        <MenuItem
+          Command="{Binding SavePmmCommand}"
+          Header="Save as" />
       </MenuItem>
     </Menu>
     <TabControl>
