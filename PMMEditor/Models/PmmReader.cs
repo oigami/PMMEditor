@@ -83,13 +83,13 @@ namespace PMMEditor.Models
 
                 public int NextIndex { get; set; }
 
-                public byte[ /* 4 */] InterpolationX { get; set; }
+                public sbyte[ /* 4 */] InterpolationX { get; set; }
 
-                public byte[ /* 4 */] InterpolationY { get; set; }
+                public sbyte[ /* 4 */] InterpolationY { get; set; }
 
-                public byte[ /* 4 */] InterpolationZ { get; set; }
+                public sbyte[ /* 4 */] InterpolationZ { get; set; }
 
-                public byte[ /* 4 */] InterpolationRotation { get; set; }
+                public sbyte[ /* 4 */] InterpolationRotation { get; set; }
 
                 public float[ /* 3 */] Translation { get; set; }
 
@@ -231,17 +231,17 @@ namespace PMMEditor.Models
 
             public int LookingBoneIndex { get; set; } // 非選択時-1
 
-            public byte[] InterpolationX { get; set; }
+            public sbyte[] InterpolationX { get; set; }
 
-            public byte[] InterpolationY { get; set; }
+            public sbyte[] InterpolationY { get; set; }
 
-            public byte[] InterpolationZ { get; set; }
+            public sbyte[] InterpolationZ { get; set; }
 
-            public byte[] InterpolationRotation { get; set; }
+            public sbyte[] InterpolationRotation { get; set; }
 
-            public byte[] InterpolationDistance { get; set; }
+            public sbyte[] InterpolationDistance { get; set; }
 
-            public byte[] InterpolationAngleView { get; set; }
+            public sbyte[] InterpolationAngleView { get; set; }
 
             public bool IsParse { get; set; }
 
@@ -923,10 +923,10 @@ namespace PMMEditor.Models
                 FrameNumber = ReadInt(),
                 PreIndex = ReadInt(),
                 NextIndex = ReadInt(),
-                InterpolationX = ReadArray(4, ReadByte),
-                InterpolationY = ReadArray(4, ReadByte),
-                InterpolationZ = ReadArray(4, ReadByte),
-                InterpolationRotation = ReadArray(4, ReadByte),
+                InterpolationX = ReadArray(4, ReadSByte),
+                InterpolationY = ReadArray(4, ReadSByte),
+                InterpolationZ = ReadArray(4, ReadSByte),
+                InterpolationRotation = ReadArray(4, ReadSByte),
                 Translation = ReadArray(3, ReadFloat),
                 Quaternion = ReadArray(4, ReadFloat),
                 IsSelected = ReadBool(),
@@ -964,12 +964,12 @@ namespace PMMEditor.Models
                 Rotation = ReadArray(3, ReadFloat),
                 LookingModelIndex = ReadInt(),
                 LookingBoneIndex = ReadInt(),
-                InterpolationX = ReadArray(4, ReadByte),
-                InterpolationY = ReadArray(4, ReadByte),
-                InterpolationZ = ReadArray(4, ReadByte),
-                InterpolationRotation = ReadArray(4, ReadByte),
-                InterpolationDistance = ReadArray(4, ReadByte),
-                InterpolationAngleView = ReadArray(4, ReadByte),
+                InterpolationX = ReadArray(4, ReadSByte),
+                InterpolationY = ReadArray(4, ReadSByte),
+                InterpolationZ = ReadArray(4, ReadSByte),
+                InterpolationRotation = ReadArray(4, ReadSByte),
+                InterpolationDistance = ReadArray(4, ReadSByte),
+                InterpolationAngleView = ReadArray(4, ReadSByte),
                 IsParse = ReadBool(),
                 AngleView = ReadInt(),
                 IsSelected = ReadBool()
@@ -1035,6 +1035,11 @@ namespace PMMEditor.Models
         private byte ReadByte()
         {
             return ReadByte(1)[0];
+        }
+
+        private sbyte ReadSByte()
+        {
+            return (sbyte) ReadByte(1)[0];
         }
 
         private int ReadInt()
