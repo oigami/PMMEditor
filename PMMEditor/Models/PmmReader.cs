@@ -433,7 +433,7 @@ namespace PMMEditor.Models
 
         public bool IsShowInfomation { get; set; }
 
-        public bool IsSHowAxis { get; set; }
+        public bool IsShowAxis { get; set; }
 
         public bool IsShowGroundShadow { get; set; }
 
@@ -655,7 +655,7 @@ namespace PMMEditor.Models
             data.IsShowBackgroundImage = ReadBool();
 
             data.IsShowInfomation = ReadBool();
-            data.IsSHowAxis = ReadBool();
+            data.IsShowAxis = ReadBool();
             data.IsShowGroundShadow = ReadBool();
             data.FpsLimit = ReadFloat();
             data.ScreenCaptureMode = ReadInt();
