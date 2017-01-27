@@ -819,7 +819,7 @@ namespace PMMEditor.Models
         private void ReadAccessoryDataBody<T>(ref T o) where T : PmmStuct.AccessoryData.DataBody
         {
             var tmp = ReadByte();
-            o.Transparency = (byte) (tmp & 0xfe);
+            o.Transparency = (byte) ((tmp & 0xfe) >> 1);
             o.IsVisible = (tmp & 0x01) != 0;
             o.ParentModelIndex = ReadInt();
             o.ParentBoneIndex = ReadInt();
