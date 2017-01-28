@@ -175,12 +175,27 @@ namespace PMMEditor.ViewModels
         {
             var ofd = new SaveFileDialog
             {
-                Filter = "pmm file(*.pmm)|*.pmm|json file(*.json)|*.json|all file(*.*)|*.*",
+                Filter = "pmm file(*.pmm)|*.pmm|json file(*.json)|*.json|zip file(*.zip)|*.zip",
                 FilterIndex = 1
             };
             if (ofd.ShowDialog() == true)
             {
-                await _model.SavePmmJson(ofd.FileName, true);
+                var ext = Path.GetExtension(ofd.FileName);
+                switch (ext)
+                {
+                    case ".pmm":
+                        await _model.SavePmm(ofd.FileName);
+                        break;
+                    case ".json":
+                        await _model.SavePmmJson(ofd.FileName);
+                        break;
+                    case ".zip":
+                        await _model.SavePmmJson(ofd.FileName, true);
+                        break;
+                    default:
+                        MessageBox.Show("Matching extension does not exist.");
+                        break;
+                }
             }
         }
 

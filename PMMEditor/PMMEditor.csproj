@@ -71,6 +71,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\Pmm.cs" />
     <Compile Include="Models\PmmWriter.cs" />
     <Compile Include="Views\NameAndValueText.xaml.cs">
       <DependentUpon>NameAndValueText.xaml</DependentUpon>

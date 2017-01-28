@@ -20,7 +20,12 @@ namespace PMMEditor.Models
 
         public void OpenPmm(byte[] pmmData)
         {
-            PmmStruct = new PmmReader(pmmData).Read();
+            PmmStruct = Pmm.Read(pmmData);
+        }
+
+        public async Task SavePmm(string filename)
+        {
+            await Pmm.WriteFileAsync(filename, PmmStruct);
         }
 
         public async Task SavePmmJson(string filename, bool isCompress = false)
@@ -33,25 +38,28 @@ namespace PMMEditor.Models
                 Formatting = Formatting.None,
                 StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
             });
-            if (isCompress)
+            await Task.Run(() =>
             {
-                using (var fso = new FileStream(filename, FileMode.Create))
+                if (isCompress)
                 {
-                    using (var ds = new ZipArchive(fso, ZipArchiveMode.Create))
+                    using (var fso = new FileStream(filename, FileMode.Create))
                     {
-                        var entry = ds.CreateEntry("pmm.json", CompressionLevel.Optimal);
-                        using (var stream = entry.Open())
+                        using (var ds = new ZipArchive(fso, ZipArchiveMode.Create))
                         {
-                            var data = Encoding.GetEncoding("Shift_JIS").GetBytes(json);
-                            await stream.WriteAsync(data, 0, data.Length);
+                            var entry = ds.CreateEntry("pmm.json", CompressionLevel.Optimal);
+                            using (var stream = entry.Open())
+                            {
+                                var data = Encoding.GetEncoding("Shift_JIS").GetBytes(json);
+                                stream.Write(data, 0, data.Length);
+                            }
                         }
                     }
                 }
-            }
-            else
-            {
-                File.WriteAllText(filename, json);
-            }
+                else
+                {
+                    File.WriteAllText(filename, json);
+                }
+            });
         }
 
         #region PmmStruct変更通知プロパティ
