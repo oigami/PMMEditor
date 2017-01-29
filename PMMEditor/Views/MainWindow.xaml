@@ -9,7 +9,10 @@
   xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:v="clr-namespace:PMMEditor.Views"
+  xmlns:vDocuments="clr-namespace:PMMEditor.Views.Documents"
   xmlns:vm="clr-namespace:PMMEditor.ViewModels"
+  xmlns:vmDocuments="clr-namespace:PMMEditor.ViewModels.Documents"
+  xmlns:vmPanes="clr-namespace:PMMEditor.ViewModels.Panes"
   Title="MainWindow"
   Width="640"
   Height="480"
@@ -44,7 +47,9 @@
 
   </i:Interaction.Triggers>
   <DockPanel>
-    <Menu DockPanel.Dock="Top">
+    <Menu
+      Background="Transparent"
+      DockPanel.Dock="Top">
       <MenuItem Header="File(_F)">
         <MenuItem
           Command="{Binding OpenPmmCommand}"
@@ -53,12 +58,48 @@
           Command="{Binding SavePmmCommand}"
           Header="Save as" />
       </MenuItem>
+      <MenuItem Header="Window(_F)">
+        <MenuItem
+          Command="{Binding AllTimelineTranslateCommand}"
+          Header="TimelineTranslate" />
+      </MenuItem>
     </Menu>
-    <avalonDock:DockingManager>
+    <avalonDock:DockingManager
+      Margin="0,5,0,0"
+      AnchorablesSource="{Binding DockingPaneViewModels}"
+      DocumentsSource="{Binding DockingDocumentViewModels}">
+      <avalonDock:DockingManager.LayoutItemContainerStyleSelector>
+        <v:LayoutItemContainerStyleSelector>
+          <v:LayoutItemTypedStyle DataType="{x:Type vmDocuments:DocumentViewModelBase}">
+            <Style TargetType="{x:Type avalonDock:LayoutItem}">
+              <Setter Property="Title" Value="{Binding Model.Title}" />
+            </Style>
+          </v:LayoutItemTypedStyle>
+          <v:LayoutItemTypedStyle DataType="{x:Type vmPanes:PaneViewModelBase}">
+            <Style TargetType="{x:Type avalonDock:LayoutAnchorableItem}">
+              <Setter Property="Title" Value="{Binding Model.Title}" />
+              <Setter Property="ContentId" Value="{Binding Model.ContentId}" />
+              <Setter Property="ToolTip" Value="{Binding Model.Title}" />
+              <Setter Property="IsSelected" Value="{Binding Model.IsSelected, Mode=TwoWay}" />
+              <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}" />
+              <Setter Property="CanHide" Value="{Binding Model.CanHide}" />
+            </Style>
+          </v:LayoutItemTypedStyle>
+        </v:LayoutItemContainerStyleSelector>
+      </avalonDock:DockingManager.LayoutItemContainerStyleSelector>
+
+      <avalonDock:DockingManager.LayoutItemTemplateSelector>
+        <v:LayoutItemTemplateSelector>
+          <DataTemplate DataType="{x:Type vmPanes:TimelineTranslateViewModel}">
+            <vDocuments:TimelineTranslateWindow />
+          </DataTemplate>
+        </v:LayoutItemTemplateSelector>
+      </avalonDock:DockingManager.LayoutItemTemplateSelector>
+
       <avalonDock:LayoutRoot>
         <avalonDock:LayoutPanel Orientation="Horizontal">
-          <avalonDock:LayoutDocumentPane>
-            <avalonDock:LayoutDocument
+          <avalonDock:LayoutAnchorablePane>
+            <avalonDock:LayoutAnchorable
               Title="Header"
               CanClose="False">
               <VirtualizingStackPanel
@@ -158,8 +199,8 @@
                     Value="{Binding PmmStruct.SelectedModelIndex}" />
                 </VirtualizingStackPanel>
               </VirtualizingStackPanel>
-            </avalonDock:LayoutDocument>
-            <avalonDock:LayoutDocument
+            </avalonDock:LayoutAnchorable>
+            <avalonDock:LayoutAnchorable
               Title="Model"
               CanClose="False">
               <Grid Background="#FFE5E5E5">
@@ -384,8 +425,8 @@
                   </TabControl>
                 </Grid>
               </Grid>
-            </avalonDock:LayoutDocument>
-            <avalonDock:LayoutDocument
+            </avalonDock:LayoutAnchorable>
+            <avalonDock:LayoutAnchorable
               Title="Camera"
               CanClose="False">
               <ListView
@@ -450,8 +491,8 @@
                   </GridView>
                 </ListView.View>
               </ListView>
-            </avalonDock:LayoutDocument>
-            <avalonDock:LayoutDocument
+            </avalonDock:LayoutAnchorable>
+            <avalonDock:LayoutAnchorable
               Title="Accessory"
               CanClose="False">
               <Grid Background="#FFE5E5E5">
@@ -527,8 +568,8 @@
                 </Grid>
               </Grid>
 
-            </avalonDock:LayoutDocument>
-          </avalonDock:LayoutDocumentPane>
+            </avalonDock:LayoutAnchorable>
+          </avalonDock:LayoutAnchorablePane>
         </avalonDock:LayoutPanel>
       </avalonDock:LayoutRoot>
     </avalonDock:DockingManager>

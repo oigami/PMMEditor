@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Livet;
 using PMMEditor.Models;
 using Livet.Commands;
 using Livet.EventListeners;
+using Livet.Messaging;
 using Microsoft.Win32;
+using PMMEditor.ViewModels.Panes;
 
 namespace PMMEditor.ViewModels
 {
@@ -56,7 +60,6 @@ namespace PMMEditor.ViewModels
          */
         private readonly Model _model = new Model();
         private PropertyChangedEventListener _listener;
-
 
         public void Initialize()
         {
@@ -198,6 +201,47 @@ namespace PMMEditor.ViewModels
                 }
             }
         }
+
+        #endregion
+
+        #region AllTimelineTranslateCommand
+
+        private ViewModelCommand _AllTimelineTranslateCommand;
+
+        public ViewModelCommand AllTimelineTranslateCommand =>
+            _AllTimelineTranslateCommand ?? (_AllTimelineTranslateCommand = new ViewModelCommand(AllTimelineTranslate));
+
+        private void AllTimelineTranslate()
+        {
+            AddPane<TimelineTranslateViewModel>();
+        }
+
+        #endregion
+
+        #region AvalonDock
+
+        private void AddPane<T>() where T : PaneViewModelBase, new()
+        {
+            var item =
+                DockingPaneViewModels.FirstOrDefault(d => d.ContentId == typeof(T).FullName);
+            if (item == null)
+            {
+                item = new T();
+            }
+            else
+            {
+                DockingPaneViewModels.Remove(item);
+            }
+            DockingPaneViewModels.Add(item);
+            item.IsSelected = true;
+            item.IsActive = true;
+        }
+
+        public ObservableCollection<PaneViewModelBase> DockingDocumentViewModels { get; } =
+            new ObservableCollection<PaneViewModelBase>();
+
+        public ObservableCollection<PaneViewModelBase> DockingPaneViewModels { get; } =
+            new ObservableCollection<PaneViewModelBase>();
 
         #endregion
     }

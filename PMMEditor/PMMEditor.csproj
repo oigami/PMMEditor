@@ -97,9 +97,21 @@
     </ApplicationDefinition>
     <Compile Include="Models\Pmm.cs" />
     <Compile Include="Models\PmmWriter.cs" />
+    <Compile Include="ViewModels\Documents\DocumentViewModelBase.cs" />
+    <Compile Include="ViewModels\Panes\PaneViewModelBase.cs" />
+    <Compile Include="ViewModels\Panes\TimelineTranslateViewModel.cs" />
+    <Compile Include="Views\Panes\TimelineTranslateWindow.xaml.cs">
+      <DependentUpon>TimelineTranslateWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LayoutItemContainerStyleSelector.cs" />
+    <Compile Include="Views\LayoutItemTemplateSelector.cs" />
     <Compile Include="Views\NameAndValueText.xaml.cs">
       <DependentUpon>NameAndValueText.xaml</DependentUpon>
     </Compile>
+    <Page Include="Views\Panes\TimelineTranslateWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
