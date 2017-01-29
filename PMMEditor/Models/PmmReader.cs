@@ -9,6 +9,17 @@ namespace PMMEditor.Models
 {
     public class PmmStuct
     {
+        public interface IKeyFrame
+        {
+            int DataIndex { get; set; }
+
+            int FrameNumber { get; set; }
+
+            int PreIndex { get; set; }
+
+            int NextIndex { get; set; }
+        }
+
         public string FormatId { get; set; }
 
         public int ViewWidth { get; set; }
@@ -73,7 +84,7 @@ namespace PMMEditor.Models
 
             #region BoneInfo
 
-            public class BoneInitFrame
+            public class BoneInitFrame : IKeyFrame
             {
                 public int DataIndex { get; set; } // 初期フレームのときは-1
 
@@ -108,7 +119,7 @@ namespace PMMEditor.Models
 
             #region MorphInfo
 
-            public class MorphFrame
+            public class MorphFrame : IKeyFrame
             {
                 public int DataIndex { get; set; } // 初期フレームのときは-1
 
@@ -211,7 +222,7 @@ namespace PMMEditor.Models
 
         #region CameraInfo
 
-        public class CameraFrame
+        public class CameraFrame : IKeyFrame
         {
             public int DataIndex { get; set; }
 
@@ -272,7 +283,7 @@ namespace PMMEditor.Models
 
         #region LightingInfo
 
-        public class LightFrame
+        public class LightFrame : IKeyFrame
         {
             public int DataIndex { get; set; }
 
@@ -359,7 +370,7 @@ namespace PMMEditor.Models
                 public bool IsShadowEnabled { get; set; }
             }
 
-            public class KeyFrame : DataBody
+            public class KeyFrame : DataBody, IKeyFrame
             {
                 public int DataIndex { get; set; }
 
@@ -470,7 +481,7 @@ namespace PMMEditor.Models
 
         public CGravityCurrentData GravityCurrentData { get; set; }
 
-        public class GravityKeyFrame
+        public class GravityKeyFrame : IKeyFrame
         {
             public int DataIndex { get; set; }
 
@@ -507,7 +518,7 @@ namespace PMMEditor.Models
 
         public float SelfShadowCurrentData { get; set; }
 
-        public class SelfShadowFrame
+        public class SelfShadowFrame : IKeyFrame
         {
             public int DataIndex { get; set; }
 

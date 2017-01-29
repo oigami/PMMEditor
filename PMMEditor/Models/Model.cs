@@ -18,6 +18,8 @@ namespace PMMEditor.Models
          * NotificationObjectはプロパティ変更通知の仕組みを実装したオブジェクトです。
          */
 
+        #region ReadWriteFile
+
         public void OpenPmm(byte[] pmmData)
         {
             PmmStruct = Pmm.Read(pmmData);
@@ -59,6 +61,115 @@ namespace PMMEditor.Models
                 {
                     File.WriteAllText(filename, json);
                 }
+            });
+        }
+
+        #endregion
+
+        public struct ChangeTimeline
+        {
+            public bool Model { get; set; }
+
+            public bool Accessory { get; set; }
+
+            public bool Camera { get; set; }
+
+            public bool Gravity { get; set; }
+
+            public bool SelfShadow { get; set; }
+
+            public bool Light { get; set; }
+        }
+
+        private static void ChangeFunc<T>(List<T> list, Func<int, int> func) where T : class, PmmStuct.IKeyFrame
+        {
+            foreach (var frame in list)
+            {
+                frame.FrameNumber = func(frame.FrameNumber);
+                if (frame.FrameNumber == -1)
+                {
+                    list[frame.PreIndex].NextIndex = frame.NextIndex;
+                    list[frame.NextIndex].PreIndex = frame.PreIndex;
+                }
+            }
+        }
+
+        private void OnChangeTimeline(ChangeTimeline isChange, Func<int, int?> changeFrameFunc)
+        {
+            Func<int, int> changeFunc = frame =>
+            {
+                var i = changeFrameFunc(frame);
+                if ((i ?? 1) <= 0)
+                {
+                    throw new Exception("frame change error.");
+                }
+                return i ?? -1;
+            };
+            if (isChange.Model)
+            {
+                foreach (var item in PmmStruct.ModelDatas)
+                {
+                    ChangeFunc(item.BoneKeyFrames, changeFunc);
+                    item.BoneKeyFrames = item.BoneKeyFrames.Where(f => f.FrameNumber != -1).ToList();
+
+                    ChangeFunc(item.MorphKeyFrames, changeFunc);
+                    item.MorphKeyFrames = item.MorphKeyFrames.Where(f => f.FrameNumber != -1).ToList();
+                }
+            }
+            if (isChange.Accessory)
+            {
+                foreach (var item in PmmStruct.AccessoryDatas)
+                {
+                    ChangeFunc(item.KeyFrames, changeFunc);
+                    item.KeyFrames = item.KeyFrames.Where(f => f.FrameNumber != -1).ToList();
+                }
+            }
+
+            if (isChange.Camera)
+            {
+                ChangeFunc(PmmStruct.CameraKeyFrames, changeFunc);
+                PmmStruct.CameraKeyFrames = PmmStruct.CameraKeyFrames.Where(f => f.FrameNumber != -1).ToList();
+            }
+
+            if (isChange.Gravity)
+            {
+                ChangeFunc(PmmStruct.GravityKeyFrames, changeFunc);
+                PmmStruct.GravityKeyFrames = PmmStruct.GravityKeyFrames.Where(f => f.FrameNumber != -1).ToList();
+            }
+
+            if (isChange.SelfShadow)
+            {
+                ChangeFunc(PmmStruct.SelfShadowKeyFrames, changeFunc);
+                PmmStruct.SelfShadowKeyFrames = PmmStruct.SelfShadowKeyFrames.Where(f => f.FrameNumber != -1).ToList();
+            }
+
+            if (isChange.Light)
+            {
+                ChangeFunc(PmmStruct.LightKeyFrames, changeFunc);
+                PmmStruct.LightKeyFrames = PmmStruct.LightKeyFrames.Where(f => f.FrameNumber != -1).ToList();
+            }
+
+            RaisePropertyChanged(nameof(PmmStruct));
+        }
+
+        public void KeyFrameAddAll(int beginTime, int frameCount)
+        {
+            OnChangeTimeline(new ChangeTimeline(), i => beginTime <= i ? i + frameCount : i);
+        }
+
+        public void KeyFrameDeleteAll(int beginTime, int frameCount)
+        {
+            OnChangeTimeline(new ChangeTimeline(), i =>
+            {
+                if (i < beginTime)
+                {
+                    return i;
+                }
+                if (i < beginTime + frameCount)
+                {
+                    return null;
+                }
+                return i - frameCount;
             });
         }
 
