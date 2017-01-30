@@ -23,7 +23,7 @@ namespace PMMEditor.ViewModels.Panes
             };
         }
 
-        public override string Title { get; } = "HeaderView";
+        public override string Title { get; } = "Header";
 
         public override string ContentId { get; } = typeof(HeaderViewModel).FullName;
 

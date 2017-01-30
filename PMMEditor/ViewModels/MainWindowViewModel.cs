@@ -66,11 +66,7 @@ namespace PMMEditor.ViewModels
             _listener = new PropertyChangedEventListener(_model)
             {
                 nameof(_model.PmmStruct),
-                (_, __) =>
-                {
-                    RaisePropertyChanged(nameof(ModelList));
-                    RaisePropertyChanged(nameof(PmmStruct));
-                }
+                (_, __) => RaisePropertyChanged(nameof(PmmStruct))
             };
 
 #if DEBUG
@@ -85,38 +81,8 @@ namespace PMMEditor.ViewModels
 #endif
 
             AddPane(() => new HeaderViewModel(_model));
+            AddPane(() => new ModelViewModel(_model));
         }
-
-        #region ModelTab
-
-        #region ModelList変更通知プロパティ
-
-        public List<PmmStruct.ModelData> ModelList => _model.PmmStruct?.ModelDatas;
-
-        #endregion ModelList変更通知プロパティ
-
-        #region SelectedModel変更通知プロパティ
-
-        private PmmStruct.ModelData _SelectedModel;
-
-        public PmmStruct.ModelData SelectedModel
-        {
-            get { return _SelectedModel; }
-
-            set
-            {
-                if (_SelectedModel == value)
-                {
-                    return;
-                }
-                _SelectedModel = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        #endregion SelectedModel変更通知プロパティ
-
-        #endregion ModelTab
 
         #region AccessoryTab
 
