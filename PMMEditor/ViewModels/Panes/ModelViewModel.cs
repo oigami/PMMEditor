@@ -29,7 +29,7 @@ namespace PMMEditor.ViewModels.Panes
 
         public override string Title { get; } = "Model";
 
-        public override string ContentId { get; } = typeof(HeaderViewModel).FullName;
+        public override string ContentId { get; } = typeof(ModelViewModel).FullName;
 
         public PmmStruct PmmStruct => _model?.PmmStruct;
 
