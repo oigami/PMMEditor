@@ -99,78 +99,15 @@
           <DataTemplate DataType="{x:Type vmPanes:ModelViewModel}">
             <panes:ModelView />
           </DataTemplate>
+          <DataTemplate DataType="{x:Type vmPanes:CameraViewModel}">
+            <panes:CameraView />
+          </DataTemplate>
         </v:LayoutItemTemplateSelector>
       </avalonDock:DockingManager.LayoutItemTemplateSelector>
 
       <avalonDock:LayoutRoot>
         <avalonDock:LayoutPanel Orientation="Horizontal">
           <avalonDock:LayoutAnchorablePane>
-            <avalonDock:LayoutAnchorable
-              Title="Camera"
-              CanClose="False">
-              <ListView
-                ItemsSource="{Binding PmmStruct.CameraKeyFrames}"
-                ScrollViewer.CanContentScroll="True"
-                ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                ScrollViewer.PanningMode="Both"
-                ScrollViewer.VerticalScrollBarVisibility="Visible"
-                VirtualizingPanel.IsVirtualizing="True"
-                VirtualizingPanel.ScrollUnit="Pixel"
-                VirtualizingPanel.VirtualizationMode="Recycling">
-                <ListView.View>
-                  <GridView AllowsColumnReorder="False">
-                    <GridViewColumn
-                      DisplayMemberBinding="{Binding DataIndex, Mode=OneTime}"
-                      Header="DataIndex" />
-                    <GridViewColumn
-                      DisplayMemberBinding="{Binding FrameNumber, Mode=OneTime}"
-                      Header="FrameNumber" />
-                    <GridViewColumn
-                      DisplayMemberBinding="{Binding PreIndex, Mode=OneTime}"
-                      Header="PreIndex" />
-                    <GridViewColumn
-                      DisplayMemberBinding="{Binding NextIndex, Mode=OneTime}"
-                      Header="NextIndex" />
-                    <GridViewColumn
-                      DisplayMemberBinding="{Binding Distance, Mode=OneTime}"
-                      Header="Distance" />
-                    <GridViewColumn
-                      DisplayMemberBinding="{Binding AngleView, Mode=OneTime}"
-                      Header="AngleView" />
-                    <GridViewColumn
-                      DisplayMemberBinding="{Binding InterpolationX, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneTime}"
-                      Header="InterpolationX" />
-                    <GridViewColumn
-                      DisplayMemberBinding="{Binding InterpolationY, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneTime}"
-                      Header="InterpolationY" />
-                    <GridViewColumn
-                      DisplayMemberBinding="{Binding InterpolationZ, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneTime}"
-                      Header="InterpolationZ" />
-                    <GridViewColumn
-                      DisplayMemberBinding="{Binding InterpolationRotation, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneTime}"
-                      Header="InterpolationRotation" />
-                    <GridViewColumn
-                      DisplayMemberBinding="{Binding InterpolationDistance, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneTime}"
-                      Header="InterpolationDistance" />
-                    <GridViewColumn
-                      DisplayMemberBinding="{Binding InterpolationAngleView, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneTime}"
-                      Header="InterpolationAngleView" />
-                    <GridViewColumn
-                      DisplayMemberBinding="{Binding LookingModelIndex, Mode=OneTime}"
-                      Header="LookingModelIndex" />
-                    <GridViewColumn
-                      DisplayMemberBinding="{Binding LookingBoneIndex, Mode=OneTime}"
-                      Header="LookingBoneIndex" />
-                    <GridViewColumn
-                      DisplayMemberBinding="{Binding IsParse, Mode=OneTime}"
-                      Header="IsParse" />
-                    <GridViewColumn
-                      DisplayMemberBinding="{Binding IsSelected, Mode=OneTime}"
-                      Header="IsSelected" />
-                  </GridView>
-                </ListView.View>
-              </ListView>
-            </avalonDock:LayoutAnchorable>
             <avalonDock:LayoutAnchorable
               Title="Accessory"
               CanClose="False">

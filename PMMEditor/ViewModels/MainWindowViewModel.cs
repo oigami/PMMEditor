@@ -82,6 +82,7 @@ namespace PMMEditor.ViewModels
 
             AddPane(() => new HeaderViewModel(_model));
             AddPane(() => new ModelViewModel(_model));
+            AddPane(() => new CameraViewModel(_model));
         }
 
         #region AccessoryTab
