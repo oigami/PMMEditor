@@ -100,11 +100,15 @@
     <Compile Include="Models\PmmWriter.cs" />
     <Compile Include="ViewModels\Documents\DocumentViewModelBase.cs" />
     <Compile Include="ViewModels\ExpressionConverter.cs" />
+    <Compile Include="ViewModels\Panes\AccessoryViewModel.cs" />
     <Compile Include="ViewModels\Panes\CameraViewModel.cs" />
     <Compile Include="ViewModels\Panes\ModelViewModel.cs" />
     <Compile Include="ViewModels\Panes\HeaderViewModel.cs" />
     <Compile Include="ViewModels\Panes\PaneViewModelBase.cs" />
     <Compile Include="ViewModels\Panes\TimelineTranslateViewModel.cs" />
+    <Compile Include="Views\Panes\AccessoryView.xaml.cs">
+      <DependentUpon>AccessoryView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Panes\CameraView.xaml.cs">
       <DependentUpon>CameraView.xaml</DependentUpon>
     </Compile>
@@ -125,6 +129,10 @@
     <Compile Include="Views\NameAndValueText.xaml.cs">
       <DependentUpon>NameAndValueText.xaml</DependentUpon>
     </Compile>
+    <Page Include="Views\Panes\AccessoryView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Panes\CameraView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

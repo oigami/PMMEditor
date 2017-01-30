@@ -83,31 +83,8 @@ namespace PMMEditor.ViewModels
             AddPane(() => new HeaderViewModel(_model));
             AddPane(() => new ModelViewModel(_model));
             AddPane(() => new CameraViewModel(_model));
+            AddPane(() => new AccessoryViewModel(_model));
         }
-
-        #region AccessoryTab
-
-        #region SelectedAccessory変更通知プロパティ
-
-        private PmmStruct.AccessoryData _SelectedAccessory;
-
-        public PmmStruct.AccessoryData SelectedAccessory
-        {
-            get { return _SelectedAccessory; }
-            set
-            {
-                if (_SelectedAccessory == value)
-                {
-                    return;
-                }
-                _SelectedAccessory = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        #endregion
-
-        #endregion
 
         #region PmmStruct変更通知プロパティ
 

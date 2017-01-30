@@ -102,90 +102,15 @@
           <DataTemplate DataType="{x:Type vmPanes:CameraViewModel}">
             <panes:CameraView />
           </DataTemplate>
+          <DataTemplate DataType="{x:Type vmPanes:AccessoryViewModel}">
+            <panes:AccessoryView />
+          </DataTemplate>
         </v:LayoutItemTemplateSelector>
       </avalonDock:DockingManager.LayoutItemTemplateSelector>
 
       <avalonDock:LayoutRoot>
         <avalonDock:LayoutPanel Orientation="Horizontal">
-          <avalonDock:LayoutAnchorablePane>
-            <avalonDock:LayoutAnchorable
-              Title="Accessory"
-              CanClose="False">
-              <Grid Background="#FFE5E5E5">
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="100" />
-                  <ColumnDefinition Width="Auto" />
-                  <ColumnDefinition Width="540*" />
-                </Grid.ColumnDefinitions>
-
-                <Grid Grid.Column="0">
-                  <ListBox
-                    HorizontalAlignment="Stretch"
-                    DisplayMemberPath="Name"
-                    ItemsSource="{Binding PmmStruct.AccessoryDatas}"
-                    SelectedItem="{Binding SelectedAccessory, Mode=TwoWay}"
-                    VirtualizingPanel.ScrollUnit="Pixel" />
-                </Grid>
-
-                <GridSplitter
-                  Grid.Column="1"
-                  Width="5"
-                  HorizontalAlignment="Center" />
-
-                <Grid Grid.Column="2">
-                  <ListView
-                    ItemsSource="{Binding SelectedAccessory.KeyFrames}"
-                    ScrollViewer.CanContentScroll="True"
-                    ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                    ScrollViewer.PanningMode="Both"
-                    ScrollViewer.VerticalScrollBarVisibility="Visible"
-                    VirtualizingPanel.IsVirtualizing="True"
-                    VirtualizingPanel.ScrollUnit="Pixel"
-                    VirtualizingPanel.VirtualizationMode="Recycling">
-                    <ListView.View>
-                      <GridView AllowsColumnReorder="False">
-                        <GridViewColumn
-                          DisplayMemberBinding="{Binding DataIndex, Mode=OneTime}"
-                          Header="DataIndex" />
-                        <GridViewColumn
-                          DisplayMemberBinding="{Binding FrameNumber, Mode=OneTime}"
-                          Header="FrameNumber" />
-                        <GridViewColumn
-                          DisplayMemberBinding="{Binding PreIndex, Mode=OneTime}"
-                          Header="PreIndex" />
-                        <GridViewColumn
-                          DisplayMemberBinding="{Binding NextIndex, Mode=OneTime}"
-                          Header="NextIndex" />
-                        <GridViewColumn
-                          DisplayMemberBinding="{Binding Transparency, Mode=OneTime}"
-                          Header="Transparency" />
-                        <GridViewColumn
-                          DisplayMemberBinding="{Binding IsVisible, Mode=OneTime}"
-                          Header="IsVisible" />
-                        <GridViewColumn
-                          DisplayMemberBinding="{Binding ParentModelIndex, Mode=OneTime}"
-                          Header="ParentModelIndex" />
-                        <GridViewColumn
-                          DisplayMemberBinding="{Binding ParentBoneIndex, Mode=OneTime}"
-                          Header="ParentBoneIndex" />
-                        <GridViewColumn
-                          DisplayMemberBinding="{Binding Scale, Mode=OneTime}"
-                          Header="Scale" />
-                        <GridViewColumn
-                          DisplayMemberBinding="{Binding IsShadowEnabled, Mode=OneTime}"
-                          Header="IsShadowEnabled" />
-                        <GridViewColumn
-                          DisplayMemberBinding="{Binding IsSelected, Mode=OneTime}"
-                          Header="IsSelected" />
-                      </GridView>
-                    </ListView.View>
-                  </ListView>
-
-                </Grid>
-              </Grid>
-
-            </avalonDock:LayoutAnchorable>
-          </avalonDock:LayoutAnchorablePane>
+          <avalonDock:LayoutAnchorablePane />
         </avalonDock:LayoutPanel>
       </avalonDock:LayoutRoot>
     </avalonDock:DockingManager>

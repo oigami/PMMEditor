@@ -1,0 +1,86 @@
+﻿<UserControl
+  x:Class="PMMEditor.Views.Panes.AccessoryView"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:local="clr-namespace:PMMEditor.Views.Panes"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:vm="clr-namespace:PMMEditor.ViewModels.Panes"
+  d:DataContext="{d:DesignInstance {x:Type vm:AccessoryViewModel}}"
+  d:DesignHeight="300"
+  d:DesignWidth="300"
+  mc:Ignorable="d">
+  <Grid Background="#FFE5E5E5">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="100" />
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="540*" />
+    </Grid.ColumnDefinitions>
+
+    <Grid Grid.Column="0">
+      <ListBox
+        HorizontalAlignment="Stretch"
+        DisplayMemberPath="Name"
+        ItemsSource="{Binding PmmStruct.AccessoryDatas}"
+        SelectedItem="{Binding SelectedAccessory, Mode=TwoWay}"
+        VirtualizingPanel.ScrollUnit="Pixel" />
+    </Grid>
+
+    <GridSplitter
+      Grid.Column="1"
+      Width="5"
+      HorizontalAlignment="Center" />
+
+    <Grid Grid.Column="2">
+      <ListView
+        ItemsSource="{Binding SelectedAccessory.KeyFrames}"
+        ScrollViewer.CanContentScroll="True"
+        ScrollViewer.HorizontalScrollBarVisibility="Visible"
+        ScrollViewer.PanningMode="Both"
+        ScrollViewer.VerticalScrollBarVisibility="Visible"
+        VirtualizingPanel.IsVirtualizing="True"
+        VirtualizingPanel.ScrollUnit="Pixel"
+        VirtualizingPanel.VirtualizationMode="Recycling">
+        <ListView.View>
+          <GridView AllowsColumnReorder="False">
+            <GridViewColumn
+              DisplayMemberBinding="{Binding DataIndex, Mode=OneTime}"
+              Header="DataIndex" />
+            <GridViewColumn
+              DisplayMemberBinding="{Binding FrameNumber, Mode=OneTime}"
+              Header="FrameNumber" />
+            <GridViewColumn
+              DisplayMemberBinding="{Binding PreIndex, Mode=OneTime}"
+              Header="PreIndex" />
+            <GridViewColumn
+              DisplayMemberBinding="{Binding NextIndex, Mode=OneTime}"
+              Header="NextIndex" />
+            <GridViewColumn
+              DisplayMemberBinding="{Binding Transparency, Mode=OneTime}"
+              Header="Transparency" />
+            <GridViewColumn
+              DisplayMemberBinding="{Binding IsVisible, Mode=OneTime}"
+              Header="IsVisible" />
+            <GridViewColumn
+              DisplayMemberBinding="{Binding ParentModelIndex, Mode=OneTime}"
+              Header="ParentModelIndex" />
+            <GridViewColumn
+              DisplayMemberBinding="{Binding ParentBoneIndex, Mode=OneTime}"
+              Header="ParentBoneIndex" />
+            <GridViewColumn
+              DisplayMemberBinding="{Binding Scale, Mode=OneTime}"
+              Header="Scale" />
+            <GridViewColumn
+              DisplayMemberBinding="{Binding IsShadowEnabled, Mode=OneTime}"
+              Header="IsShadowEnabled" />
+            <GridViewColumn
+              DisplayMemberBinding="{Binding IsSelected, Mode=OneTime}"
+              Header="IsSelected" />
+          </GridView>
+        </ListView.View>
+      </ListView>
+
+    </Grid>
+  </Grid>
+
+</UserControl>
