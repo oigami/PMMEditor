@@ -213,20 +213,20 @@ namespace PMMEditor.ViewModels
 
         private void AllTimelineTranslate()
         {
-            AddPane<TimelineTranslateViewModel>();
+            AddPane(() => new TimelineTranslateViewModel(_model));
         }
 
         #endregion
 
         #region AvalonDock
 
-        private void AddPane<T>() where T : PaneViewModelBase, new()
+        private void AddPane<T>(Func<T> createFunc) where T : PaneViewModelBase
         {
             var item =
                 DockingPaneViewModels.FirstOrDefault(d => d.ContentId == typeof(T).FullName);
             if (item == null)
             {
-                item = new T();
+                item = createFunc();
             }
             else
             {

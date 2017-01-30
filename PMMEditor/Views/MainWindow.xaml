@@ -9,10 +9,10 @@
   xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:v="clr-namespace:PMMEditor.Views"
-  xmlns:vDocuments="clr-namespace:PMMEditor.Views.Documents"
   xmlns:vm="clr-namespace:PMMEditor.ViewModels"
   xmlns:vmDocuments="clr-namespace:PMMEditor.ViewModels.Documents"
-  xmlns:vmPanes="clr-namespace:PMMEditor.ViewModels.Panes"
+  xmlns:vmPanes="clr-namespace:PMMEditor.ViewModels.Panes" 
+  xmlns:panes="clr-namespace:PMMEditor.Views.Panes"
   Title="MainWindow"
   Width="640"
   Height="480"
@@ -91,7 +91,7 @@
       <avalonDock:DockingManager.LayoutItemTemplateSelector>
         <v:LayoutItemTemplateSelector>
           <DataTemplate DataType="{x:Type vmPanes:TimelineTranslateViewModel}">
-            <vDocuments:TimelineTranslateWindow />
+            <panes:TimelineTranslateWindow />
           </DataTemplate>
         </v:LayoutItemTemplateSelector>
       </avalonDock:DockingManager.LayoutItemTemplateSelector>

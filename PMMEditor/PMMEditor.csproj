@@ -43,6 +43,7 @@
       <HintPath>..\packages\LivetCask.1.3.1.0\lib\net45\Microsoft.Expression.Interactions.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.JScript" />
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -98,8 +99,12 @@
     <Compile Include="Models\Pmm.cs" />
     <Compile Include="Models\PmmWriter.cs" />
     <Compile Include="ViewModels\Documents\DocumentViewModelBase.cs" />
+    <Compile Include="ViewModels\ExpressionConverter.cs" />
     <Compile Include="ViewModels\Panes\PaneViewModelBase.cs" />
     <Compile Include="ViewModels\Panes\TimelineTranslateViewModel.cs" />
+    <Compile Include="Views\Panes\Timeline.xaml.cs">
+      <DependentUpon>Timeline.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Panes\TimelineTranslateWindow.xaml.cs">
       <DependentUpon>TimelineTranslateWindow.xaml</DependentUpon>
     </Compile>
@@ -108,6 +113,10 @@
     <Compile Include="Views\NameAndValueText.xaml.cs">
       <DependentUpon>NameAndValueText.xaml</DependentUpon>
     </Compile>
+    <Page Include="Views\Panes\Timeline.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Panes\TimelineTranslateWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
