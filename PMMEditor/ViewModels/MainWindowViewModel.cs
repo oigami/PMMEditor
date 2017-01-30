@@ -173,12 +173,10 @@ namespace PMMEditor.ViewModels
             if (item == null)
             {
                 item = createFunc();
+                DockingPaneViewModels.Add(item);
             }
-            else
-            {
-                DockingPaneViewModels.Remove(item);
-            }
-            DockingPaneViewModels.Add(item);
+
+            item.Visibility = Visibility.Visible;
             item.IsSelected = true;
             item.IsActive = true;
         }

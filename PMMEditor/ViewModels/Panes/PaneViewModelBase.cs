@@ -81,5 +81,25 @@ namespace PMMEditor.ViewModels.Panes
         }
 
         #endregion
+
+        #region Visibility変更通知プロパティ
+
+        private Visibility _Visibility;
+
+        public Visibility Visibility
+        {
+            get { return _Visibility; }
+            set
+            {
+                if (_Visibility == value)
+                {
+                    return;
+                }
+                _Visibility = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion
     }
 }
