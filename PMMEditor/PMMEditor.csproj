@@ -100,8 +100,12 @@
     <Compile Include="Models\PmmWriter.cs" />
     <Compile Include="ViewModels\Documents\DocumentViewModelBase.cs" />
     <Compile Include="ViewModels\ExpressionConverter.cs" />
+    <Compile Include="ViewModels\Panes\HeaderViewModel.cs" />
     <Compile Include="ViewModels\Panes\PaneViewModelBase.cs" />
     <Compile Include="ViewModels\Panes\TimelineTranslateViewModel.cs" />
+    <Compile Include="Views\Panes\HeaderView.xaml.cs">
+      <DependentUpon>HeaderView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Panes\Timeline.xaml.cs">
       <DependentUpon>Timeline.xaml</DependentUpon>
     </Compile>
@@ -113,6 +117,10 @@
     <Compile Include="Views\NameAndValueText.xaml.cs">
       <DependentUpon>NameAndValueText.xaml</DependentUpon>
     </Compile>
+    <Page Include="Views\Panes\HeaderView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Panes\Timeline.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

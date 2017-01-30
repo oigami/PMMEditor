@@ -1,0 +1,109 @@
+﻿<UserControl
+  x:Class="PMMEditor.Views.Panes.HeaderView"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:local="clr-namespace:PMMEditor.Views.Panes"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:v="clr-namespace:PMMEditor.Views"
+  d:DesignHeight="300"
+  d:DesignWidth="300"
+  mc:Ignorable="d">
+  <VirtualizingStackPanel
+    Background="#FFE5E5E5"
+    Orientation="Vertical">
+    <VirtualizingStackPanel
+      Margin="0,5,5,0"
+      Orientation="Horizontal">
+      <v:NameAndValueText
+        VerticalAlignment="Top"
+        Text="ViewWidth:"
+        ValueWidth="60"
+        Value="{Binding PmmStruct.ViewWidth}" />
+      <v:NameAndValueText
+        VerticalAlignment="Top"
+        Text="ViewHeight:"
+        ValueWidth="60"
+        Value="{Binding PmmStruct.ViewHeight}" />
+
+    </VirtualizingStackPanel>
+    <VirtualizingStackPanel
+      Margin="0,5,5,0"
+      Orientation="Horizontal">
+      <v:NameAndValueText
+        VerticalAlignment="Top"
+        Text="FrameWidth:"
+        ValueWidth="60"
+        Value="{Binding PmmStruct.FrameWidth}" />
+      <v:NameAndValueText
+        VerticalAlignment="Top"
+        Text="EditViewAngle:"
+        ValueWidth="60"
+        Value="{Binding PmmStruct.EditViewAngle}" />
+
+    </VirtualizingStackPanel>
+    <VirtualizingStackPanel
+      Margin="0,5,5,0"
+      Orientation="Horizontal">
+      <v:NameAndValueText
+        VerticalAlignment="Top"
+        Text="IsEditCameraLightAccessory:"
+        ValueWidth="60"
+        Value="{Binding PmmStruct.IsEditCameraLightAccessory}" />
+    </VirtualizingStackPanel>
+    <GroupBox
+      HorizontalAlignment="Left"
+      VerticalAlignment="Top"
+      Header="IsOpenPanel">
+      <VirtualizingStackPanel>
+        <VirtualizingStackPanel
+          Margin="0,5,5,0"
+          Orientation="Horizontal">
+          <v:NameAndValueText
+            VerticalAlignment="Top"
+            Text="Camera:"
+            ValueWidth="60"
+            Value="{Binding PmmStruct.IsOpenCameraPanel}" />
+          <v:NameAndValueText
+            VerticalAlignment="Top"
+            Text="Light:"
+            ValueWidth="60"
+            Value="{Binding PmmStruct.IsOpenLightPanel}" />
+          <v:NameAndValueText
+            VerticalAlignment="Top"
+            Text="Accessory:"
+            ValueWidth="60"
+            Value="{Binding PmmStruct.IsOpenAccessoryPanel}" />
+        </VirtualizingStackPanel>
+        <VirtualizingStackPanel
+          Margin="0,5,5,0"
+          Orientation="Horizontal">
+          <v:NameAndValueText
+            VerticalAlignment="Top"
+            Text="Bone:"
+            ValueWidth="60"
+            Value="{Binding PmmStruct.IsOpenBonePanel}" />
+          <v:NameAndValueText
+            VerticalAlignment="Top"
+            Text="Morph:"
+            ValueWidth="60"
+            Value="{Binding PmmStruct.IsOpenMorphPanel}" />
+          <v:NameAndValueText
+            VerticalAlignment="Top"
+            Text="SelfShadow:"
+            ValueWidth="60"
+            Value="{Binding PmmStruct.IsOpenSelfShadowPanel}" />
+        </VirtualizingStackPanel>
+      </VirtualizingStackPanel>
+    </GroupBox>
+    <VirtualizingStackPanel
+      Margin="0,5,5,0"
+      Orientation="Horizontal">
+      <v:NameAndValueText
+        VerticalAlignment="Top"
+        Text="SelectedModelIndex:"
+        ValueWidth="60"
+        Value="{Binding PmmStruct.SelectedModelIndex}" />
+    </VirtualizingStackPanel>
+  </VirtualizingStackPanel>
+</UserControl>

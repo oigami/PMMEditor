@@ -83,6 +83,8 @@ namespace PMMEditor.ViewModels
                 MessageBox.Show(e.Message + "\n\n" + e.StackTrace);
             }
 #endif
+
+            AddPane(() => new HeaderViewModel(_model));
         }
 
         #region ModelTab
