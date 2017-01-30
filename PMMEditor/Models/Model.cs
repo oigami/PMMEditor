@@ -81,7 +81,7 @@ namespace PMMEditor.Models
             public bool Light { get; set; }
         }
 
-        private static void ChangeFunc<T>(List<T> list, Func<int, int> func) where T : class, PmmStuct.IKeyFrame
+        private static void ChangeFunc<T>(List<T> list, Func<int, int> func) where T : class, PmmStruct.IKeyFrame
         {
             foreach (var frame in list)
             {
@@ -175,9 +175,9 @@ namespace PMMEditor.Models
 
         #region PmmStruct変更通知プロパティ
 
-        private PmmStuct _PmmStruct;
+        private PmmStruct _PmmStruct;
 
-        public PmmStuct PmmStruct
+        public PmmStruct PmmStruct
         {
             get { return _PmmStruct; }
             set

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace PMMEditor.Models
 {
-    public class PmmStuct
+    public class PmmStruct
     {
         public interface IKeyFrame
         {
@@ -600,9 +600,9 @@ namespace PMMEditor.Models
             _binaryData = binaryData;
         }
 
-        public PmmStuct Read()
+        public PmmStruct Read()
         {
-            var data = new PmmStuct();
+            var data = new PmmStruct();
             _stream = new MemoryStream(_binaryData);
             data.FormatId = ReadFixedStringTerminationChar(30);
             if (data.FormatId != "Polygon Movie maker 0002")
@@ -715,9 +715,9 @@ namespace PMMEditor.Models
 
         #region SelectorChoiceTypeRead
 
-        private PmmStuct.CSelectorChoiceData ReadSelectorChoice()
+        private PmmStruct.CSelectorChoiceData ReadSelectorChoice()
         {
-            return new PmmStuct.CSelectorChoiceData
+            return new PmmStruct.CSelectorChoiceData
             {
                 ModelIndex = ReadByte(),
                 SelectorChoice = ReadInt()
@@ -728,9 +728,9 @@ namespace PMMEditor.Models
 
         #region SelfShadowTypeRead
 
-        private PmmStuct.SelfShadowFrame ReadSelfShadowKeyFrame(bool isInit)
+        private PmmStruct.SelfShadowFrame ReadSelfShadowKeyFrame(bool isInit)
         {
-            return new PmmStuct.SelfShadowFrame
+            return new PmmStruct.SelfShadowFrame
             {
                 DataIndex = isInit ? -1 : ReadInt(),
                 FrameNumber = ReadInt(),
@@ -746,9 +746,9 @@ namespace PMMEditor.Models
 
         #region GravityTypeRead
 
-        private PmmStuct.GravityKeyFrame ReadGravityKeyFrame(bool isInit)
+        private PmmStruct.GravityKeyFrame ReadGravityKeyFrame(bool isInit)
         {
-            return new PmmStuct.GravityKeyFrame
+            return new PmmStruct.GravityKeyFrame
             {
                 DataIndex = isInit ? -1 : ReadInt(),
                 FrameNumber = ReadInt(),
@@ -764,9 +764,9 @@ namespace PMMEditor.Models
             };
         }
 
-        private PmmStuct.CGravityCurrentData ReadGravityCurrentData()
+        private PmmStruct.CGravityCurrentData ReadGravityCurrentData()
         {
-            return new PmmStuct.CGravityCurrentData
+            return new PmmStruct.CGravityCurrentData
             {
                 Acceleration = ReadFloat(),
                 NoizeAmount = ReadInt(),
@@ -781,9 +781,9 @@ namespace PMMEditor.Models
 
         #region ModelTypeRead
 
-        private PmmStuct.ModelData ReadModelData()
+        private PmmStruct.ModelData ReadModelData()
         {
-            var o = new PmmStuct.ModelData();
+            var o = new PmmStruct.ModelData();
             o.Number = ReadByte();
             o.Name = ReadVString();
             o.NameEn = ReadVString();
@@ -827,7 +827,7 @@ namespace PMMEditor.Models
 
         #region AccessoryTypeRead
 
-        private void ReadAccessoryDataBody<T>(ref T o) where T : PmmStuct.AccessoryData.DataBody
+        private void ReadAccessoryDataBody<T>(ref T o) where T : PmmStruct.AccessoryData.DataBody
         {
             var tmp = ReadByte();
             o.Transparency = (byte) ((tmp & 0xfe) >> 1);
@@ -840,9 +840,9 @@ namespace PMMEditor.Models
             o.IsShadowEnabled = ReadBool();
         }
 
-        private PmmStuct.AccessoryData.KeyFrame ReadAccessoryKeyFrame(bool isInit)
+        private PmmStruct.AccessoryData.KeyFrame ReadAccessoryKeyFrame(bool isInit)
         {
-            var o = new PmmStuct.AccessoryData.KeyFrame();
+            var o = new PmmStruct.AccessoryData.KeyFrame();
             o.DataIndex = isInit ? -1 : ReadInt();
             o.FrameNumber = ReadInt();
             o.PreIndex = ReadInt();
@@ -852,16 +852,16 @@ namespace PMMEditor.Models
             return o;
         }
 
-        private PmmStuct.AccessoryData ReadAccessory()
+        private PmmStruct.AccessoryData ReadAccessory()
         {
-            var o = new PmmStuct.AccessoryData();
+            var o = new PmmStruct.AccessoryData();
             o.Index = ReadByte();
             o.Name = ReadFixedStringTerminationChar(100);
             o.Path = ReadFixedStringTerminationChar(256);
             o.DrawOrder = ReadByte();
             o.InitFrame = ReadAccessoryKeyFrame(true);
             o.KeyFrames = ReadVList(() => ReadAccessoryKeyFrame(false));
-            var tmp = new PmmStuct.AccessoryData.DataBody();
+            var tmp = new PmmStruct.AccessoryData.DataBody();
             ReadAccessoryDataBody(ref tmp);
             o.CurrentData = tmp;
             o.IsAddBlend = ReadBool();
@@ -872,9 +872,9 @@ namespace PMMEditor.Models
 
         #region LightingTypeRead
 
-        private PmmStuct.CLightCurrentData ReadLightCurrentData()
+        private PmmStruct.CLightCurrentData ReadLightCurrentData()
         {
-            return new PmmStuct.CLightCurrentData
+            return new PmmStruct.CLightCurrentData
             {
                 R = ReadFloat(),
                 G = ReadFloat(),
@@ -885,9 +885,9 @@ namespace PMMEditor.Models
             };
         }
 
-        private PmmStuct.LightFrame ReadLightFrame(bool isInit)
+        private PmmStruct.LightFrame ReadLightFrame(bool isInit)
         {
-            var o = new PmmStuct.LightFrame
+            var o = new PmmStruct.LightFrame
             {
                 DataIndex = isInit ? -1 : ReadInt(),
                 FrameNumber = ReadInt(),
@@ -908,9 +908,9 @@ namespace PMMEditor.Models
 
         #region MorphTypeRead
 
-        private PmmStuct.ModelData.MorphFrame ReadMorphFrame(bool isInit)
+        private PmmStruct.ModelData.MorphFrame ReadMorphFrame(bool isInit)
         {
-            var o = new PmmStuct.ModelData.MorphFrame
+            var o = new PmmStruct.ModelData.MorphFrame
             {
                 DataIndex = isInit ? -1 : ReadInt(),
                 FrameNumber = ReadInt(),
@@ -926,9 +926,9 @@ namespace PMMEditor.Models
 
         #region BoneTypeRead
 
-        private PmmStuct.ModelData.BoneInitFrame ReadBoneFrame(bool isInitFrame)
+        private PmmStruct.ModelData.BoneInitFrame ReadBoneFrame(bool isInitFrame)
         {
-            var o = new PmmStuct.ModelData.BoneInitFrame
+            var o = new PmmStruct.ModelData.BoneInitFrame
             {
                 DataIndex = isInitFrame ? -1 : ReadInt(),
                 FrameNumber = ReadInt(),
@@ -946,9 +946,9 @@ namespace PMMEditor.Models
             return o;
         }
 
-        private PmmStuct.ModelData.BoneCurrentData ReadBoneCurrentData()
+        private PmmStruct.ModelData.BoneCurrentData ReadBoneCurrentData()
         {
-            return new PmmStuct.ModelData.BoneCurrentData
+            return new PmmStruct.ModelData.BoneCurrentData
             {
                 Translation = ReadArray(3, ReadFloat),
                 Quaternion = ReadArray(4, ReadFloat),
@@ -962,9 +962,9 @@ namespace PMMEditor.Models
 
         #region CameraTypeRead
 
-        private PmmStuct.CameraFrame ReadCameraFrame(bool isInit)
+        private PmmStruct.CameraFrame ReadCameraFrame(bool isInit)
         {
-            return new PmmStuct.CameraFrame
+            return new PmmStruct.CameraFrame
             {
                 DataIndex = isInit ? -1 : ReadInt(),
                 FrameNumber = ReadInt(),
@@ -987,9 +987,9 @@ namespace PMMEditor.Models
             };
         }
 
-        private PmmStuct.CCameraCurrentData ReadCameraCurrentData()
+        private PmmStruct.CCameraCurrentData ReadCameraCurrentData()
         {
-            var o = new PmmStuct.CCameraCurrentData
+            var o = new PmmStruct.CCameraCurrentData
             {
                 EyePosition = ReadArray(3, ReadFloat),
                 TargetPosition = ReadArray(3, ReadFloat),
@@ -1003,9 +1003,9 @@ namespace PMMEditor.Models
 
         #region OpTypeRead
 
-        private PmmStuct.ModelData.OpFrame ReadOpFrame(int ikCount, int opCount, bool isInit)
+        private PmmStruct.ModelData.OpFrame ReadOpFrame(int ikCount, int opCount, bool isInit)
         {
-            return new PmmStuct.ModelData.OpFrame
+            return new PmmStruct.ModelData.OpFrame
             {
                 DataIndex = isInit ? -1 : ReadInt(),
                 FrameNumber = ReadInt(),
@@ -1018,9 +1018,9 @@ namespace PMMEditor.Models
             };
         }
 
-        private PmmStuct.ModelData.OpCurrentData ReadOpCurrentData()
+        private PmmStruct.ModelData.OpCurrentData ReadOpCurrentData()
         {
-            return new PmmStuct.ModelData.OpCurrentData
+            return new PmmStruct.ModelData.OpCurrentData
             {
                 KeyFrameBegin = ReadInt(),
                 KeyFrameEnd = ReadInt(),

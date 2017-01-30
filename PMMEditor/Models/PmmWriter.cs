@@ -92,7 +92,7 @@ namespace PMMEditor.Models
 
         #region WriteModel
 
-        private void WriteBoneFrame(PmmStuct.ModelData.BoneInitFrame frame, bool isInit)
+        private void WriteBoneFrame(PmmStruct.ModelData.BoneInitFrame frame, bool isInit)
         {
             if (isInit == false)
             {
@@ -111,7 +111,7 @@ namespace PMMEditor.Models
             Write(frame.IsPhysicsDisabled);
         }
 
-        private void WriteMorphFrame(PmmStuct.ModelData.MorphFrame frame, bool isInit)
+        private void WriteMorphFrame(PmmStruct.ModelData.MorphFrame frame, bool isInit)
         {
             if (isInit == false)
             {
@@ -124,7 +124,7 @@ namespace PMMEditor.Models
             Write(frame.IsSelected);
         }
 
-        private void WriteOpFrame(PmmStuct.ModelData.OpFrame frame, bool isInit)
+        private void WriteOpFrame(PmmStruct.ModelData.OpFrame frame, bool isInit)
         {
             if (isInit == false)
             {
@@ -143,7 +143,7 @@ namespace PMMEditor.Models
 
         #region WriteCamera
 
-        private void WriteCameraFrame(PmmStuct.CameraFrame frame, bool isInit)
+        private void WriteCameraFrame(PmmStruct.CameraFrame frame, bool isInit)
         {
             if (isInit == false)
             {
@@ -168,7 +168,7 @@ namespace PMMEditor.Models
             Write(frame.IsSelected);
         }
 
-        private void WriteCameraCurrentData(PmmStuct.CCameraCurrentData data)
+        private void WriteCameraCurrentData(PmmStruct.CCameraCurrentData data)
         {
             WriteArray(data.EyePosition, Write);
             WriteArray(data.TargetPosition, Write);
@@ -180,7 +180,7 @@ namespace PMMEditor.Models
 
         #region WriteLight
 
-        private void WriteLightFrame(PmmStuct.LightFrame frame, bool isInit)
+        private void WriteLightFrame(PmmStruct.LightFrame frame, bool isInit)
         {
             if (isInit == false)
             {
@@ -198,7 +198,7 @@ namespace PMMEditor.Models
             Write(frame.IsSelected);
         }
 
-        private void WriteLightCurrentData(PmmStuct.CLightCurrentData data)
+        private void WriteLightCurrentData(PmmStruct.CLightCurrentData data)
         {
             Write(data.R);
             Write(data.G);
@@ -212,7 +212,7 @@ namespace PMMEditor.Models
 
         #region WriteAccessory
 
-        private void WriteAccessoryDataBody(PmmStuct.AccessoryData.DataBody body)
+        private void WriteAccessoryDataBody(PmmStruct.AccessoryData.DataBody body)
         {
             Write((byte) ((body.Transparency << 1) | (byte) (body.IsVisible ? 1 : 0)));
             Write(body.ParentModelIndex);
@@ -223,7 +223,7 @@ namespace PMMEditor.Models
             Write(body.IsShadowEnabled);
         }
 
-        private void WriteAccessoryKeyFrame(PmmStuct.AccessoryData.KeyFrame frame, bool isInit)
+        private void WriteAccessoryKeyFrame(PmmStruct.AccessoryData.KeyFrame frame, bool isInit)
         {
             if (isInit == false)
             {
@@ -240,7 +240,7 @@ namespace PMMEditor.Models
 
         #region WriteGravity
 
-        private void WriteGravityCurrentData(PmmStuct.CGravityCurrentData data)
+        private void WriteGravityCurrentData(PmmStruct.CGravityCurrentData data)
         {
             Write(data.Acceleration);
             Write(data.NoizeAmount);
@@ -251,7 +251,7 @@ namespace PMMEditor.Models
         }
 
 
-        private void WriteGravityKeyFrame(PmmStuct.GravityKeyFrame frame, bool isInit)
+        private void WriteGravityKeyFrame(PmmStruct.GravityKeyFrame frame, bool isInit)
         {
             if (isInit == false)
             {
@@ -273,7 +273,7 @@ namespace PMMEditor.Models
 
         #region WriteSelfShadow
 
-        private void WriteSelfShadowKeyFrame(PmmStuct.SelfShadowFrame frame, bool isInit)
+        private void WriteSelfShadowKeyFrame(PmmStruct.SelfShadowFrame frame, bool isInit)
         {
             if (isInit == false)
             {
@@ -289,7 +289,7 @@ namespace PMMEditor.Models
 
         #endregion
 
-        public void Write(PmmStuct pmm)
+        public void Write(PmmStruct pmm)
         {
             WriteFixedString(pmm.FormatId, 30);
             Write(pmm.ViewWidth);

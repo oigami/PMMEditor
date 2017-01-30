@@ -48,7 +48,7 @@ namespace PMMEditor.ViewModels.Panes
 
         #endregion
 
-        private IEnumerable<PmmStuct.ModelData.BoneInitFrame> CreateList(int num)
+        private IEnumerable<PmmStruct.ModelData.BoneInitFrame> CreateList(int num)
         {
             var item = _model?.PmmStruct?.ModelDatas?[0].BoneInitFrames?[num];
             if (item == null)
@@ -72,12 +72,12 @@ namespace PMMEditor.ViewModels.Panes
 
         public List<string> BoneList => _model?.PmmStruct?.ModelDatas?[0].BoneName;
 
-        public List<IEnumerable<PmmStuct.ModelData.BoneInitFrame>> MyList
+        public List<IEnumerable<PmmStruct.ModelData.BoneInitFrame>> MyList
         {
             get
             {
-                List<IEnumerable<PmmStuct.ModelData.BoneInitFrame>> list =
-                    new List<IEnumerable<PmmStuct.ModelData.BoneInitFrame>>();
+                List<IEnumerable<PmmStruct.ModelData.BoneInitFrame>> list =
+                    new List<IEnumerable<PmmStruct.ModelData.BoneInitFrame>>();
                 for (int i = 0; i < _model?.PmmStruct?.ModelDatas?[0].BoneInitFrames?.Count; i++)
                 {
                     list.Add(CreateList(i));

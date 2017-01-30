@@ -89,15 +89,15 @@ namespace PMMEditor.ViewModels
 
         #region ModelList変更通知プロパティ
 
-        public List<PmmStuct.ModelData> ModelList => _model.PmmStruct?.ModelDatas;
+        public List<PmmStruct.ModelData> ModelList => _model.PmmStruct?.ModelDatas;
 
         #endregion ModelList変更通知プロパティ
 
         #region SelectedModel変更通知プロパティ
 
-        private PmmStuct.ModelData _SelectedModel;
+        private PmmStruct.ModelData _SelectedModel;
 
-        public PmmStuct.ModelData SelectedModel
+        public PmmStruct.ModelData SelectedModel
         {
             get { return _SelectedModel; }
 
@@ -120,9 +120,9 @@ namespace PMMEditor.ViewModels
 
         #region SelectedAccessory変更通知プロパティ
 
-        private PmmStuct.AccessoryData _SelectedAccessory;
+        private PmmStruct.AccessoryData _SelectedAccessory;
 
-        public PmmStuct.AccessoryData SelectedAccessory
+        public PmmStruct.AccessoryData SelectedAccessory
         {
             get { return _SelectedAccessory; }
             set
@@ -142,7 +142,7 @@ namespace PMMEditor.ViewModels
 
         #region PmmStruct変更通知プロパティ
 
-        public PmmStuct PmmStruct => _model.PmmStruct;
+        public PmmStruct PmmStruct => _model.PmmStruct;
 
         #endregion
 
