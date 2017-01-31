@@ -6,6 +6,7 @@
     <Rectangle
       Width="8"
       Height="8"
+      Margin="3"
       Fill="Black"
       RenderTransformOrigin="0.5,0.5">
       <Rectangle.RenderTransform>

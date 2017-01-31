@@ -64,7 +64,6 @@
       VerticalScrollBarVisibility="Visible">
 
       <ItemsControl
-        Width="{Binding MaxFrameNumber, Converter={StaticResource ExpressionConverter}, ConverterParameter=x*14}"
         Height="{Binding MyList.Count, Converter={StaticResource ExpressionConverter}, ConverterParameter=(x+5)*14}"
         HorizontalAlignment="Left"
         VerticalAlignment="Top"
@@ -72,16 +71,19 @@
         ItemsSource="{Binding MyList}">
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate>
-            <Canvas
+            <StackPanel
+              Margin="0,2,0,0"
               HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch" />
+              VerticalAlignment="Stretch"
+              Orientation="Vertical" />
           </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate>
             <vp:TimelineControl
-              Margin="3"
-              ItemsSource="{Binding}">
+              Height="14"
+              ItemsSource="{Binding}"
+              MaxIndex="{Binding Path=DataContext.MaxFrameNumber, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
               <vp:TimelineControl.ItemContainerStyle>
                 <Style>
                   <Setter Property="vp:TimelineControl.Index" Value="{Binding Path=FrameNumber}" />
@@ -90,12 +92,6 @@
             </vp:TimelineControl>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
-        <ItemsControl.ItemContainerStyle>
-          <Style>
-            <Setter Property="Canvas.Left" Value="0" />
-            <Setter Property="Canvas.Top" Value="{Binding Path=(ItemsControl.AlternationIndex), RelativeSource={RelativeSource Self}, Converter={StaticResource ExpressionConverter}, ConverterParameter=x*14}" />
-          </Style>
-        </ItemsControl.ItemContainerStyle>
       </ItemsControl>
     </ScrollViewer>
   </Grid>

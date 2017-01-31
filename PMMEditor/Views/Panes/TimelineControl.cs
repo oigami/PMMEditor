@@ -40,9 +40,7 @@ namespace PMMEditor.Views.Panes
             DependencyProperty.RegisterAttached("Index", typeof(double), typeof(TimelineControl),
                                                 new FrameworkPropertyMetadata(default(double),
                                                                               FrameworkPropertyMetadataOptions
-                                                                                  .AffectsArrange
-                                                                              | FrameworkPropertyMetadataOptions
-                                                                                  .AffectsMeasure));
+                                                                                  .AffectsArrange));
 
         #endregion
 
@@ -86,8 +84,43 @@ namespace PMMEditor.Views.Panes
 
         protected override int VisualChildrenCount => Children.Count;
 
-        public Style ItemContainerStyle { get; set; }
+        public Style ItemContainerStyle { private get; set; }
 
+        #region IndexWidth変更通知プロパティ
+
+        public double IndexWidth
+        {
+            get { return (double) GetValue(IndexWidthProperty); }
+            set { SetValue(IndexWidthProperty, value); }
+        }
+
+        public static readonly DependencyProperty IndexWidthProperty =
+            DependencyProperty.Register("IndexWidth",
+                                        typeof(double),
+                                        typeof(TimelineControl),
+                                        new FrameworkPropertyMetadata(double.NaN,
+                                                                      FrameworkPropertyMetadataOptions
+                                                                          .AffectsArrange));
+
+        #endregion
+
+        #region MaxIndex変更通知プロパティ
+
+        public double MaxIndex
+        {
+            get { return (double) GetValue(MaxIndexProperty); }
+            set { SetValue(MaxIndexProperty, value); }
+        }
+
+        public static readonly DependencyProperty MaxIndexProperty =
+            DependencyProperty.Register("MaxIndex",
+                                        typeof(double),
+                                        typeof(TimelineControl),
+                                        new FrameworkPropertyMetadata(double.NaN,
+                                                                      FrameworkPropertyMetadataOptions
+                                                                          .AffectsMeasure));
+
+        #endregion
 
         public override void OnApplyTemplate()
         {
@@ -139,22 +172,50 @@ namespace PMMEditor.Views.Panes
             foreach (var child in Children)
             {
                 var location = new Point(GetIndex(child), Margin.Top);
-                location.X *= child.DesiredSize.Width * 2;
-                location.X += Margin.Left;
+                var width = double.IsNaN(IndexWidth) ? child.DesiredSize.Width : IndexWidth;
+                location.X = GetPosition(location.X, width);
+
                 child.Arrange(new Rect(location, child.DesiredSize));
             }
 
             return finalSize;
         }
 
+        private double GetPosition(double x, double width)
+        {
+            width += Padding.Left + Padding.Right;
+
+            x *= width;
+            x += Margin.Left;
+            x -= (Padding.Right - Padding.Left) / 2;
+            return x;
+        }
+
         protected override Size MeasureOverride(Size availableSize)
         {
+            var width = 0.0;
+            var height = 0.0;
+
             foreach (var child in Children)
             {
                 child.Measure(availableSize);
+                width = Math.Max(width, child.DesiredSize.Width);
+                height = Math.Max(height, child.DesiredSize.Height);
             }
 
-            return base.MeasureOverride(availableSize);
+            if (double.IsNaN(IndexWidth) == false)
+            {
+                width = IndexWidth;
+            }
+
+            var size = new Size
+            {
+                Width = Math.Min(availableSize.Width,
+                                 GetPosition(double.IsNaN(MaxIndex) ? 0 : MaxIndex, width) + width + Margin.Right),
+                Height =
+                    Math.Min(height + Margin.Top + Margin.Bottom, availableSize.Height)
+            };
+            return size;
         }
     }
 }
