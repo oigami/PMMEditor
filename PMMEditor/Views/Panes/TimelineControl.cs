@@ -24,7 +24,7 @@ namespace PMMEditor.Views.Panes
     /// </summary>
     public class TimelineControl : ContentControl
     {
-        #region Leftプロパティ
+        #region Indexプロパティ
 
         public static double GetIndex(DependencyObject obj)
         {
@@ -49,6 +49,8 @@ namespace PMMEditor.Views.Panes
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         private List<FrameworkElement> Children { get; } = new List<FrameworkElement>();
 
+        #region ItemsSourceプロパティ
+
         public IEnumerable ItemsSource
         {
             get { return (IEnumerable) GetValue(ItemsSourceProperty); }
@@ -65,6 +67,27 @@ namespace PMMEditor.Views.Panes
         {
             ((TimelineControl) d).RenderItems();
         }
+
+        #endregion
+
+        #region ItemTemplateプロパティ
+
+        public DataTemplate ItemTemplate
+        {
+            get { return (DataTemplate) GetValue(ItemTemplateProperty); }
+            set { SetValue(ItemTemplateProperty, value); }
+        }
+
+        public static readonly DependencyProperty ItemTemplateProperty =
+            DependencyProperty.Register("ItemTemplate", typeof(DataTemplate), typeof(TimelineControl),
+                                        new PropertyMetadata(null));
+
+        #endregion
+
+        protected override int VisualChildrenCount => Children.Count;
+
+        public Style ItemContainerStyle { get; set; }
+
 
         public override void OnApplyTemplate()
         {
@@ -84,22 +107,19 @@ namespace PMMEditor.Views.Panes
             {
                 return;
             }
-            var itemTemplate = ItemTemplate;
+
+            var itemTemplate = ItemTemplate ?? new ResourceDictionary
+            {
+                Source =
+                    new Uri("pack://application:,,,/PmmEditor;component/Views/Panes/TimelineResource.xaml",
+                            UriKind.Absolute)
+            }["DefaultTimelineItemTemplate"] as DataTemplate;
+
             if (itemTemplate == null)
             {
-                ResourceDictionary rd = new ResourceDictionary
-                {
-                    Source =
-                        new Uri("pack://application:,,,/PmmEditor;component/Views/Panes/TimelineResource.xaml",
-                                UriKind.Absolute)
-                };
-                itemTemplate = rd["DefaultTimelineItemTemplate"] as DataTemplate;
-
-                if (itemTemplate == null)
-                {
-                    return;
-                }
+                return;
             }
+
             foreach (var item in ItemsSource)
             {
                 var elem = itemTemplate.LoadContent() as FrameworkElement;
@@ -108,38 +128,6 @@ namespace PMMEditor.Views.Panes
                 Children.Add(elem);
             }
         }
-
-        #region ItemTemplateプロパティ
-
-        public DataTemplate ItemTemplate
-        {
-            get { return (DataTemplate) GetValue(ItemTemplateProperty); }
-            set { SetValue(ItemTemplateProperty, value); }
-        }
-
-        public static readonly DependencyProperty ItemTemplateProperty =
-            DependencyProperty.Register("ItemTemplate", typeof(DataTemplate), typeof(TimelineControl),
-                                        new PropertyMetadata(null));
-
-        #endregion
-
-        #region ItemTemplateプロパティ
-
-        public DataTemplate DefaultItemTemplate
-        {
-            get { return (DataTemplate) GetValue(DefaultItemTemplateProperty); }
-            set { SetValue(DefaultItemTemplateProperty, value); }
-        }
-
-        public static readonly DependencyProperty DefaultItemTemplateProperty =
-            DependencyProperty.Register("DefaultItemTemplate", typeof(DataTemplate), typeof(TimelineControl),
-                                        new PropertyMetadata(null));
-
-        #endregion
-
-        protected override int VisualChildrenCount => Children.Count;
-
-        public Style ItemContainerStyle { get; set; }
 
         protected override Visual GetVisualChild(int index)
         {
