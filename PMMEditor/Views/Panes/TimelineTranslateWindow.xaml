@@ -79,9 +79,15 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate>
-            <vp:Timeline
-              Height="14"
-              ItemsSource="{Binding}" />
+            <vp:TimelineControl
+              Margin="3"
+              ItemsSource="{Binding}">
+              <vp:TimelineControl.ItemContainerStyle>
+                <Style>
+                  <Setter Property="vp:TimelineControl.Index" Value="{Binding Path=FrameNumber}" />
+                </Style>
+              </vp:TimelineControl.ItemContainerStyle>
+            </vp:TimelineControl>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
         <ItemsControl.ItemContainerStyle>
@@ -95,3 +101,4 @@
   </Grid>
 
 </UserControl>
+
