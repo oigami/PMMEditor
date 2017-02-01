@@ -11,6 +11,7 @@ using Livet.Commands;
 using Livet.EventListeners;
 using Livet.Messaging;
 using Microsoft.Win32;
+using PMMEditor.ViewModels.Documents;
 using PMMEditor.ViewModels.Panes;
 
 namespace PMMEditor.ViewModels
@@ -164,9 +165,39 @@ namespace PMMEditor.ViewModels
 
         #endregion
 
+        #region OpenCameraLightAccessoryTimelineCommand
+
+        private ViewModelCommand _OpenCameraLightAccessoryTimelineCommand;
+
+        public ViewModelCommand OpenCameraLightAccessoryTimelineCommand =>
+            _OpenCameraLightAccessoryTimelineCommand
+            ?? (_OpenCameraLightAccessoryTimelineCommand =
+                new ViewModelCommand(OpenCameraLightAccessoryTimeline));
+
+        public void OpenCameraLightAccessoryTimeline()
+        {
+            AddDocument(() => new CameraLightAccessoryViewModel(_model), CameraLightAccessoryViewModel.GetContentId());
+        }
+
+        #endregion
+
         #region AvalonDock
 
-        private void AddPane<T>(Func<T> createFunc) where T : PaneViewModelBase
+        private T AddDocument<T>(Func<T> createFunc, string contentId) where T : DocumentViewModelBase
+        {
+            var item =
+                DockingDocumentViewModels.FirstOrDefault(d => d.ContentId == contentId);
+            if (item == null)
+            {
+                item = createFunc();
+                DockingDocumentViewModels.Add(item);
+            }
+
+            item.IsSelected = true;
+            return (T) item;
+        }
+
+        private T AddPane<T>(Func<T> createFunc) where T : PaneViewModelBase
         {
             var item =
                 DockingPaneViewModels.FirstOrDefault(d => d.ContentId == typeof(T).FullName);
@@ -179,10 +210,11 @@ namespace PMMEditor.ViewModels
             item.Visibility = Visibility.Visible;
             item.IsSelected = true;
             item.IsActive = true;
+            return (T) item;
         }
 
-        public ObservableCollection<PaneViewModelBase> DockingDocumentViewModels { get; } =
-            new ObservableCollection<PaneViewModelBase>();
+        public ObservableCollection<DocumentViewModelBase> DockingDocumentViewModels { get; } =
+            new ObservableCollection<DocumentViewModelBase>();
 
         public ObservableCollection<PaneViewModelBase> DockingPaneViewModels { get; } =
             new ObservableCollection<PaneViewModelBase>();

@@ -4,6 +4,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:avalonDock="http://schemas.xceed.com/wpf/xaml/avalondock"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:documents="clr-namespace:PMMEditor.Views.Documents"
   xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
   xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
   xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
@@ -62,6 +63,9 @@
         <MenuItem
           Command="{Binding AllTimelineTranslateCommand}"
           Header="TimelineTranslate" />
+        <MenuItem
+          Command="{Binding OpenCameraLightAccessoryTimelineCommand}"
+          Header="Camera, Light, Accessory Timeline" />
       </MenuItem>
     </Menu>
     <avalonDock:DockingManager
@@ -107,12 +111,16 @@
           <DataTemplate DataType="{x:Type vmPanes:AccessoryViewModel}">
             <panes:AccessoryView />
           </DataTemplate>
+          <DataTemplate DataType="{x:Type vmDocuments:CameraLightAccessoryViewModel}">
+            <documents:TimelineView />
+          </DataTemplate>
         </v:LayoutItemTemplateSelector>
       </avalonDock:DockingManager.LayoutItemTemplateSelector>
 
       <avalonDock:LayoutRoot>
-        <avalonDock:LayoutPanel Orientation="Horizontal">
-          <avalonDock:LayoutAnchorablePane />
+        <avalonDock:LayoutPanel Orientation="Vertical">
+          <avalonDock:LayoutAnchorablePane DockHeight="300" />
+          <avalonDock:LayoutDocumentPane />
         </avalonDock:LayoutPanel>
       </avalonDock:LayoutRoot>
     </avalonDock:DockingManager>
