@@ -82,6 +82,26 @@ namespace PMMEditor.ViewModels.Panes
 
         #endregion
 
+        #region CanClose変更通知プロパティ
+
+        private bool _CanClose = false;
+
+        public bool CanClose
+        {
+            get { return _CanClose; }
+            set
+            {
+                if (_CanClose == value)
+                {
+                    return;
+                }
+                _CanClose = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion
+
         #region Visibility変更通知プロパティ
 
         private Visibility _Visibility;

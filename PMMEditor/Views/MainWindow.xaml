@@ -84,6 +84,7 @@
               <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}" />
               <Setter Property="CanHide" Value="{Binding Model.CanHide}" />
               <Setter Property="Visibility" Value="{Binding Model.Visibility, Mode=TwoWay}" />
+              <Setter Property="CanClose" Value="{Binding Model.CanClose}" />
             </Style>
           </v:LayoutItemTypedStyle>
         </v:LayoutItemContainerStyleSelector>
