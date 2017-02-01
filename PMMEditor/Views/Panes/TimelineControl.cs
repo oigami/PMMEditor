@@ -195,12 +195,14 @@ namespace PMMEditor.Views.Panes
         {
             var width = 0.0;
             var height = 0.0;
+            var index = 0;
 
             foreach (var child in Children)
             {
                 child.Measure(availableSize);
                 width = Math.Max(width, child.DesiredSize.Width);
                 height = Math.Max(height, child.DesiredSize.Height);
+                index = Math.Max(index, (int) GetIndex(child));
             }
 
             if (double.IsNaN(IndexWidth) == false)
@@ -211,7 +213,7 @@ namespace PMMEditor.Views.Panes
             var size = new Size
             {
                 Width = Math.Min(availableSize.Width,
-                                 GetPosition(double.IsNaN(MaxIndex) ? 0 : MaxIndex, width) + width + Margin.Right),
+                                 GetPosition(double.IsNaN(MaxIndex) ? index : MaxIndex, width) + width + Margin.Right),
                 Height =
                     Math.Min(height + Margin.Top + Margin.Bottom, availableSize.Height)
             };
