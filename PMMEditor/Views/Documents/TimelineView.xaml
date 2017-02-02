@@ -13,36 +13,123 @@
   mc:Ignorable="d">
   <Grid>
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="65" />
+      <ColumnDefinition Width="80" />
       <ColumnDefinition Width="5" />
       <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
-    <ScrollViewer
-      Grid.Column="0"
-      HorizontalScrollBarVisibility="Visible"
-      VerticalScrollBarVisibility="Disabled">
-      <ItemsControl
-        Margin="5,0,5,0"
-        HorizontalAlignment="Left"
-        VerticalAlignment="Top"
-        ItemsSource="{Binding ListOfKeyFrameList}">
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <VirtualizingStackPanel
-              HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch"
-              Orientation="Vertical" />
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.ItemTemplate>
-          <DataTemplate>
+
+    <TreeView
+      Padding="0"
+      Background="Transparent"
+      BorderThickness="0"
+      ItemsSource="{Binding ListOfKeyFrameList}"
+      ScrollViewer.HorizontalScrollBarVisibility="Visible"
+      ScrollViewer.VerticalScrollBarVisibility="Disabled">
+      <TreeView.ItemTemplate>
+        <HierarchicalDataTemplate
+          DataType="{x:Type documents:TimelineKeyFrameList}"
+          ItemsSource="{Binding Children}">
+          <Border
+            Height="14"
+            BorderBrush="{x:Null}">
             <TextBlock
-              Height="14"
+              VerticalAlignment="Center"
               Text="{Binding Name}" />
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
-    </ScrollViewer>
+          </Border>
+        </HierarchicalDataTemplate>
+      </TreeView.ItemTemplate>
+      <TreeView.ItemContainerStyle>
+        <Style TargetType="{x:Type TreeViewItem}">
+          <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+          <Setter Property="Template">
+            <Setter.Value>
+              <ControlTemplate TargetType="{x:Type TreeViewItem}">
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="14" />
+                    <RowDefinition />
+                  </Grid.RowDefinitions>
+                  <ToggleButton
+                    x:Name="Expander"
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Height="14"
+                    ClickMode="Press"
+                    Focusable="False"
+                    IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}">
+                    <ToggleButton.Template>
+                      <ControlTemplate TargetType="ToggleButton">
+                        <Border
+                          Width="8"
+                          Height="14"
+                          BorderBrush="{x:Null}">
+                          <TextBlock
+                            x:Name="toggleButtonTextBlock"
+                            VerticalAlignment="Center"
+                            Text="+"
+                            TextAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                          <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="toggleButtonTextBlock" Property="Text" Value="-" />
+                          </Trigger>
+                        </ControlTemplate.Triggers>
+                      </ControlTemplate>
+                    </ToggleButton.Template>
+                  </ToggleButton>
+                  <Border
+                    x:Name="Bd"
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Padding="{TemplateBinding Padding}"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    SnapsToDevicePixels="true">
+                    <ContentPresenter
+                      x:Name="PART_Header"
+                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                      ContentSource="Header"
+                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                  </Border>
+                  <ItemsPresenter
+                    x:Name="ItemsHost"
+                    Grid.Row="1"
+                    Grid.Column="1" />
+                </Grid>
+                <ControlTemplate.Triggers>
+                  <Trigger Property="IsExpanded" Value="false">
+                    <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed" />
+                  </Trigger>
+                  <Trigger Property="HasItems" Value="false">
+                    <Setter TargetName="Expander" Property="Visibility" Value="Hidden" />
+                  </Trigger>
+                  <Trigger Property="IsSelected" Value="true">
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                  </Trigger>
+                  <Trigger Property="IsEnabled" Value="false">
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                  </Trigger>
+                  <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                      <Condition Property="IsSelected" Value="true" />
+                      <Condition Property="IsSelectionActive" Value="false" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+                  </MultiTrigger>
+                </ControlTemplate.Triggers>
+              </ControlTemplate>
+            </Setter.Value>
+          </Setter>
+        </Style>
+      </TreeView.ItemContainerStyle>
+    </TreeView>
 
     <GridSplitter
       Grid.Column="1"
@@ -70,17 +157,17 @@
           </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
-          <DataTemplate>
+          <HierarchicalDataTemplate ItemsSource="{Binding Children}">
             <panes:TimelineControl
               Height="14"
               ItemsSource="{Binding Frame}">
               <panes:TimelineControl.ItemContainerStyle>
                 <Style>
-                  <Setter Property="panes:TimelineControl.Index" Value="{Binding Path=FrameNumber}" />
+                  <Setter Property="panes:TimelineControl.Index" Value="{Binding FrameNumber}" />
                 </Style>
               </panes:TimelineControl.ItemContainerStyle>
             </panes:TimelineControl>
-          </DataTemplate>
+          </HierarchicalDataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
     </ScrollViewer>
