@@ -11,58 +11,6 @@
   d:DesignHeight="300"
   d:DesignWidth="300"
   mc:Ignorable="d">
-  <UserControl.Resources>
-    <DataTemplate x:Key="GridBackground">
-      <Grid
-        Width="70"
-        Height="14"
-        HorizontalAlignment="Left"
-        VerticalAlignment="Top">
-        <Line
-          Stroke="Blue"
-          StrokeThickness="1"
-          X1="7"
-          X2="7"
-          Y1="0"
-          Y2="14" />
-        <Line
-          Stroke="Gray"
-          StrokeThickness="1"
-          X1="21"
-          X2="21"
-          Y1="0"
-          Y2="14" />
-        <Line
-          Stroke="Gray"
-          StrokeThickness="1"
-          X1="35"
-          X2="35"
-          Y1="0"
-          Y2="14" />
-        <Line
-          Stroke="Gray"
-          StrokeThickness="1"
-          X1="49"
-          X2="49"
-          Y1="0"
-          Y2="14" />
-        <Line
-          Stroke="Gray"
-          StrokeThickness="1"
-          X1="63"
-          X2="63"
-          Y1="0"
-          Y2="14" />
-        <Line
-          Stroke="Orange"
-          StrokeThickness="1"
-          X1="0"
-          X2="70"
-          Y1="14"
-          Y2="14" />
-      </Grid>
-    </DataTemplate>
-  </UserControl.Resources>
   <Grid>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="80" />
@@ -195,12 +143,62 @@
       VerticalScrollBarVisibility="Visible">
       <Grid>
         <Grid.Background>
-          <ImageBrush
-            x:Name="Image"
-            Stretch="Uniform"
+          <VisualBrush
+            Stretch="Fill"
             TileMode="Tile"
             Viewport="0,0,70,14"
-            ViewportUnits="Absolute" />
+            ViewportUnits="Absolute">
+            <VisualBrush.Visual>
+              <Grid
+                Width="70"
+                Height="14"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top">
+                <Line
+                  Stroke="Blue"
+                  StrokeThickness="1"
+                  X1="7"
+                  X2="7"
+                  Y1="0"
+                  Y2="14" />
+                <Line
+                  Stroke="Gray"
+                  StrokeThickness="1"
+                  X1="21"
+                  X2="21"
+                  Y1="0"
+                  Y2="14" />
+                <Line
+                  Stroke="Gray"
+                  StrokeThickness="1"
+                  X1="35"
+                  X2="35"
+                  Y1="0"
+                  Y2="14" />
+                <Line
+                  Stroke="Gray"
+                  StrokeThickness="1"
+                  X1="49"
+                  X2="49"
+                  Y1="0"
+                  Y2="14" />
+                <Line
+                  Stroke="Gray"
+                  StrokeThickness="1"
+                  X1="63"
+                  X2="63"
+                  Y1="0"
+                  Y2="14" />
+                <Line
+                  Stroke="Orange"
+                  StrokeThickness="1"
+                  X1="0"
+                  X2="70"
+                  Y1="14"
+                  Y2="14" />
+              </Grid>
+            </VisualBrush.Visual>
+          </VisualBrush>
         </Grid.Background>
         <ItemsControl
           HorizontalAlignment="Left"
