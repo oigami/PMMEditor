@@ -11,6 +11,58 @@
   d:DesignHeight="300"
   d:DesignWidth="300"
   mc:Ignorable="d">
+  <UserControl.Resources>
+    <DataTemplate x:Key="GridBackground">
+      <Grid
+        Width="70"
+        Height="14"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top">
+        <Line
+          Stroke="Blue"
+          StrokeThickness="1"
+          X1="7"
+          X2="7"
+          Y1="0"
+          Y2="14" />
+        <Line
+          Stroke="Gray"
+          StrokeThickness="1"
+          X1="21"
+          X2="21"
+          Y1="0"
+          Y2="14" />
+        <Line
+          Stroke="Gray"
+          StrokeThickness="1"
+          X1="35"
+          X2="35"
+          Y1="0"
+          Y2="14" />
+        <Line
+          Stroke="Gray"
+          StrokeThickness="1"
+          X1="49"
+          X2="49"
+          Y1="0"
+          Y2="14" />
+        <Line
+          Stroke="Gray"
+          StrokeThickness="1"
+          X1="63"
+          X2="63"
+          Y1="0"
+          Y2="14" />
+        <Line
+          Stroke="Orange"
+          StrokeThickness="1"
+          X1="0"
+          X2="70"
+          Y1="14"
+          Y2="14" />
+      </Grid>
+    </DataTemplate>
+  </UserControl.Resources>
   <Grid>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="80" />
@@ -141,35 +193,44 @@
       Grid.Column="2"
       HorizontalScrollBarVisibility="Visible"
       VerticalScrollBarVisibility="Visible">
-
-      <ItemsControl
-        HorizontalAlignment="Left"
-        VerticalAlignment="Top"
-        AlternationCount="{Binding ListOfKeyFrameList.Count}"
-        ItemsSource="{Binding ListOfKeyFrameList}">
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <StackPanel
-              Margin="0,2,0,0"
-              HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch"
-              Orientation="Vertical" />
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.ItemTemplate>
-          <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-            <panes:TimelineControl
-              Height="14"
-              ItemsSource="{Binding Frame}">
-              <panes:TimelineControl.ItemContainerStyle>
-                <Style>
-                  <Setter Property="panes:TimelineControl.Index" Value="{Binding FrameNumber}" />
-                </Style>
-              </panes:TimelineControl.ItemContainerStyle>
-            </panes:TimelineControl>
-          </HierarchicalDataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
+      <Grid>
+        <Grid.Background>
+          <ImageBrush
+            x:Name="Image"
+            Stretch="Uniform"
+            TileMode="Tile"
+            Viewport="0,0,70,14"
+            ViewportUnits="Absolute" />
+        </Grid.Background>
+        <ItemsControl
+          HorizontalAlignment="Left"
+          VerticalAlignment="Top"
+          AlternationCount="{Binding ListOfKeyFrameList.Count}"
+          ItemsSource="{Binding ListOfKeyFrameList}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel
+                Margin="0,0,0,0"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Orientation="Vertical" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+              <panes:TimelineControl
+                Height="14"
+                ItemsSource="{Binding Frame}">
+                <panes:TimelineControl.ItemContainerStyle>
+                  <Style>
+                    <Setter Property="panes:TimelineControl.Index" Value="{Binding FrameNumber}" />
+                  </Style>
+                </panes:TimelineControl.ItemContainerStyle>
+              </panes:TimelineControl>
+            </HierarchicalDataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </Grid>
     </ScrollViewer>
   </Grid>
 </UserControl>
