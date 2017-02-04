@@ -160,6 +160,7 @@ namespace PMMEditor.Views.Panes
                 elem.Style = ItemContainerStyle;
                 Children.Add(elem);
             }
+            InvalidateMeasure();
         }
 
         protected override Visual GetVisualChild(int index)
