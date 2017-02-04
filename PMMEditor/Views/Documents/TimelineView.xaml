@@ -141,94 +141,115 @@
       Grid.Column="2"
       HorizontalScrollBarVisibility="Visible"
       VerticalScrollBarVisibility="Visible">
-      <Grid>
-        <Grid.Background>
-          <VisualBrush
-            Stretch="Fill"
-            TileMode="Tile"
-            Viewport="0,0,70,14"
-            ViewportUnits="Absolute">
-            <VisualBrush.Visual>
-              <Grid
-                Width="70"
+      <VirtualizingStackPanel Orientation="Vertical">
+        <panes:TimelineControl
+          Height="14"
+          Alignment="Center"
+          IndexWidth="14"
+          ItemsSource="{Binding GridFrameNumberList}">
+          <panes:TimelineControl.ItemTemplate>
+            <DataTemplate>
+              <TextBlock
                 Height="14"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top">
-                <Line
-                  Stroke="Blue"
-                  StrokeThickness="1"
-                  X1="7"
-                  X2="7"
-                  Y1="0"
-                  Y2="14" />
-                <Line
-                  Stroke="Gray"
-                  StrokeThickness="1"
-                  X1="21"
-                  X2="21"
-                  Y1="0"
-                  Y2="14" />
-                <Line
-                  Stroke="Gray"
-                  StrokeThickness="1"
-                  X1="35"
-                  X2="35"
-                  Y1="0"
-                  Y2="14" />
-                <Line
-                  Stroke="Gray"
-                  StrokeThickness="1"
-                  X1="49"
-                  X2="49"
-                  Y1="0"
-                  Y2="14" />
-                <Line
-                  Stroke="Gray"
-                  StrokeThickness="1"
-                  X1="63"
-                  X2="63"
-                  Y1="0"
-                  Y2="14" />
-                <Line
-                  Stroke="Orange"
-                  StrokeThickness="1"
-                  X1="0"
-                  X2="70"
-                  Y1="14"
-                  Y2="14" />
-              </Grid>
-            </VisualBrush.Visual>
-          </VisualBrush>
-        </Grid.Background>
-        <ItemsControl
-          HorizontalAlignment="Left"
-          VerticalAlignment="Top"
-          AlternationCount="{Binding ListOfKeyFrameList.Count}"
-          ItemsSource="{Binding ListOfKeyFrameList}">
-          <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <StackPanel
-                Margin="0,0,0,0"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Orientation="Vertical" />
-            </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
-          <ItemsControl.ItemTemplate>
-            <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-              <panes:TimelineControl
-                Height="14"
-                ItemsSource="{Binding Frame}">
-                <panes:TimelineControl.ItemContainerStyle>
-                  <Style>
-                    <Setter Property="panes:TimelineControl.Index" Value="{Binding FrameNumber}" />
-                  </Style>
-                </panes:TimelineControl.ItemContainerStyle>
-              </panes:TimelineControl>
-            </HierarchicalDataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-      </Grid>
+                Text="{Binding}"
+                TextAlignment="Center" />
+            </DataTemplate>
+          </panes:TimelineControl.ItemTemplate>
+          <panes:TimelineControl.ItemContainerStyle>
+            <Style>
+              <Setter Property="panes:TimelineControl.Index" Value="{Binding}" />
+            </Style>
+          </panes:TimelineControl.ItemContainerStyle>
+        </panes:TimelineControl>
+        <Grid>
+          <Grid.Background>
+            <VisualBrush
+              Stretch="Fill"
+              TileMode="Tile"
+              Viewport="0,0,70,14"
+              ViewportUnits="Absolute">
+              <VisualBrush.Visual>
+                <Grid
+                  Width="70"
+                  Height="14"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Top">
+                  <Line
+                    Stroke="Blue"
+                    StrokeThickness="1"
+                    X1="7"
+                    X2="7"
+                    Y1="0"
+                    Y2="14" />
+                  <Line
+                    Stroke="Gray"
+                    StrokeThickness="1"
+                    X1="21"
+                    X2="21"
+                    Y1="0"
+                    Y2="14" />
+                  <Line
+                    Stroke="Gray"
+                    StrokeThickness="1"
+                    X1="35"
+                    X2="35"
+                    Y1="0"
+                    Y2="14" />
+                  <Line
+                    Stroke="Gray"
+                    StrokeThickness="1"
+                    X1="49"
+                    X2="49"
+                    Y1="0"
+                    Y2="14" />
+                  <Line
+                    Stroke="Gray"
+                    StrokeThickness="1"
+                    X1="63"
+                    X2="63"
+                    Y1="0"
+                    Y2="14" />
+                  <Line
+                    Stroke="Orange"
+                    StrokeThickness="1"
+                    X1="0"
+                    X2="70"
+                    Y1="14"
+                    Y2="14" />
+                </Grid>
+              </VisualBrush.Visual>
+            </VisualBrush>
+          </Grid.Background>
+          <ItemsControl
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            AlternationCount="{Binding ListOfKeyFrameList.Count}"
+            ItemsSource="{Binding ListOfKeyFrameList}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel
+                  Margin="0,0,0,0"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  Orientation="Vertical" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                <panes:TimelineControl
+                  Height="14"
+                  ItemsSource="{Binding Frame}">
+                  <panes:TimelineControl.ItemContainerStyle>
+                    <Style>
+                      <Setter Property="panes:TimelineControl.Index" Value="{Binding FrameNumber}" />
+                    </Style>
+                  </panes:TimelineControl.ItemContainerStyle>
+                </panes:TimelineControl>
+              </HierarchicalDataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </Grid>
+      </VirtualizingStackPanel>
     </ScrollViewer>
   </Grid>
 </UserControl>

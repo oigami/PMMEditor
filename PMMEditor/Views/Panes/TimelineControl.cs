@@ -122,6 +122,24 @@ namespace PMMEditor.Views.Panes
 
         #endregion
 
+        #region MaxIndex変更通知プロパティ
+
+        public AlignmentX Alignment
+        {
+            get { return (AlignmentX) GetValue(AlignmentProperty); }
+            set { SetValue(AlignmentProperty, value); }
+        }
+
+        public static readonly DependencyProperty AlignmentProperty =
+            DependencyProperty.Register(nameof(Alignment),
+                                        typeof(AlignmentX),
+                                        typeof(TimelineControl),
+                                        new FrameworkPropertyMetadata(AlignmentX.Right,
+                                                                      FrameworkPropertyMetadataOptions
+                                                                          .AffectsMeasure));
+
+        #endregion
+
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -174,7 +192,7 @@ namespace PMMEditor.Views.Panes
             {
                 var location = new Point(GetIndex(child), Margin.Top);
                 var width = double.IsNaN(IndexWidth) ? child.DesiredSize.Width : IndexWidth;
-                location.X = GetPosition(location.X, width);
+                location.X = GetPosition(location.X, width, child);
 
                 child.Arrange(new Rect(location, child.DesiredSize));
             }
@@ -182,12 +200,26 @@ namespace PMMEditor.Views.Panes
             return finalSize;
         }
 
-        private double GetPosition(double x, double width)
+        private double GetPosition(double x, double width, FrameworkElement child)
         {
             width += Padding.Left + Padding.Right;
 
             x *= width;
             x += Margin.Left;
+            if (child != null)
+            {
+                switch (Alignment)
+                {
+                    case AlignmentX.Center:
+                        x -= child.DesiredSize.Width / 2;
+                        x += width / 2;
+                        break;
+                    case AlignmentX.Left:
+                        x -= child.DesiredSize.Width;
+                        x += width / 2;
+                        break;
+                }
+            }
             x -= (Padding.Right - Padding.Left) / 2;
             return x;
         }
@@ -214,7 +246,9 @@ namespace PMMEditor.Views.Panes
             var size = new Size
             {
                 Width = Math.Min(availableSize.Width,
-                                 GetPosition(double.IsNaN(MaxIndex) ? index : MaxIndex, width) + width + Margin.Right),
+                                 GetPosition(double.IsNaN(MaxIndex) ? index : MaxIndex, width,
+                                             Children.Count == 0 ? null : Children[0]) + width
+                                 + Margin.Right),
                 Height =
                     Math.Min(height + Margin.Top + Margin.Bottom, availableSize.Height)
             };
