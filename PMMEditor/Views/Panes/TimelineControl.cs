@@ -59,7 +59,9 @@ namespace PMMEditor.Views.Panes
             DependencyProperty.Register("ItemsSource",
                                         typeof(IEnumerable),
                                         typeof(TimelineControl),
-                                        new PropertyMetadata(null, ItemsSourceChanged));
+                                        new FrameworkPropertyMetadata(null,
+                                                                      FrameworkPropertyMetadataOptions.AffectsMeasure,
+                                                                      ItemsSourceChanged));
 
         private static void ItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -178,7 +180,6 @@ namespace PMMEditor.Views.Panes
                 elem.Style = ItemContainerStyle;
                 Children.Add(elem);
             }
-            InvalidateMeasure();
         }
 
         protected override Visual GetVisualChild(int index)
