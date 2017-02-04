@@ -26,19 +26,19 @@ namespace PMMEditor.Views.Panes
     {
         #region Indexプロパティ
 
-        public static double GetIndex(DependencyObject obj)
+        public static int GetIndex(DependencyObject obj)
         {
-            return (double) obj.GetValue(IndexProperty);
+            return (int) obj.GetValue(IndexProperty);
         }
 
-        public static void SetIndex(DependencyObject obj, double value)
+        public static void SetIndex(DependencyObject obj, int value)
         {
             obj.SetValue(IndexProperty, value);
         }
 
         public static readonly DependencyProperty IndexProperty =
-            DependencyProperty.RegisterAttached("Index", typeof(double), typeof(TimelineControl),
-                                                new FrameworkPropertyMetadata(default(double),
+            DependencyProperty.RegisterAttached("Index", typeof(int), typeof(TimelineControl),
+                                                new FrameworkPropertyMetadata(default(int),
                                                                               FrameworkPropertyMetadataOptions
                                                                                   .AffectsArrange));
 
@@ -201,11 +201,11 @@ namespace PMMEditor.Views.Panes
             return finalSize;
         }
 
-        private double GetPosition(double x, double width, FrameworkElement child)
+        private double GetPosition(double x, double indexWidth, FrameworkElement child)
         {
-            width += Padding.Left + Padding.Right;
+            indexWidth += Padding.Left + Padding.Right;
 
-            x *= width;
+            x *= indexWidth;
             x += Margin.Left;
             if (child != null)
             {
@@ -213,11 +213,11 @@ namespace PMMEditor.Views.Panes
                 {
                     case AlignmentX.Center:
                         x -= child.DesiredSize.Width / 2;
-                        x += width / 2;
+                        x += indexWidth / 2;
                         break;
                     case AlignmentX.Left:
                         x -= child.DesiredSize.Width;
-                        x += width / 2;
+                        x += indexWidth / 2;
                         break;
                 }
             }
