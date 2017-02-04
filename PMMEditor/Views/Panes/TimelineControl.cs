@@ -227,28 +227,33 @@ namespace PMMEditor.Views.Panes
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            var width = 0.0;
+            var indexWidth = 0.0;
             var height = 0.0;
             var index = 0;
-
+            FrameworkElement lastIndexChild = null;
             foreach (var child in Children)
             {
                 child.Measure(availableSize);
-                width = Math.Max(width, child.DesiredSize.Width);
+                indexWidth = Math.Max(indexWidth, child.DesiredSize.Width);
                 height = Math.Max(height, child.DesiredSize.Height);
-                index = Math.Max(index, (int) GetIndex(child));
+                var i = GetIndex(child);
+                if (index < i)
+                {
+                    lastIndexChild = child;
+                    index = i;
+                }
             }
 
             if (double.IsNaN(IndexWidth) == false)
             {
-                width = IndexWidth;
+                indexWidth = IndexWidth;
             }
 
             var size = new Size
             {
                 Width = Math.Min(availableSize.Width,
-                                 GetPosition(double.IsNaN(MaxIndex) ? index : MaxIndex, width,
-                                             Children.Count == 0 ? null : Children[0]) + width
+                                 GetPosition(double.IsNaN(MaxIndex) ? index : MaxIndex, indexWidth,
+                                             lastIndexChild) + lastIndexChild?.DesiredSize.Width ?? 0
                                  + Margin.Right),
                 Height =
                     Math.Min(height + Margin.Top + Margin.Bottom, availableSize.Height)
