@@ -166,7 +166,7 @@ namespace PMMEditor.Views.Panes
                 Source =
                     new Uri("pack://application:,,,/PmmEditor;component/Views/Panes/TimelineResource.xaml",
                             UriKind.Absolute)
-            }["DefaultTimelineItemTemplate"] as DataTemplate;
+            }["DefaultTimelineItemTemplate"] as FrameworkTemplate;
 
             if (itemTemplate == null)
             {
@@ -179,6 +179,7 @@ namespace PMMEditor.Views.Panes
                 elem.DataContext = item;
                 elem.Style = ItemContainerStyle;
                 Children.Add(elem);
+                AddVisualChild(elem);
             }
         }
 
