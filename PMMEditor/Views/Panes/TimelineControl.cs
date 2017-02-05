@@ -44,6 +44,27 @@ namespace PMMEditor.Views.Panes
 
         #endregion
 
+        #region IsSelectedプロパティ
+
+        public static bool GetIsSelected(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(IsSelectedProperty);
+        }
+
+        public static void SetIsSelected(DependencyObject obj, bool value)
+        {
+            obj.SetValue(IsSelectedProperty, value);
+        }
+
+        public static readonly DependencyProperty IsSelectedProperty =
+            DependencyProperty.RegisterAttached("IsSelected", typeof(bool), typeof(TimelineControl),
+                                                new FrameworkPropertyMetadata(false,
+                                                                              FrameworkPropertyMetadataOptions
+                                                                                  .AffectsArrange));
+
+        #endregion
+
+
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         private List<FrameworkElement> Children { get; } = new List<FrameworkElement>();
 

@@ -3,17 +3,24 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:local="clr-namespace:PMMEditor.Views.Panes">
   <DataTemplate x:Key="DefaultTimelineItemTemplate">
-    <Rectangle
-      Width="8"
-      Height="8"
-      Margin="3"
-      Fill="Black"
-      RenderTransformOrigin="0.5,0.5">
-      <Rectangle.RenderTransform>
-        <TransformGroup>
-          <RotateTransform Angle="45" />
-        </TransformGroup>
-      </Rectangle.RenderTransform>
-    </Rectangle>
+    <Thumb>
+      <Thumb.Template>
+        <ControlTemplate>
+          <Rectangle
+            Name="RECTANGLE"
+            Width="8"
+            Height="8"
+            Margin="3"
+            Fill="{TemplateBinding Background}"
+            RenderTransformOrigin="0.5,0.5">
+            <Rectangle.RenderTransform>
+              <TransformGroup>
+                <RotateTransform Angle="45" />
+              </TransformGroup>
+            </Rectangle.RenderTransform>
+          </Rectangle>
+        </ControlTemplate>
+      </Thumb.Template>
+    </Thumb>
   </DataTemplate>
 </ResourceDictionary>

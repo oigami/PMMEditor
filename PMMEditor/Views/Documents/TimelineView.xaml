@@ -240,8 +240,21 @@
                   Height="14"
                   ItemsSource="{Binding Frame}">
                   <panes:TimelineControl.ItemContainerStyle>
-                    <Style>
+                    <Style TargetType="Thumb">
                       <Setter Property="panes:TimelineControl.Index" Value="{Binding FrameNumber}" />
+                      <Setter Property="panes:TimelineControl.IsSelected" Value="{Binding IsSelected}" />
+                      <Style.Triggers>
+                        <DataTrigger
+                          Binding="{Binding IsSelected}"
+                          Value="False">
+                          <Setter Property="Thumb.Background" Value="Black" />
+                        </DataTrigger>
+                        <DataTrigger
+                          Binding="{Binding IsSelected}"
+                          Value="True">
+                          <Setter Property="Thumb.Background" Value="Red" />
+                        </DataTrigger>
+                      </Style.Triggers>
                     </Style>
                   </panes:TimelineControl.ItemContainerStyle>
                 </panes:TimelineControl>

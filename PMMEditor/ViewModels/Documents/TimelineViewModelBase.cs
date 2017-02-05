@@ -11,7 +11,15 @@ namespace PMMEditor.ViewModels.Documents
 {
     public struct TimelineFrameData
     {
+        public TimelineFrameData(int frame = -1, bool isSelected = false)
+        {
+            FrameNumber = frame;
+            IsSelected = isSelected;
+        }
+
         public int FrameNumber { get; set; }
+
+        public bool IsSelected { get; set; }
     }
 
     public class TimelineKeyFrameList : ViewModel
