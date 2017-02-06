@@ -157,7 +157,7 @@
           </panes:TimelineControl.ItemTemplate>
           <panes:TimelineControl.ItemContainerStyle>
             <Style>
-              <Setter Property="panes:TimelineControl.Index" Value="{Binding}" />
+              <Setter Property="panes:TimelineItem.Index" Value="{Binding}" />
             </Style>
           </panes:TimelineControl.ItemContainerStyle>
         </panes:TimelineControl>
@@ -240,9 +240,9 @@
                   Height="14"
                   ItemsSource="{Binding Frame}">
                   <panes:TimelineControl.ItemContainerStyle>
-                    <Style TargetType="Thumb">
-                      <Setter Property="panes:TimelineControl.Index" Value="{Binding FrameNumber}" />
-                      <Setter Property="panes:TimelineControl.IsSelected" Value="{Binding IsSelected}" />
+                    <Style >
+                      <Setter Property="panes:TimelineItem.Index" Value="{Binding FrameNumber}" />
+                      <Setter Property="panes:TimelineItem.IsSelected" Value="{Binding IsSelected,Mode=TwoWay}" />
                       <Style.Triggers>
                         <DataTrigger
                           Binding="{Binding IsSelected}"

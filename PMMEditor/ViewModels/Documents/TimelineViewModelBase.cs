@@ -9,7 +9,7 @@ using PMMEditor.Models;
 
 namespace PMMEditor.ViewModels.Documents
 {
-    public struct TimelineFrameData
+    public class TimelineFrameData : ViewModel
     {
         public TimelineFrameData(int frame = -1, bool isSelected = false)
         {
@@ -19,7 +19,21 @@ namespace PMMEditor.ViewModels.Documents
 
         public int FrameNumber { get; set; }
 
-        public bool IsSelected { get; set; }
+        private bool _IsSelected;
+
+        public bool IsSelected
+        {
+            get { return _IsSelected; }
+            set
+            {
+                if (_IsSelected == value)
+                {
+                    return;
+                }
+                _IsSelected = value;
+                RaisePropertyChanged();
+            }
+        }
     }
 
     public class TimelineKeyFrameList : ViewModel

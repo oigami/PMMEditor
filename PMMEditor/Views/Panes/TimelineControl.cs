@@ -19,54 +19,67 @@ using System.Windows.Shapes;
 
 namespace PMMEditor.Views.Panes
 {
-    /// <summary>
-    /// TimelineControl.xaml の相互作用ロジック
-    /// </summary>
-    public class TimelineControl : ContentControl
+    public class TimelineItem : ContentControl
     {
+
+        public TimelineItem()
+        {
+            MouseMove += (sender, args) =>
+            {
+                args.Handled = true;
+            };
+            PreviewMouseLeftButtonDown += (sender, args) =>
+            {
+                args.Handled = true;
+            };
+            PreviewMouseLeftButtonUp += (sender, args) =>
+            {
+                args.Handled = true;
+                IsSelected = !IsSelected;
+            };
+        }
+
         #region Indexプロパティ
 
-        public static int GetIndex(DependencyObject obj)
-        {
-            return (int) obj.GetValue(IndexProperty);
-        }
-
-        public static void SetIndex(DependencyObject obj, int value)
-        {
-            obj.SetValue(IndexProperty, value);
-        }
-
         public static readonly DependencyProperty IndexProperty =
-            DependencyProperty.RegisterAttached("Index", typeof(int), typeof(TimelineControl),
-                                                new FrameworkPropertyMetadata(default(int),
-                                                                              FrameworkPropertyMetadataOptions
-                                                                                  .AffectsArrange));
+            DependencyProperty.Register("Index", typeof(int), typeof(TimelineItem),
+                                        new FrameworkPropertyMetadata(default(int),
+                                                                      FrameworkPropertyMetadataOptions
+                                                                          .AffectsArrange));
+
+        public int Index
+        {
+            get { return (int) GetValue(IndexProperty); }
+            set { SetValue(IndexProperty, value); }
+        }
 
         #endregion
 
         #region IsSelectedプロパティ
 
-        public static bool GetIsSelected(DependencyObject obj)
-        {
-            return (bool)obj.GetValue(IsSelectedProperty);
-        }
-
-        public static void SetIsSelected(DependencyObject obj, bool value)
-        {
-            obj.SetValue(IsSelectedProperty, value);
-        }
-
         public static readonly DependencyProperty IsSelectedProperty =
-            DependencyProperty.RegisterAttached("IsSelected", typeof(bool), typeof(TimelineControl),
-                                                new FrameworkPropertyMetadata(false,
-                                                                              FrameworkPropertyMetadataOptions
-                                                                                  .AffectsArrange));
+            DependencyProperty.Register("IsSelected", typeof(bool), typeof(TimelineItem),
+                                        new FrameworkPropertyMetadata(default(bool),
+                                                                      FrameworkPropertyMetadataOptions
+                                                                          .AffectsArrange));
+
+        public bool IsSelected
+        {
+            get { return (bool) GetValue(IsSelectedProperty); }
+            set { SetValue(IsSelectedProperty, value); }
+        }
 
         #endregion
 
+    }
 
+    /// <summary>
+    /// TimelineControl.xaml の相互作用ロジック
+    /// </summary>
+    public class TimelineControl : ContentControl
+    {
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-        private List<FrameworkElement> Children { get; } = new List<FrameworkElement>();
+        private List<TimelineItem> Children { get; } = new List<TimelineItem>();
 
         #region ItemsSourceプロパティ
 
@@ -197,10 +210,16 @@ namespace PMMEditor.Views.Panes
             foreach (var item in ItemsSource)
             {
                 var elem = itemTemplate.LoadContent() as FrameworkElement;
-                elem.DataContext = item;
+                var controlItem = new TimelineItem
+                {
+                    DataContext = item
+                };
+                controlItem.Style = ItemContainerStyle;
                 elem.Style = ItemContainerStyle;
-                Children.Add(elem);
-                AddVisualChild(elem);
+                controlItem.Content = elem;
+                Children.Add(controlItem);
+                AddVisualChild(controlItem);
+                AddLogicalChild(controlItem);
             }
         }
 
@@ -213,7 +232,7 @@ namespace PMMEditor.Views.Panes
         {
             foreach (var child in Children)
             {
-                var location = new Point(GetIndex(child), Margin.Top);
+                var location = new Point(child.Index, Margin.Top);
                 var width = double.IsNaN(IndexWidth) ? child.DesiredSize.Width : IndexWidth;
                 location.X = GetPosition(location.X, width, child);
 
@@ -258,7 +277,7 @@ namespace PMMEditor.Views.Panes
                 child.Measure(availableSize);
                 indexWidth = Math.Max(indexWidth, child.DesiredSize.Width);
                 height = Math.Max(height, child.DesiredSize.Height);
-                var i = GetIndex(child);
+                var i = child.Index;
                 if (index < i)
                 {
                     lastIndexChild = child;
