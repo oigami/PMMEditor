@@ -162,6 +162,7 @@
           </panes:TimelineControl.ItemContainerStyle>
         </panes:TimelineControl>
         <Grid>
+          <!--  グリッド線  -->
           <Grid.Background>
             <VisualBrush
               Stretch="Fill"
@@ -220,7 +221,32 @@
               </VisualBrush.Visual>
             </VisualBrush>
           </Grid.Background>
+
+          <!--  ドラッグ処理用  -->
+          <Thumb
+            DragCompleted="BackgroundSelectRange_OnDragCompleted"
+            DragDelta="BackgroundSelectRange_OnDragDelta"
+            DragStarted="BackgroundSelectRange_OnDragStarted">
+            <Thumb.Template>
+              <ControlTemplate>
+                <Rectangle Fill="Transparent" />
+              </ControlTemplate>
+            </Thumb.Template>
+          </Thumb>
+
+          <!--  範囲選択用  -->
+          <Canvas>
+            <Border
+              Name="RangeSelectBorder"
+              Width="0"
+              Height="0"
+              Background="Transparent"
+              BorderBrush="Red" />
+          </Canvas>
+
+          <!--  キーフレームタイムライン  -->
           <ItemsControl
+            Name="TimelineViewer"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             AlternationCount="{Binding ListOfKeyFrameList.Count}"
@@ -240,9 +266,9 @@
                   Height="14"
                   ItemsSource="{Binding Frame}">
                   <panes:TimelineControl.ItemContainerStyle>
-                    <Style >
+                    <Style>
                       <Setter Property="panes:TimelineItem.Index" Value="{Binding FrameNumber}" />
-                      <Setter Property="panes:TimelineItem.IsSelected" Value="{Binding IsSelected,Mode=TwoWay}" />
+                      <Setter Property="panes:TimelineItem.IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                       <Style.Triggers>
                         <DataTrigger
                           Binding="{Binding IsSelected}"
