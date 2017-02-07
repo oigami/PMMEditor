@@ -142,6 +142,7 @@
       HorizontalScrollBarVisibility="Visible"
       VerticalScrollBarVisibility="Visible">
       <VirtualizingStackPanel Orientation="Vertical">
+        <!--  タイムラインの数値  -->
         <panes:TimelineControl
           Height="14"
           Alignment="Center"

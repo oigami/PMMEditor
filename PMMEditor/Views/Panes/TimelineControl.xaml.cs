@@ -81,11 +81,20 @@ namespace PMMEditor.Views.Panes
     /// <summary>
     /// TimelineControl.xaml の相互作用ロジック
     /// </summary>
-    public class TimelineControl : MultiSelector
+    public class TimelineControlBase : MultiSelector {}
+
+    public partial class TimelineControl : TimelineControlBase
     {
         public TimelineControl()
         {
+            InitializeComponent();
             CanSelectMultipleItems = true;
+        }
+
+        protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+        {
+            base.OnItemsSourceChanged(oldValue, newValue);
+            RenderItems();
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
@@ -168,12 +177,7 @@ namespace PMMEditor.Views.Panes
                 return;
             }
 
-            var itemTemplate = ItemTemplate ?? new ResourceDictionary
-            {
-                Source =
-                    new Uri("pack://application:,,,/PmmEditor;component/Views/Panes/TimelineResource.xaml",
-                            UriKind.Absolute)
-            }["DefaultTimelineItemTemplate"] as FrameworkTemplate;
+            var itemTemplate = ItemTemplate;
 
             if (itemTemplate == null)
             {
@@ -205,8 +209,8 @@ namespace PMMEditor.Views.Panes
                     EndUpdateSelectedItems();
                 };
                 AddVisualChild(controlItem);
-                AddLogicalChild(controlItem);
             }
+            InvalidateMeasure();
         }
 
         public new void SelectAll()

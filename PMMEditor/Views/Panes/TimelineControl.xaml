@@ -1,0 +1,34 @@
+﻿<local:TimelineControlBase
+    x:Class="PMMEditor.Views.Panes.TimelineControl"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:local="clr-namespace:PMMEditor.Views.Panes">
+  <local:TimelineControlBase.Resources>
+    <DataTemplate
+      x:Key="DefaultTimelineItemTemplate"
+      DataType="{x:Type local:TimelineItem}">
+      <Thumb>
+        <Thumb.Template>
+          <ControlTemplate>
+            <Rectangle
+              Name="RECTANGLE"
+              Width="8"
+              Height="8"
+              Margin="3"
+              Fill="{TemplateBinding Background}"
+              RenderTransformOrigin="0.5,0.5">
+              <Rectangle.RenderTransform>
+                <TransformGroup>
+                  <RotateTransform Angle="45" />
+                </TransformGroup>
+              </Rectangle.RenderTransform>
+            </Rectangle>
+          </ControlTemplate>
+        </Thumb.Template>
+      </Thumb>
+    </DataTemplate>
+    <Style TargetType="local:TimelineControl">
+      <Setter Property="ItemTemplate" Value="{StaticResource DefaultTimelineItemTemplate}" />
+    </Style>
+  </local:TimelineControlBase.Resources>
+</local:TimelineControlBase>
