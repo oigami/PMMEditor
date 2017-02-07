@@ -1,6 +1,7 @@
 ﻿using Livet;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -29,11 +30,14 @@ namespace PMMEditor.Views.Documents
             InitializeComponent();
         }
 
-        readonly List<TimelineItem> _rangeSelectedElements = new List<TimelineItem>();
-        private Point _rangeStartPoint;
+        private readonly List<TimelineItem> _rangeSelectedElements = new List<TimelineItem>();
 
         private void RangeHitTest()
         {
+            foreach (var item in _rangeSelectedElements)
+            {
+                item.IsSelected = false;
+            }
             var rect =
                 new RectangleGeometry(
                     new Rect(new Point(Canvas.GetLeft(RangeSelectBorder), Canvas.GetTop(RangeSelectBorder)),
@@ -51,13 +55,17 @@ namespace PMMEditor.Views.Documents
                     {
                         _rangeSelectedElements.Add(item);
                         item.IsSelected = true;
+                        return HitTestFilterBehavior.ContinueSkipSelfAndChildren;
                     }
                     return HitTestFilterBehavior.Continue;
                 });
 
-            VisualTreeHelper.HitTest(
-                                     TimelineViewer, filterCallback, resultCallback, hitTestParams);
+            VisualTreeHelper.HitTest(TimelineViewer, filterCallback, resultCallback, hitTestParams);
         }
+
+        #region SelectRange
+
+        private Point _rangeStartPoint;
 
         private void BackgroundSelectRange_OnDragStarted(object sender, DragStartedEventArgs e)
         {
@@ -66,9 +74,9 @@ namespace PMMEditor.Views.Documents
             RangeSelectBorder.BorderThickness = new Thickness(1);
             if (Keyboard.IsKeyDown(Key.LeftShift) == false && Keyboard.IsKeyDown(Key.RightShift) == false)
             {
-                foreach (var item in _rangeSelectedElements)
+                foreach (var item in GetTimeline())
                 {
-                    item.IsSelected = false;
+                    item.UnselectAll();
                 }
             }
             _rangeSelectedElements.Clear();
@@ -90,5 +98,49 @@ namespace PMMEditor.Views.Documents
             RangeSelectBorder.Width = 0;
             RangeSelectBorder.Height = 0;
         }
+
+        #endregion
+
+        IEnumerable<TimelineControl> GetTimeline()
+        {
+            foreach (var o in TimelineViewer.Items)
+            {
+                var c = (ContentPresenter) TimelineViewer.ItemContainerGenerator.ContainerFromItem(o);
+                yield return c.ContentTemplate.FindName("TimelineControl", c) as TimelineControl;
+            }
+        }
+
+        IEnumerable<TimelineItem> GetSelectedTimelineItem()
+        {
+            foreach (var item in GetTimeline())
+            {
+                if (item == null || item.IsArrangeValid == false)
+                {
+                    continue;
+                }
+
+                foreach (var selectedItem in item.SelectedItems)
+                {
+                    yield return (TimelineItem) selectedItem;
+                }
+            }
+        }
+
+        #region KeyFrameMove
+
+        private void KeyFrameMoveStarted(object sender, DragStartedEventArgs e) {}
+
+        private void KeyFrameMoveDelta(object sender, DragDeltaEventArgs e)
+        {
+            int diff = (int) e.HorizontalChange / 14;
+            foreach (var item1 in GetSelectedTimelineItem())
+            {
+                item1.Index += diff;
+            }
+        }
+
+        private void KeyFrameMoveCompleted(object sender, DragCompletedEventArgs e) {}
+
+        #endregion
     }
 }

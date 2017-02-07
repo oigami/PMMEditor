@@ -263,12 +263,22 @@
             <ItemsControl.ItemTemplate>
               <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                 <panes:TimelineControl
+                  x:Name="TimelineControl"
                   Height="14"
                   ItemsSource="{Binding Frame}">
                   <panes:TimelineControl.ItemContainerStyle>
                     <Style>
                       <Setter Property="panes:TimelineItem.Index" Value="{Binding FrameNumber}" />
                       <Setter Property="panes:TimelineItem.IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                      <EventSetter
+                        Event="Thumb.DragStarted"
+                        Handler="KeyFrameMoveStarted" />
+                      <EventSetter
+                        Event="Thumb.DragDelta"
+                        Handler="KeyFrameMoveDelta" />
+                      <EventSetter
+                        Event="Thumb.DragCompleted"
+                        Handler="KeyFrameMoveCompleted" />
                       <Style.Triggers>
                         <DataTrigger
                           Binding="{Binding IsSelected}"

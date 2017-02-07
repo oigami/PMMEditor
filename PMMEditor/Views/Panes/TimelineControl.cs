@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -21,21 +22,13 @@ namespace PMMEditor.Views.Panes
 {
     public class TimelineItem : ContentControl
     {
-
         public TimelineItem()
         {
-            MouseMove += (sender, args) =>
-            {
-                args.Handled = true;
-            };
             PreviewMouseLeftButtonDown += (sender, args) =>
             {
-                args.Handled = true;
-            };
-            PreviewMouseLeftButtonUp += (sender, args) =>
-            {
-                args.Handled = true;
-                IsSelected = !IsSelected;
+                //Mouse.Capture(null);
+                //args.Handled = true;
+                IsSelected = true;
             };
         }
 
@@ -45,7 +38,7 @@ namespace PMMEditor.Views.Panes
             DependencyProperty.Register("Index", typeof(int), typeof(TimelineItem),
                                         new FrameworkPropertyMetadata(default(int),
                                                                       FrameworkPropertyMetadataOptions
-                                                                          .AffectsArrange));
+                                                                          .AffectsParentArrange));
 
         public int Index
         {
@@ -66,61 +59,41 @@ namespace PMMEditor.Views.Panes
         public bool IsSelected
         {
             get { return (bool) GetValue(IsSelectedProperty); }
-            set { SetValue(IsSelectedProperty, value); }
+            set
+            {
+                SetValue(IsSelectedProperty, value);
+                SelectionChanged?.Invoke(value);
+            }
+        }
+
+        public delegate void SelectionChangedDelegate(bool isSelected);
+
+        public event SelectionChangedDelegate SelectionChanged;
+
+        public void ReverseSelect()
+        {
+            IsSelected = !IsSelected;
         }
 
         #endregion
-
     }
 
     /// <summary>
     /// TimelineControl.xaml の相互作用ロジック
     /// </summary>
-    public class TimelineControl : ContentControl
+    public class TimelineControl : MultiSelector
     {
+        public TimelineControl()
+        {
+            CanSelectMultipleItems = true;
+        }
+
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         private List<TimelineItem> Children { get; } = new List<TimelineItem>();
 
-        #region ItemsSourceプロパティ
-
-        public IEnumerable ItemsSource
-        {
-            get { return (IEnumerable) GetValue(ItemsSourceProperty); }
-            set { SetValue(ItemsSourceProperty, value); }
-        }
-
-        public static readonly DependencyProperty ItemsSourceProperty =
-            DependencyProperty.Register("ItemsSource",
-                                        typeof(IEnumerable),
-                                        typeof(TimelineControl),
-                                        new FrameworkPropertyMetadata(null,
-                                                                      FrameworkPropertyMetadataOptions.AffectsMeasure,
-                                                                      ItemsSourceChanged));
-
-        private static void ItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((TimelineControl) d).RenderItems();
-        }
-
-        #endregion
-
-        #region ItemTemplateプロパティ
-
-        public DataTemplate ItemTemplate
-        {
-            get { return (DataTemplate) GetValue(ItemTemplateProperty); }
-            set { SetValue(ItemTemplateProperty, value); }
-        }
-
-        public static readonly DependencyProperty ItemTemplateProperty =
-            DependencyProperty.Register("ItemTemplate", typeof(DataTemplate), typeof(TimelineControl),
-                                        new PropertyMetadata(null));
-
-        #endregion
+        private List<TimelineItem> _selectedItems = new List<TimelineItem>();
 
         protected override int VisualChildrenCount => Children.Count;
-
-        public Style ItemContainerStyle { private get; set; }
 
         #region IndexWidth変更通知プロパティ
 
@@ -218,8 +191,38 @@ namespace PMMEditor.Views.Panes
                 elem.Style = ItemContainerStyle;
                 controlItem.Content = elem;
                 Children.Add(controlItem);
+                controlItem.SelectionChanged += selected =>
+                {
+                    BeginUpdateSelectedItems();
+                    if (selected)
+                    {
+                        SelectedItems.Add(controlItem);
+                    }
+                    else
+                    {
+                        SelectedItems.Remove(controlItem);
+                    }
+                    EndUpdateSelectedItems();
+                };
                 AddVisualChild(controlItem);
                 AddLogicalChild(controlItem);
+            }
+        }
+
+        public new void SelectAll()
+        {
+            foreach (var timelineItem in Children)
+            {
+                timelineItem.IsSelected = true;
+            }
+        }
+
+        public new void UnselectAll()
+        {
+            var list = SelectedItems.Cast<TimelineItem>().ToList();
+            foreach (var timelineItem in list)
+            {
+                timelineItem.IsSelected = false;
             }
         }
 
