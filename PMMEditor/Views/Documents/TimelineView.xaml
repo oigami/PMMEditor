@@ -348,9 +348,9 @@
                     <Style TargetType="panes:TimelineItem">
                       <Setter Property="Index" Value="{Binding FrameNumber}" />
                       <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                      <Setter Property="ContentTemplate">
+                      <Setter Property="Template">
                         <Setter.Value>
-                          <DataTemplate>
+                          <ControlTemplate>
                             <Thumb>
                               <Thumb.Style>
                                 <Style
@@ -359,7 +359,7 @@
                                   <Setter Property="Template" Value="{Binding UnselectedContainerTemplate, RelativeSource={RelativeSource AncestorType=local:TimelineView}}" />
                                   <Style.Triggers>
                                     <DataTrigger
-                                      Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=panes:TimelineItem}}"
+                                      Binding="{Binding IsSelected}"
                                       Value="True">
                                       <Setter Property="Template" Value="{Binding SelectedContainerTemplate, RelativeSource={RelativeSource AncestorType=local:TimelineView}}" />
                                     </DataTrigger>
@@ -367,7 +367,7 @@
                                 </Style>
                               </Thumb.Style>
                             </Thumb>
-                          </DataTemplate>
+                          </ControlTemplate>
                         </Setter.Value>
                       </Setter>
                     </Style>
