@@ -283,17 +283,20 @@
           Alignment="Center"
           IndexWidth="14"
           ItemsSource="{Binding GridFrameNumberList}">
-          <panes:TimelineControl.ItemTemplate>
-            <DataTemplate>
-              <TextBlock
-                Height="14"
-                Text="{Binding}"
-                TextAlignment="Center" />
-            </DataTemplate>
-          </panes:TimelineControl.ItemTemplate>
+
           <panes:TimelineControl.ItemContainerStyle>
-            <Style>
-              <Setter Property="panes:TimelineItem.Index" Value="{Binding}" />
+            <Style TargetType="{x:Type panes:TimelineItem}">
+              <Setter Property="Index" Value="{Binding}" />
+              <Setter Property="Template">
+                <Setter.Value>
+                  <ControlTemplate>
+                    <TextBlock
+                      Height="14"
+                      Text="{Binding}"
+                      TextAlignment="Center" />
+                  </ControlTemplate>
+                </Setter.Value>
+              </Setter>
             </Style>
           </panes:TimelineControl.ItemContainerStyle>
         </panes:TimelineControl>
