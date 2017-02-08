@@ -67,23 +67,6 @@ namespace PMMEditor.Views.Documents
 
         private Point _rangeStartPoint;
 
-        private T FindVisualChild<T>(DependencyObject obj) where T : DependencyObject
-        {
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
-            {
-                DependencyObject child = VisualTreeHelper.GetChild(obj, i);
-                if (child != null && child is T)
-                    return (T)child;
-                else
-                {
-                    T childOfChild = FindVisualChild<T>(child);
-                    if (childOfChild != null)
-                        return childOfChild;
-                }
-            }
-            return null;
-        }
-
         private void BackgroundSelectRange_OnDragStarted(object sender, DragStartedEventArgs e)
         {
             Canvas.SetLeft(SelectRangeControl, e.HorizontalOffset);
@@ -149,6 +132,21 @@ namespace PMMEditor.Views.Documents
         private void KeyFrameMoveDelta(object sender, DragDeltaEventArgs e)
         {
             int diff = (int) e.HorizontalChange / 14;
+            if (diff == 0)
+            {
+                return;
+            }
+            // 負のときはキーフレームが負にならないように事前に確認する
+            if (diff < 0)
+            {
+                foreach (var item1 in GetSelectedTimelineItem())
+                {
+                    if (item1.Index + diff < 0)
+                    {
+                        return;
+                    }
+                }
+            }
             foreach (var item1 in GetSelectedTimelineItem())
             {
                 item1.Index += diff;
@@ -185,7 +183,7 @@ namespace PMMEditor.Views.Documents
 
         public DataTemplate SelectRangeTemplate
         {
-            get { return (DataTemplate)GetValue(SelectRangeTemplateProperty); }
+            get { return (DataTemplate) GetValue(SelectRangeTemplateProperty); }
             set { SetValue(SelectRangeTemplateProperty, value); }
         }
 
@@ -199,12 +197,11 @@ namespace PMMEditor.Views.Documents
 
         #endregion
 
-
         #region SelectedContainerStyle変更通知プロパティ
 
         public ControlTemplate SelectedContainerTemplate
         {
-            get { return (ControlTemplate)GetValue(SelectedContainerTemplateProperty); }
+            get { return (ControlTemplate) GetValue(SelectedContainerTemplateProperty); }
             set { SetValue(SelectedContainerTemplateProperty, value); }
         }
 
@@ -218,12 +215,11 @@ namespace PMMEditor.Views.Documents
 
         #endregion
 
-
         #region SelectedContainerStyle変更通知プロパティ
 
         public ControlTemplate UnselectedContainerTemplate
         {
-            get { return (ControlTemplate)GetValue(UnselectedContainerTemplateProperty); }
+            get { return (ControlTemplate) GetValue(UnselectedContainerTemplateProperty); }
             set { SetValue(UnselectedContainerTemplateProperty, value); }
         }
 
