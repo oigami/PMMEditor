@@ -79,9 +79,16 @@
       </Setter>
     </Style>
 
-    <ControlTemplate x:Key="SelectRange">
-      <Rectangle Fill="Transparent" />
-    </ControlTemplate>
+    <!--  範囲選択時の枠  -->
+    <DataTemplate x:Key="SelectRange">
+      <Border
+        Name="RangeSelectBorder"
+        Width="{TemplateBinding Width}"
+        Height="{TemplateBinding Height}"
+        Background="Transparent"
+        BorderBrush="Red"
+        BorderThickness="1" />
+    </DataTemplate>
 
     <!--  選択時のキーフレーム  -->
     <ControlTemplate x:Key="SelectedKeyFrameTemplate">
@@ -296,17 +303,21 @@
           <Thumb
             DragCompleted="BackgroundSelectRange_OnDragCompleted"
             DragDelta="BackgroundSelectRange_OnDragDelta"
-            DragStarted="BackgroundSelectRange_OnDragStarted"
-            Template="{Binding SelectRangeTemplate, ElementName=TimelineViewN}" />
+            DragStarted="BackgroundSelectRange_OnDragStarted">
+            <Thumb.Template>
+              <ControlTemplate>
+                <Rectangle Fill="Transparent" />
+              </ControlTemplate>
+            </Thumb.Template>
+          </Thumb>
 
           <!--  範囲選択用  -->
           <Canvas>
-            <Border
-              Name="RangeSelectBorder"
+            <ContentPresenter
+              Name="SelectRangeControl"
               Width="0"
               Height="0"
-              Background="Transparent"
-              BorderBrush="Red" />
+              ContentTemplate="{Binding SelectRangeTemplate, ElementName=TimelineViewN}" />
           </Canvas>
 
           <!--  キーフレームタイムライン  -->

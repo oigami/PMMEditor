@@ -40,8 +40,8 @@ namespace PMMEditor.Views.Documents
             }
             var rect =
                 new RectangleGeometry(
-                    new Rect(new Point(Canvas.GetLeft(RangeSelectBorder), Canvas.GetTop(RangeSelectBorder)),
-                             new Size(RangeSelectBorder.Width, RangeSelectBorder.Height)));
+                    new Rect(new Point(Canvas.GetLeft(SelectRangeControl), Canvas.GetTop(SelectRangeControl)),
+                             new Size(SelectRangeControl.Width, SelectRangeControl.Height)));
             var hitTestParams = new GeometryHitTestParameters(rect);
 
             var resultCallback = new HitTestResultCallback(
@@ -67,11 +67,27 @@ namespace PMMEditor.Views.Documents
 
         private Point _rangeStartPoint;
 
+        private T FindVisualChild<T>(DependencyObject obj) where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(obj, i);
+                if (child != null && child is T)
+                    return (T)child;
+                else
+                {
+                    T childOfChild = FindVisualChild<T>(child);
+                    if (childOfChild != null)
+                        return childOfChild;
+                }
+            }
+            return null;
+        }
+
         private void BackgroundSelectRange_OnDragStarted(object sender, DragStartedEventArgs e)
         {
-            Canvas.SetLeft(RangeSelectBorder, e.HorizontalOffset);
-            Canvas.SetTop(RangeSelectBorder, e.VerticalOffset);
-            RangeSelectBorder.BorderThickness = new Thickness(1);
+            Canvas.SetLeft(SelectRangeControl, e.HorizontalOffset);
+            Canvas.SetTop(SelectRangeControl, e.VerticalOffset);
             if (Keyboard.IsKeyDown(Key.LeftShift) == false && Keyboard.IsKeyDown(Key.RightShift) == false)
             {
                 foreach (var item in GetTimeline())
@@ -85,18 +101,18 @@ namespace PMMEditor.Views.Documents
 
         private void BackgroundSelectRange_OnDragDelta(object sender, DragDeltaEventArgs e)
         {
-            RangeSelectBorder.Width = Math.Abs(e.HorizontalChange);
-            RangeSelectBorder.Height = Math.Abs(e.VerticalChange);
-            Canvas.SetLeft(RangeSelectBorder, Math.Min(e.HorizontalChange + _rangeStartPoint.X, _rangeStartPoint.X));
-            Canvas.SetTop(RangeSelectBorder, Math.Min(e.VerticalChange + _rangeStartPoint.Y, _rangeStartPoint.Y));
+            SelectRangeControl.Width = Math.Abs(e.HorizontalChange);
+            SelectRangeControl.Height = Math.Abs(e.VerticalChange);
+            Canvas.SetLeft(SelectRangeControl, Math.Min(e.HorizontalChange + _rangeStartPoint.X, _rangeStartPoint.X));
+            Canvas.SetTop(SelectRangeControl, Math.Min(e.VerticalChange + _rangeStartPoint.Y, _rangeStartPoint.Y));
 
             RangeHitTest();
         }
 
         private void BackgroundSelectRange_OnDragCompleted(object sender, DragCompletedEventArgs e)
         {
-            RangeSelectBorder.Width = 0;
-            RangeSelectBorder.Height = 0;
+            SelectRangeControl.Width = 0;
+            SelectRangeControl.Height = 0;
         }
 
         #endregion
@@ -167,15 +183,15 @@ namespace PMMEditor.Views.Documents
 
         #region SelectRange変更通知プロパティ
 
-        public ControlTemplate SelectRangeTemplate
+        public DataTemplate SelectRangeTemplate
         {
-            get { return (ControlTemplate)GetValue(SelectRangeTemplateProperty); }
+            get { return (DataTemplate)GetValue(SelectRangeTemplateProperty); }
             set { SetValue(SelectRangeTemplateProperty, value); }
         }
 
         public static readonly DependencyProperty SelectRangeTemplateProperty =
             DependencyProperty.Register("SelectRangeTemplate",
-                                        typeof(ControlTemplate),
+                                        typeof(DataTemplate),
                                         typeof(TimelineView),
                                         new FrameworkPropertyMetadata(null,
                                                                       FrameworkPropertyMetadataOptions
