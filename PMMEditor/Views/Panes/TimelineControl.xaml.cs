@@ -177,23 +177,14 @@ namespace PMMEditor.Views.Panes
                 return;
             }
 
-            var itemTemplate = ItemTemplate;
-
-            if (itemTemplate == null)
-            {
-                return;
-            }
-
             foreach (var item in ItemsSource)
             {
-                var elem = itemTemplate.LoadContent() as FrameworkElement;
                 var controlItem = new TimelineItem
                 {
+                    Style = ItemContainerStyle,
                     DataContext = item
                 };
-                controlItem.Style = ItemContainerStyle;
-                elem.Style = ItemContainerStyle;
-                controlItem.Content = elem;
+                AddVisualChild(controlItem);
                 Children.Add(controlItem);
                 controlItem.SelectionChanged += selected =>
                 {
@@ -208,7 +199,6 @@ namespace PMMEditor.Views.Panes
                     }
                     EndUpdateSelectedItems();
                 };
-                AddVisualChild(controlItem);
             }
             InvalidateMeasure();
         }
@@ -273,6 +263,8 @@ namespace PMMEditor.Views.Panes
             return x;
         }
 
+        #region 測定、配置
+
         protected override Size MeasureOverride(Size availableSize)
         {
             var indexWidth = 0.0;
@@ -308,5 +300,7 @@ namespace PMMEditor.Views.Panes
             };
             return size;
         }
+
+        #endregion
     }
 }

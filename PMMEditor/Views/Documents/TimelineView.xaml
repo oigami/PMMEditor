@@ -7,10 +7,138 @@
   xmlns:local="clr-namespace:PMMEditor.Views.Documents"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:panes="clr-namespace:PMMEditor.Views.Panes"
+  Name="TimelineViewN"
   d:DataContext="{d:DesignInstance {x:Type documents:TimelineViewModelBase}}"
   d:DesignHeight="300"
   d:DesignWidth="300"
   mc:Ignorable="d">
+  <UserControl.Resources>
+    <!--  タイムラインの背景  -->
+    <Style
+      x:Key="TimelineGridStyle"
+      TargetType="Grid">
+      <Setter Property="Background">
+        <Setter.Value>
+          <VisualBrush
+            Stretch="Fill"
+            TileMode="Tile"
+            Viewport="0,0,70,14"
+            ViewportUnits="Absolute">
+            <VisualBrush.Visual>
+              <Grid
+                Width="70"
+                Height="14"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top">
+                <Line
+                  Stroke="Blue"
+                  StrokeThickness="1"
+                  X1="7"
+                  X2="7"
+                  Y1="0"
+                  Y2="14" />
+                <Line
+                  Stroke="Gray"
+                  StrokeThickness="1"
+                  X1="21"
+                  X2="21"
+                  Y1="0"
+                  Y2="14" />
+                <Line
+                  Stroke="Gray"
+                  StrokeThickness="1"
+                  X1="35"
+                  X2="35"
+                  Y1="0"
+                  Y2="14" />
+                <Line
+                  Stroke="Gray"
+                  StrokeThickness="1"
+                  X1="49"
+                  X2="49"
+                  Y1="0"
+                  Y2="14" />
+                <Line
+                  Stroke="Gray"
+                  StrokeThickness="1"
+                  X1="63"
+                  X2="63"
+                  Y1="0"
+                  Y2="14" />
+                <Line
+                  Stroke="Orange"
+                  StrokeThickness="1"
+                  X1="0"
+                  X2="70"
+                  Y1="14"
+                  Y2="14" />
+              </Grid>
+            </VisualBrush.Visual>
+          </VisualBrush>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <ControlTemplate x:Key="SelectRange">
+      <Rectangle Fill="Transparent" />
+    </ControlTemplate>
+
+    <!--  選択時のキーフレーム  -->
+    <ControlTemplate x:Key="SelectedKeyFrameTemplate">
+      <Rectangle
+        Width="8"
+        Height="8"
+        Margin="3"
+        Fill="Red"
+        RenderTransformOrigin="0.5,0.5">
+        <Rectangle.RenderTransform>
+          <TransformGroup>
+            <RotateTransform Angle="45" />
+          </TransformGroup>
+        </Rectangle.RenderTransform>
+      </Rectangle>
+    </ControlTemplate>
+
+    <!--  未選択時のキーフレーム  -->
+    <ControlTemplate x:Key="UnselectedKeyFrameTemplate">
+      <Rectangle
+        Width="8"
+        Height="8"
+        Margin="3"
+        Fill="Black"
+        RenderTransformOrigin="0.5,0.5">
+        <Rectangle.RenderTransform>
+          <TransformGroup>
+            <RotateTransform Angle="45" />
+          </TransformGroup>
+        </Rectangle.RenderTransform>
+      </Rectangle>
+    </ControlTemplate>
+
+    <!--  デフォルトのスタイル  -->
+    <Style TargetType="{x:Type local:TimelineView}">
+      <Setter Property="TimelineGridStyle" Value="{StaticResource TimelineGridStyle}" />
+      <Setter Property="SelectRangeTemplate" Value="{StaticResource SelectRange}" />
+      <Setter Property="SelectedContainerTemplate" Value="{StaticResource SelectedKeyFrameTemplate}" />
+      <Setter Property="UnselectedContainerTemplate" Value="{StaticResource UnselectedKeyFrameTemplate}" />
+    </Style>
+
+    <!--  ここから内部のスタイル  -->
+    <Style
+      x:Key="TimelineThumbBaseStyle"
+      TargetType="{x:Type Thumb}">
+      <EventSetter
+        Event="DragStarted"
+        Handler="KeyFrameMoveStarted" />
+      <EventSetter
+        Event="DragDelta"
+        Handler="KeyFrameMoveDelta" />
+      <EventSetter
+        Event="DragCompleted"
+        Handler="KeyFrameMoveCompleted" />
+    </Style>
+  </UserControl.Resources>
+
   <Grid>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="80" />
@@ -162,78 +290,14 @@
             </Style>
           </panes:TimelineControl.ItemContainerStyle>
         </panes:TimelineControl>
-        <Grid>
-          <!--  グリッド線  -->
-          <Grid.Background>
-            <VisualBrush
-              Stretch="Fill"
-              TileMode="Tile"
-              Viewport="0,0,70,14"
-              ViewportUnits="Absolute">
-              <VisualBrush.Visual>
-                <Grid
-                  Width="70"
-                  Height="14"
-                  HorizontalAlignment="Left"
-                  VerticalAlignment="Top">
-                  <Line
-                    Stroke="Blue"
-                    StrokeThickness="1"
-                    X1="7"
-                    X2="7"
-                    Y1="0"
-                    Y2="14" />
-                  <Line
-                    Stroke="Gray"
-                    StrokeThickness="1"
-                    X1="21"
-                    X2="21"
-                    Y1="0"
-                    Y2="14" />
-                  <Line
-                    Stroke="Gray"
-                    StrokeThickness="1"
-                    X1="35"
-                    X2="35"
-                    Y1="0"
-                    Y2="14" />
-                  <Line
-                    Stroke="Gray"
-                    StrokeThickness="1"
-                    X1="49"
-                    X2="49"
-                    Y1="0"
-                    Y2="14" />
-                  <Line
-                    Stroke="Gray"
-                    StrokeThickness="1"
-                    X1="63"
-                    X2="63"
-                    Y1="0"
-                    Y2="14" />
-                  <Line
-                    Stroke="Orange"
-                    StrokeThickness="1"
-                    X1="0"
-                    X2="70"
-                    Y1="14"
-                    Y2="14" />
-                </Grid>
-              </VisualBrush.Visual>
-            </VisualBrush>
-          </Grid.Background>
+        <Grid Style="{Binding Path=TimelineGridStyle, ElementName=TimelineViewN}">
 
           <!--  ドラッグ処理用  -->
           <Thumb
             DragCompleted="BackgroundSelectRange_OnDragCompleted"
             DragDelta="BackgroundSelectRange_OnDragDelta"
-            DragStarted="BackgroundSelectRange_OnDragStarted">
-            <Thumb.Template>
-              <ControlTemplate>
-                <Rectangle Fill="Transparent" />
-              </ControlTemplate>
-            </Thumb.Template>
-          </Thumb>
+            DragStarted="BackgroundSelectRange_OnDragStarted"
+            Template="{Binding SelectRangeTemplate, ElementName=TimelineViewN}" />
 
           <!--  範囲選択用  -->
           <Canvas>
@@ -265,33 +329,33 @@
               <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                 <panes:TimelineControl
                   x:Name="TimelineControl"
-                  Height="14"
                   ItemsSource="{Binding Frame}">
                   <panes:TimelineControl.ItemContainerStyle>
-                    <Style>
-                      <Setter Property="panes:TimelineItem.Index" Value="{Binding FrameNumber}" />
-                      <Setter Property="panes:TimelineItem.IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                      <EventSetter
-                        Event="Thumb.DragStarted"
-                        Handler="KeyFrameMoveStarted" />
-                      <EventSetter
-                        Event="Thumb.DragDelta"
-                        Handler="KeyFrameMoveDelta" />
-                      <EventSetter
-                        Event="Thumb.DragCompleted"
-                        Handler="KeyFrameMoveCompleted" />
-                      <Style.Triggers>
-                        <DataTrigger
-                          Binding="{Binding IsSelected}"
-                          Value="False">
-                          <Setter Property="Thumb.Background" Value="Black" />
-                        </DataTrigger>
-                        <DataTrigger
-                          Binding="{Binding IsSelected}"
-                          Value="True">
-                          <Setter Property="Thumb.Background" Value="Red" />
-                        </DataTrigger>
-                      </Style.Triggers>
+                    <Style TargetType="panes:TimelineItem">
+                      <Setter Property="Index" Value="{Binding FrameNumber}" />
+                      <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                      <Setter Property="ContentTemplate">
+                        <Setter.Value>
+                          <DataTemplate>
+                            <Thumb>
+                              <Thumb.Style>
+                                <Style
+                                  BasedOn="{StaticResource TimelineThumbBaseStyle}"
+                                  TargetType="{x:Type Thumb}">
+                                  <Setter Property="Template" Value="{Binding UnselectedContainerTemplate, RelativeSource={RelativeSource AncestorType=local:TimelineView}}" />
+                                  <Style.Triggers>
+                                    <DataTrigger
+                                      Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=panes:TimelineItem}}"
+                                      Value="True">
+                                      <Setter Property="Template" Value="{Binding SelectedContainerTemplate, RelativeSource={RelativeSource AncestorType=local:TimelineView}}" />
+                                    </DataTrigger>
+                                  </Style.Triggers>
+                                </Style>
+                              </Thumb.Style>
+                            </Thumb>
+                          </DataTemplate>
+                        </Setter.Value>
+                      </Setter>
                     </Style>
                   </panes:TimelineControl.ItemContainerStyle>
                 </panes:TimelineControl>
@@ -303,4 +367,6 @@
     </ScrollViewer>
   </Grid>
 </UserControl>
+
+
 

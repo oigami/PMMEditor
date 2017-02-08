@@ -142,5 +142,83 @@ namespace PMMEditor.Views.Documents
         private void KeyFrameMoveCompleted(object sender, DragCompletedEventArgs e) {}
 
         #endregion
+
+        /*
+         * Style変更用プロパティ
+         */
+
+        #region Visual変更通知プロパティ
+
+        public Style TimelineGridStyle
+        {
+            get { return (Style) GetValue(TimelineGridStyleProperty); }
+            set { SetValue(TimelineGridStyleProperty, value); }
+        }
+
+        public static readonly DependencyProperty TimelineGridStyleProperty =
+            DependencyProperty.Register("TimelineGridStyle",
+                                        typeof(Style),
+                                        typeof(TimelineView),
+                                        new FrameworkPropertyMetadata(null,
+                                                                      FrameworkPropertyMetadataOptions
+                                                                          .AffectsArrange));
+
+        #endregion
+
+        #region SelectRange変更通知プロパティ
+
+        public ControlTemplate SelectRangeTemplate
+        {
+            get { return (ControlTemplate)GetValue(SelectRangeTemplateProperty); }
+            set { SetValue(SelectRangeTemplateProperty, value); }
+        }
+
+        public static readonly DependencyProperty SelectRangeTemplateProperty =
+            DependencyProperty.Register("SelectRangeTemplate",
+                                        typeof(ControlTemplate),
+                                        typeof(TimelineView),
+                                        new FrameworkPropertyMetadata(null,
+                                                                      FrameworkPropertyMetadataOptions
+                                                                          .AffectsArrange));
+
+        #endregion
+
+
+        #region SelectedContainerStyle変更通知プロパティ
+
+        public ControlTemplate SelectedContainerTemplate
+        {
+            get { return (ControlTemplate)GetValue(SelectedContainerTemplateProperty); }
+            set { SetValue(SelectedContainerTemplateProperty, value); }
+        }
+
+        public static readonly DependencyProperty SelectedContainerTemplateProperty =
+            DependencyProperty.Register("SelectedContainerTemplate",
+                                        typeof(ControlTemplate),
+                                        typeof(TimelineView),
+                                        new FrameworkPropertyMetadata(null,
+                                                                      FrameworkPropertyMetadataOptions
+                                                                          .AffectsArrange));
+
+        #endregion
+
+
+        #region SelectedContainerStyle変更通知プロパティ
+
+        public ControlTemplate UnselectedContainerTemplate
+        {
+            get { return (ControlTemplate)GetValue(UnselectedContainerTemplateProperty); }
+            set { SetValue(UnselectedContainerTemplateProperty, value); }
+        }
+
+        public static readonly DependencyProperty UnselectedContainerTemplateProperty =
+            DependencyProperty.Register("UnselectedContainerTemplate",
+                                        typeof(ControlTemplate),
+                                        typeof(TimelineView),
+                                        new FrameworkPropertyMetadata(null,
+                                                                      FrameworkPropertyMetadataOptions
+                                                                          .AffectsArrange));
+
+        #endregion
     }
 }
