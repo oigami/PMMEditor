@@ -34,14 +34,13 @@ namespace PMMEditor.Models
             public bool IsSelected { get; set; }
         }
 
-        private List<KeyFrameList<BoneKeyFrame>> _boneList;
+        private List<KeyFrameList<BoneKeyFrame>> _boneKeyList;
 
         public async Task Set(PmmStruct.ModelData modelData)
         {
             _modelData = modelData;
             var keyFrame = await Task.Run(() =>
             {
-                _boneList = new List<KeyFrameList<BoneKeyFrame>>(modelData.BoneName.Count);
                 int maxDataIndex = 0;
                 foreach (var item in modelData.BoneKeyFrames)
                 {
@@ -54,9 +53,10 @@ namespace PMMEditor.Models
                 }
                 return res;
             });
-            _boneList.AddRange(await Task.WhenAll(modelData.BoneInitFrames.Select(async x =>
+            _boneKeyList = new List<KeyFrameList<BoneKeyFrame>>(modelData.BoneName.Count);
+            _boneKeyList.AddRange(await Task.WhenAll(modelData.BoneInitFrames.Zip(modelData.BoneName, async (x, y) =>
             {
-                var list = new KeyFrameList<BoneKeyFrame>();
+                var list = new KeyFrameList<BoneKeyFrame>(y);
                 Func<sbyte[], int[]> createArray4 = i => new int[] {i[0], i[1], i[2], i[3]};
 
                 await list.CreateKeyFrame(keyFrame, x, i =>

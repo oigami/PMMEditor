@@ -10,6 +10,13 @@ namespace PMMEditor.Models
 {
     public class KeyFrameList<T> : Dictionary<int, T>
     {
+        public KeyFrameList(string name)
+        {
+            Name = name;
+        }
+
+        public string Name { get; }
+
         public bool Move(int nowIndex, int diff, bool isOverride = false)
         {
             if (nowIndex + diff < 0)
