@@ -96,6 +96,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\KeyFrameList.cs" />
+    <Compile Include="Models\MmdModelModel.cs" />
     <Compile Include="Models\Pmm.cs" />
     <Compile Include="Models\PmmWriter.cs" />
     <Compile Include="ViewModels\Documents\CameraLightAccessoryViewModel.cs" />
