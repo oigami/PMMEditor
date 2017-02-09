@@ -83,13 +83,13 @@ namespace PMMEditor.ViewModels.Documents
             int nowIndex = item.NextIndex;
             while (nowIndex != 0)
             {
-                maxFrameWidth = Math.Max(maxFrameWidth, item.FrameNumber);
-                res.Add(new TimelineFrameData {FrameNumber = item.FrameNumber});
                 item = frameList.FirstOrDefault(frame => frame.DataIndex == nowIndex);
                 if (item == null)
                 {
                     break;
                 }
+                maxFrameWidth = Math.Max(maxFrameWidth, item.FrameNumber);
+                res.Add(new TimelineFrameData {FrameNumber = item.FrameNumber});
                 nowIndex = item.NextIndex;
             }
             MaxFrameIndex = maxFrameWidth;
