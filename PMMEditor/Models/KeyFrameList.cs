@@ -17,7 +17,7 @@ namespace PMMEditor.Models
 
         public string Name { get; }
 
-        public bool Move(int nowIndex, int diff, bool isOverride = false)
+        public bool CanMove(int nowIndex, int diff, bool isOverride = false)
         {
             if (nowIndex + diff < 0)
             {
@@ -28,12 +28,18 @@ namespace PMMEditor.Models
             {
                 throw new NullReferenceException(nameof(p));
             }
-            Remove(nowIndex);
             var next = this[nowIndex + diff];
-            if (next != null && isOverride == false)
+            return next == null || isOverride;
+        }
+
+        public bool Move(int nowIndex, int diff, bool isOverride = false)
+        {
+            if (CanMove(nowIndex, diff, isOverride) == false)
             {
                 return false;
             }
+            var p = this[nowIndex];
+            Remove(nowIndex);
             this[nowIndex + diff] = p;
             return true;
         }
