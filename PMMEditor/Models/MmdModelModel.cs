@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,7 +35,27 @@ namespace PMMEditor.Models
             public bool IsSelected { get; set; }
         }
 
-        private List<KeyFrameList<BoneKeyFrame>> _boneKeyList;
+        private readonly List<KeyFrameList<BoneKeyFrame>> _boneKeyList = new List<KeyFrameList<BoneKeyFrame>>();
+
+        #region BonekeyListプロパティ
+
+        private ReadOnlyCollection<KeyFrameList<BoneKeyFrame>> _BoneKeyList;
+
+        public ReadOnlyCollection<KeyFrameList<BoneKeyFrame>> BoneKeyList
+        {
+            get { return _BoneKeyList; }
+            set
+            {
+                if (_BoneKeyList == value)
+                {
+                    return;
+                }
+                _BoneKeyList = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion
 
         public async Task Set(PmmStruct.ModelData modelData)
         {
@@ -53,7 +74,7 @@ namespace PMMEditor.Models
                 }
                 return res;
             });
-            _boneKeyList = new List<KeyFrameList<BoneKeyFrame>>(modelData.BoneName.Count);
+            _boneKeyList.Clear();
             _boneKeyList.AddRange(await Task.WhenAll(modelData.BoneInitFrames.Zip(modelData.BoneName, async (x, y) =>
             {
                 var list = new KeyFrameList<BoneKeyFrame>(y);
@@ -76,6 +97,7 @@ namespace PMMEditor.Models
                 });
                 return list;
             })));
+            BoneKeyList = new ReadOnlyCollection<KeyFrameList<BoneKeyFrame>>(_boneKeyList);
         }
     }
 }
