@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents.DocumentStructures;
 using System.Windows.Media.Media3D;
 using Livet;
 
@@ -52,8 +53,18 @@ namespace PMMEditor.Models
 
         #endregion
 
+        #region Name変更通知プロパティ
+
+        public string Name { get; private set; }
+
+        public string NameEnglish { get; private set; }
+
+        #endregion
+
         public async Task Set(PmmStruct.AccessoryData accessoryData)
         {
+            Name = accessoryData.Name;
+            NameEnglish = Name;
             _boneKeyList.Clear();
             var keyFrame = await KeyFrameList<BoneKeyFrame>.CreateKeyFrameArray(accessoryData.KeyFrames);
             _boneKeyList.Add(await Task.Run(async () =>

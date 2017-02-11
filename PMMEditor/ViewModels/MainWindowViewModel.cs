@@ -62,7 +62,7 @@ namespace PMMEditor.ViewModels
         private readonly Model _model = new Model();
         private PropertyChangedEventListener _listener;
 
-        public void Initialize()
+        public async void Initialize()
         {
             _listener = new PropertyChangedEventListener(_model)
             {
@@ -73,7 +73,7 @@ namespace PMMEditor.ViewModels
 #if DEBUG
             try
             {
-                _model.OpenPmm(File.ReadAllBytes("C:/tool/MikuMikuDance_v926x64/UserFile/サンプル（きしめんAllStar).pmm"));
+                await _model.OpenPmm(File.ReadAllBytes("C:/tool/MikuMikuDance_v926x64/UserFile/サンプル（きしめんAllStar).pmm"));
             }
             catch (Exception e)
             {
@@ -99,7 +99,7 @@ namespace PMMEditor.ViewModels
 
         public ViewModelCommand OpenPmmCommand => _OpenPmmCommand ?? (_OpenPmmCommand = new ViewModelCommand(OpenPmm));
 
-        private void OpenPmm()
+        private async void OpenPmm()
         {
             var ofd = new OpenFileDialog
             {
@@ -109,7 +109,7 @@ namespace PMMEditor.ViewModels
             };
             if (ofd.ShowDialog() == true)
             {
-                _model.OpenPmm(File.ReadAllBytes(ofd.FileName));
+                await _model.OpenPmm(File.ReadAllBytes(ofd.FileName));
             }
         }
 
@@ -174,22 +174,27 @@ namespace PMMEditor.ViewModels
             ?? (_OpenCameraLightAccessoryTimelineCommand =
                 new ViewModelCommand(OpenCameraLightAccessoryTimeline));
 
-        public void OpenCameraLightAccessoryTimeline()
+        public async void OpenCameraLightAccessoryTimeline()
         {
-            AddDocument(() => new CameraLightAccessoryViewModel(_model), CameraLightAccessoryViewModel.GetContentId());
+            await AddDocument(async () =>
+            {
+                var res = new CameraLightAccessoryViewModel(_model);
+                await res.Initialize();
+                return res;
+            }, CameraLightAccessoryViewModel.GetContentId());
         }
 
         #endregion
 
         #region AvalonDock
 
-        private T AddDocument<T>(Func<T> createFunc, string contentId) where T : DocumentViewModelBase
+        private async Task<T> AddDocument<T>(Func<Task<T>> createFunc, string contentId) where T : DocumentViewModelBase
         {
             var item =
                 DockingDocumentViewModels.FirstOrDefault(d => d.ContentId == contentId);
             if (item == null)
             {
-                item = createFunc();
+                item = await createFunc();
                 DockingDocumentViewModels.Add(item);
             }
 

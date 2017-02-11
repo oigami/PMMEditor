@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -20,9 +21,11 @@ namespace PMMEditor.Models
 
         #region ReadWriteFile
 
-        public void OpenPmm(byte[] pmmData)
+        public async Task OpenPmm(byte[] pmmData)
         {
-            PmmStruct = Pmm.Read(pmmData);
+            PmmStruct = await Pmm.ReadAsync(pmmData);
+            MmdAccessoryList = new MmdAccessoryList();
+            await MmdAccessoryList.Set(PmmStruct.AccessoryDatas);
         }
 
         public async Task SavePmm(string filename)
@@ -187,6 +190,26 @@ namespace PMMEditor.Models
                     return;
                 }
                 _PmmStruct = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion
+
+        #region MmdAccessoryList変更通知プロパティ
+
+        private MmdAccessoryList _mmdAccessoryList;
+
+        public MmdAccessoryList MmdAccessoryList
+        {
+            get { return _mmdAccessoryList; }
+            set
+            {
+                if (_mmdAccessoryList == value)
+                {
+                    return;
+                }
+                _mmdAccessoryList = value;
                 RaisePropertyChanged();
             }
         }
