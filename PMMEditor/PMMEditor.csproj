@@ -100,6 +100,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\KeyFrameList.cs" />
+    <Compile Include="Models\MmdModelList.cs" />
     <Compile Include="Models\MmdModelModel.cs" />
     <Compile Include="Models\Pmm.cs" />
     <Compile Include="Models\PmmWriter.cs" />

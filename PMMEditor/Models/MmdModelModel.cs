@@ -57,9 +57,16 @@ namespace PMMEditor.Models
 
         #endregion
 
+        public string Name { get; private set; }
+
+        public string NameEnglish { get; private set; }
+
         public async Task Set(PmmStruct.ModelData modelData)
         {
             _modelData = modelData;
+            Name = modelData.Name;
+            NameEnglish = modelData.NameEn;
+
             var keyFrame = await Task.Run(() =>
             {
                 int maxDataIndex = 0;
