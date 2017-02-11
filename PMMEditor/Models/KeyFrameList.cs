@@ -46,8 +46,7 @@ namespace PMMEditor.Models
 
         public async Task CreateKeyFrame<TIn>(TIn[] frame,
                                               TIn initFrame,
-                                              Func<TIn, T>
-                                                  createFunc) where TIn : PmmStruct.IKeyFrame
+                                              Func<TIn, T> createFunc) where TIn : PmmStruct.IKeyFrame
         {
             if (initFrame == null)
             {
@@ -61,6 +60,26 @@ namespace PMMEditor.Models
                     Add(frame[next].FrameNumber, createFunc(initFrame));
                     next = frame[next].NextIndex;
                 }
+            });
+        }
+
+
+        public static async Task<TKeyFrame[]> CreateKeyFrameArray<TKeyFrame>(List<TKeyFrame> boneKeyFrames)
+            where TKeyFrame : PmmStruct.IKeyFrame
+        {
+            return await Task.Run(() =>
+            {
+                int maxDataIndex = 0;
+                foreach (var item in boneKeyFrames)
+                {
+                    maxDataIndex = Math.Max(maxDataIndex, item.DataIndex);
+                }
+                var res = new TKeyFrame[maxDataIndex];
+                foreach (var item in boneKeyFrames)
+                {
+                    res[item.DataIndex] = item;
+                }
+                return res;
             });
         }
     }

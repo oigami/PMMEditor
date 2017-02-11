@@ -66,21 +66,7 @@ namespace PMMEditor.Models
             _modelData = modelData;
             Name = modelData.Name;
             NameEnglish = modelData.NameEn;
-
-            var keyFrame = await Task.Run(() =>
-            {
-                int maxDataIndex = 0;
-                foreach (var item in modelData.BoneKeyFrames)
-                {
-                    maxDataIndex = Math.Max(maxDataIndex, item.DataIndex);
-                }
-                var res = new PmmStruct.ModelData.BoneInitFrame[maxDataIndex];
-                foreach (var item in modelData.BoneKeyFrames)
-                {
-                    res[item.DataIndex] = item;
-                }
-                return res;
-            });
+            var keyFrame = await KeyFrameList<BoneKeyFrame>.CreateKeyFrameArray(modelData.BoneKeyFrames);
             _boneKeyList.Clear();
             _boneKeyList.AddRange(await Task.WhenAll(modelData.BoneInitFrames.Zip(modelData.BoneName, async (x, y) =>
             {
