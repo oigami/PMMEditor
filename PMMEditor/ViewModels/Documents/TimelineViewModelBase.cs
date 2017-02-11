@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Documents;
+using System.Windows.Input;
 using Livet;
 using PMMEditor.Models;
+using Livet.Commands;
+using PMMEditor.Views.Documents;
 
 namespace PMMEditor.ViewModels.Documents
 {
@@ -188,6 +191,16 @@ namespace PMMEditor.ViewModels.Documents
                 RaisePropertyChanged();
             }
         }
+
+        #region KeyFrameMoveCommand
+
+        public abstract ListenerCommand<KeyFrameMoveEventArgs> KeyFrameMoveStartedCommand { get; protected set; }
+
+        public abstract ListenerCommand<KeyFrameMoveEventArgs> KeyFrameMoveDeltaCommand { get; protected set; }
+
+        public abstract ListenerCommand<KeyFrameMoveEventArgs> KeyFrameMoveCompletedCommand { get; protected set; }
+
+        #endregion
 
         #endregion
     }

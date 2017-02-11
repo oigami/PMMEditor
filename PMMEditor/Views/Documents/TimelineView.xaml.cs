@@ -1,5 +1,6 @@
 ﻿using Livet;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -20,6 +21,24 @@ using PMMEditor.Views.Panes;
 
 namespace PMMEditor.Views.Documents
 {
+    public class KeyFrameMoveEventArgs
+    {
+        public KeyFrameMoveEventArgs(IEnumerable<TimelineControl> controls, IEnumerable<IEnumerable<TimelineItem>> selectedItems,
+                                     int diffFrame)
+        {
+            Controls = controls;
+            SelectedItems = selectedItems;
+            DiffFrame = diffFrame;
+        }
+
+        public int DiffFrame { get; }
+
+        public IEnumerable<TimelineControl> Controls { get; }
+
+        public IEnumerable<IEnumerable<TimelineItem>> SelectedItems { get; }
+    }
+
+
     /// <summary>
     /// TimelineView.xaml の相互作用ロジック
     /// </summary>
@@ -127,13 +146,29 @@ namespace PMMEditor.Views.Documents
 
         #region KeyFrameMove
 
-        private void KeyFrameMoveStarted(object sender, DragStartedEventArgs e) {}
+        private KeyFrameMoveEventArgs CreateKeyMoveEventArgs(int diff)
+        {
+            IEnumerable<TimelineControl> timeline = GetTimeline();
+            IEnumerable<IEnumerable<TimelineItem>> selectedItems =
+                timeline.Select(i =>i.SelectedItems.Cast<TimelineItem>());
+            return new KeyFrameMoveEventArgs(timeline, selectedItems, diff);
+        }
 
-        private void KeyFrameMoveDelta(object sender, DragDeltaEventArgs e)
+        private void OnKeyFrameMoveStarted(object sender, DragStartedEventArgs e)
+        {
+            KeyFrameMoveStartedCommand?.Execute(CreateKeyMoveEventArgs(0));
+        }
+
+        private void OnKeyFrameMoveDelta(object sender, DragDeltaEventArgs e)
         {
             int diff = (int) e.HorizontalChange / 14;
             if (diff == 0)
             {
+                return;
+            }
+            if (KeyFrameMoveDeltaCommand != null)
+            {
+                KeyFrameMoveDeltaCommand.Execute(CreateKeyMoveEventArgs(diff));
                 return;
             }
             // 負のときはキーフレームが負にならないように事前に確認する
@@ -153,9 +188,49 @@ namespace PMMEditor.Views.Documents
             }
         }
 
-        private void KeyFrameMoveCompleted(object sender, DragCompletedEventArgs e) {}
+        private void OnKeyFrameMoveCompleted(object sender, DragCompletedEventArgs e)
+        {
+            KeyFrameMoveCompletedCommand?.Execute(CreateKeyMoveEventArgs(0));
+        }
 
         #endregion
+
+        public ICommand KeyFrameMoveStartedCommand
+        {
+            get { return (ICommand) GetValue(KeyFrameMoveStartedCommandProperty); }
+            set { SetValue(KeyFrameMoveStartedCommandProperty, value); }
+        }
+
+        public static readonly DependencyProperty KeyFrameMoveStartedCommandProperty =
+            DependencyProperty.Register(nameof(KeyFrameMoveStartedCommand),
+                                        typeof(ICommand),
+                                        typeof(TimelineView),
+                                        new PropertyMetadata(null));
+
+        public ICommand KeyFrameMoveDeltaCommand
+        {
+            get { return (ICommand) GetValue(KeyFrameMoveDeltaCommandProperty); }
+            set { SetValue(KeyFrameMoveDeltaCommandProperty, value); }
+        }
+
+        public static readonly DependencyProperty KeyFrameMoveDeltaCommandProperty =
+            DependencyProperty.Register(nameof(KeyFrameMoveDeltaCommand),
+                                        typeof(ICommand),
+                                        typeof(TimelineView),
+                                        new PropertyMetadata(null));
+
+        public ICommand KeyFrameMoveCompletedCommand
+        {
+            get { return (ICommand) GetValue(KeyFrameMoveCompletedCommandProperty); }
+            set { SetValue(KeyFrameMoveCompletedCommandProperty, value); }
+        }
+
+        public static readonly DependencyProperty KeyFrameMoveCompletedCommandProperty =
+            DependencyProperty.Register(nameof(KeyFrameMoveCompletedCommand),
+                                        typeof(ICommand),
+                                        typeof(TimelineView),
+                                        new PropertyMetadata(null));
+
 
         /*
          * Style変更用プロパティ

@@ -11,6 +11,7 @@ using Livet.Messaging.IO;
 using Livet.EventListeners;
 using Livet.Messaging.Windows;
 using PMMEditor.Models;
+using PMMEditor.Views.Documents;
 
 namespace PMMEditor.ViewModels.Documents
 {
@@ -65,5 +66,11 @@ namespace PMMEditor.ViewModels.Documents
         public override string Title { get; } = GetTitle();
 
         public override string ContentId { get; } = typeof(CameraLightAccessoryViewModel).FullName + GetTitle();
+
+        public override ListenerCommand<KeyFrameMoveEventArgs> KeyFrameMoveStartedCommand { get; protected set; }
+
+        public override ListenerCommand<KeyFrameMoveEventArgs> KeyFrameMoveDeltaCommand { get; protected set; }
+
+        public override ListenerCommand<KeyFrameMoveEventArgs> KeyFrameMoveCompletedCommand { get; protected set; }
     }
 }

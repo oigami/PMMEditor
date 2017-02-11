@@ -128,6 +128,9 @@
       <Setter Property="SelectRangeTemplate" Value="{StaticResource SelectRange}" />
       <Setter Property="SelectedContainerTemplate" Value="{StaticResource SelectedKeyFrameTemplate}" />
       <Setter Property="UnselectedContainerTemplate" Value="{StaticResource UnselectedKeyFrameTemplate}" />
+      <Setter Property="KeyFrameMoveStartedCommand" Value="{Binding KeyFrameMoveStartedCommand}" />
+      <Setter Property="KeyFrameMoveDeltaCommand" Value="{Binding KeyFrameMoveDeltaCommand}" />
+      <Setter Property="KeyFrameMoveCompletedCommand" Value="{Binding KeyFrameMoveCompletedCommand}" />
     </Style>
 
     <!--  ここから内部のスタイル  -->
@@ -136,13 +139,13 @@
       TargetType="{x:Type Thumb}">
       <EventSetter
         Event="DragStarted"
-        Handler="KeyFrameMoveStarted" />
+        Handler="OnKeyFrameMoveStarted" />
       <EventSetter
         Event="DragDelta"
-        Handler="KeyFrameMoveDelta" />
+        Handler="OnKeyFrameMoveDelta" />
       <EventSetter
         Event="DragCompleted"
-        Handler="KeyFrameMoveCompleted" />
+        Handler="OnKeyFrameMoveCompleted" />
     </Style>
   </UserControl.Resources>
 
