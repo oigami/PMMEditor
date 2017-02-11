@@ -70,7 +70,7 @@ namespace PMMEditor.Models
                         ParentBoneIndex = i.ParentBoneIndex,
                         ParentModelIndex = i.ParentModelIndex,
                         Scale = i.Scale,
-                        Translation = new Point3D(i.Translation[0], i.Translation[1], i.Translation[3]),
+                        Translation = new Point3D(i.Translation[0], i.Translation[1], i.Translation[2]),
                         Transparency = i.Transparency
                     };
                     return res;

@@ -54,10 +54,11 @@ namespace PMMEditor.Models
             }
             await Task.Run(() =>
             {
+                Add(initFrame.FrameNumber, createFunc(initFrame));
                 var next = initFrame.NextIndex;
                 while (next != 0)
                 {
-                    Add(frame[next].FrameNumber, createFunc(initFrame));
+                    Add(frame[next].FrameNumber, createFunc(frame[next]));
                     next = frame[next].NextIndex;
                 }
             });
@@ -74,7 +75,7 @@ namespace PMMEditor.Models
                 {
                     maxDataIndex = Math.Max(maxDataIndex, item.DataIndex);
                 }
-                var res = new TKeyFrame[maxDataIndex];
+                var res = new TKeyFrame[maxDataIndex + 1];
                 foreach (var item in boneKeyFrames)
                 {
                     res[item.DataIndex] = item;

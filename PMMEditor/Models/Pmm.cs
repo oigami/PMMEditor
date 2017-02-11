@@ -20,12 +20,12 @@ namespace PMMEditor.Models
         }
 
 
-        public static async Task<PmmStruct> ReadAsync(string path)
+        public static async Task<PmmStruct> ReadFileAsync(string path)
         {
             return await Task.Run(() => ReadFile(path));
         }
 
-        public static async Task<PmmStruct> ReadFileAsync(byte[] data)
+        public static async Task<PmmStruct> ReadAsync(byte[] data)
         {
             return await Task.Run(() => Read(data));
         }
