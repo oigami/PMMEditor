@@ -20,7 +20,25 @@ namespace PMMEditor.ViewModels.Documents
             IsSelected = isSelected;
         }
 
-        public int FrameNumber { get; set; }
+        #region FrameNumber変更通知プロパティ
+
+        private int _FrameNumber;
+
+        public int FrameNumber
+        {
+            get { return _FrameNumber; }
+            set
+            {
+                if (_FrameNumber == value)
+                {
+                    return;
+                }
+                _FrameNumber = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion
 
         private bool _IsSelected;
 

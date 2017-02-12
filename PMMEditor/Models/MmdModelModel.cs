@@ -16,7 +16,7 @@ namespace PMMEditor.Models
          * NotificationObjectはプロパティ変更通知の仕組みを実装したオブジェクトです。
          */
 
-        public class BoneKeyFrame
+        public class BoneKeyFrame : KeyFrameBase
         {
             public Point3D Position { get; set; }
 

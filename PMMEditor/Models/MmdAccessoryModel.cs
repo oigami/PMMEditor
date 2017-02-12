@@ -12,7 +12,7 @@ namespace PMMEditor.Models
 {
     public class MmdAccessoryModel : NotificationObject
     {
-        public class BoneKeyFrame
+        public class BoneKeyFrame : KeyFrameBase
         {
             public Point3D Translation { get; set; }
 

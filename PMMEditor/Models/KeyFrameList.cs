@@ -8,7 +8,14 @@ using Livet;
 
 namespace PMMEditor.Models
 {
-    public class KeyFrameList<T> : Dictionary<int, T>
+    public delegate void MoveChangedHandler(int index, int diff);
+
+    public class KeyFrameBase
+    {
+        public MoveChangedHandler MoveChanged;
+    }
+
+    public class KeyFrameList<T> : Dictionary<int, T> where T : KeyFrameBase
     {
         public KeyFrameList(string name)
         {
@@ -30,6 +37,11 @@ namespace PMMEditor.Models
             return !ContainsKey(nowIndex + diff) || isOverride;
         }
 
+        public bool CanMoveAll(IEnumerable<int> nowIndex, int diff, bool isOverride = false)
+        {
+            return nowIndex.Any() == false || nowIndex.All(i => CanMove(i, diff, isOverride));
+        }
+
         public bool Move(int nowIndex, int diff, bool isOverride = false)
         {
             if (CanMove(nowIndex, diff, isOverride) == false)
@@ -39,8 +51,20 @@ namespace PMMEditor.Models
             var p = this[nowIndex];
             Remove(nowIndex);
             this[nowIndex + diff] = p;
+            p.MoveChanged(nowIndex, diff);
+            MoveChanged?.Invoke(nowIndex, diff);
             return true;
         }
+
+        public void MoveAll(IEnumerable<int> nowIndex, int diff, bool isOverride = false)
+        {
+            foreach (var i in nowIndex)
+            {
+                Move(i, diff, isOverride);
+            }
+        }
+
+        public event MoveChangedHandler MoveChanged;
 
         public async Task CreateKeyFrame<TIn>(TIn[] frame,
                                               TIn initFrame,
