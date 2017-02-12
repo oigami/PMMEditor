@@ -23,13 +23,11 @@ namespace PMMEditor.Models
             {
                 return false;
             }
-            var p = this[nowIndex];
-            if (p == null)
+            if (ContainsKey(nowIndex) == false)
             {
-                throw new NullReferenceException(nameof(p));
+                return false;
             }
-            var next = this[nowIndex + diff];
-            return next == null || isOverride;
+            return !ContainsKey(nowIndex + diff) || isOverride;
         }
 
         public bool Move(int nowIndex, int diff, bool isOverride = false)
