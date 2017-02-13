@@ -58,6 +58,7 @@ namespace PMMEditor.ViewModels.Documents
                         {
                             var res = new TimelineFrameData(frame.Key, frame.Value.IsSelected);
                             frame.Value.MoveChanged += (index, diff) => { res.FrameNumber = index + diff; };
+                            MaxFrameIndex = Math.Max(res.FrameNumber, MaxFrameIndex);
                             return res;
                         }).ToList()
                 }));

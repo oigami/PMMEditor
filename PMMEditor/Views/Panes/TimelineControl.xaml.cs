@@ -140,7 +140,7 @@ namespace PMMEditor.Views.Panes
 
         #endregion
 
-        #region MaxIndex変更通知プロパティ
+        #region Alignment変更通知プロパティ
 
         public AlignmentX Alignment
         {
