@@ -116,9 +116,11 @@
     <Compile Include="ViewModels\Panes\HeaderViewModel.cs" />
     <Compile Include="ViewModels\Panes\PaneViewModelBase.cs" />
     <Compile Include="ViewModels\Panes\TimelineTranslateViewModel.cs" />
+    <Compile Include="Views\Behaviors\ScrollSyncronizingBehavior.cs" />
     <Compile Include="Views\Documents\TimelineView.xaml.cs">
       <DependentUpon>TimelineView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\MyScrollViewer.cs" />
     <Compile Include="Views\Panes\AccessoryView.xaml.cs">
       <DependentUpon>AccessoryView.xaml</DependentUpon>
     </Compile>
