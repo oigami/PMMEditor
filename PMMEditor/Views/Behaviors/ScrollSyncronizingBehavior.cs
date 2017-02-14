@@ -14,9 +14,10 @@ namespace PMMEditor.Views.Behaviors
      * プログラミングな日々: WPFのScrollViewerやScrollBarのスクロール位置を同期させる
      * https://days-of-programming.blogspot.jp/2015/01/wpfscrollviewerscrollbar.html
      */
+
     public class ScrollSyncronizingBehavior : Behavior<Control>
     {
-        static Dictionary<string, List<Control>> SyncGroups = new Dictionary<string, List<Control>>();
+        private static readonly Dictionary<string, List<Control>> SyncGroups = new Dictionary<string, List<Control>>();
 
         protected override void OnAttached()
         {
@@ -37,90 +38,117 @@ namespace PMMEditor.Views.Behaviors
         /// </summary>
         public string ScrollGroup
         {
-            get { return (string)this.GetValue(ScrollGroupProperty); }
-            set { this.SetValue(ScrollGroupProperty, value); }
+            get { return (string) GetValue(ScrollGroupProperty); }
+            set { SetValue(ScrollGroupProperty, value); }
         }
-        private static readonly DependencyProperty ScrollGroupProperty = DependencyProperty.Register(
-            "ScrollGroup", typeof(string), typeof(ScrollSyncronizingBehavior), new FrameworkPropertyMetadata((d, e) => {
-                ScrollSyncronizingBehavior me = (ScrollSyncronizingBehavior)d;
 
-                me.RemoveSyncGroup((string)e.OldValue);
-                me.AddSyncGroup((string)e.NewValue);
-            })
-        );
+        private static readonly DependencyProperty ScrollGroupProperty
+            = DependencyProperty.Register("ScrollGroup",
+                                          typeof(string),
+                                          typeof(ScrollSyncronizingBehavior),
+                                          new FrameworkPropertyMetadata((d, e) =>
+                                          {
+                                              var me = (ScrollSyncronizingBehavior) d;
+
+                                              me.RemoveSyncGroup((string) e.OldValue);
+                                              me.AddSyncGroup((string) e.NewValue);
+                                          })
+                );
 
         /// <summary>
         /// スクロールの向き
         /// </summary>
         public Orientation Orientation
         {
-            get { return (Orientation)this.GetValue(OrientationProperty); }
-            set { this.SetValue(OrientationProperty, value); }
+            get { return (Orientation) GetValue(OrientationProperty); }
+            set { SetValue(OrientationProperty, value); }
         }
-        private static readonly DependencyProperty OrientationProperty = DependencyProperty.Register(
-            "Orientation", typeof(Orientation), typeof(ScrollSyncronizingBehavior), new FrameworkPropertyMetadata()
-        );
+
+        private static readonly DependencyProperty OrientationProperty
+            = DependencyProperty.Register("Orientation",
+                                          typeof(Orientation),
+                                          typeof(ScrollSyncronizingBehavior),
+                                          new FrameworkPropertyMetadata()
+                );
 
         /// <summary>
         /// 同期グループに追加するメソッド
         /// </summary>
-        /// <param name="GroupName">グループ名</param>
-        /// <returns>成功したかどうか</returns>
-        bool AddSyncGroup(string GroupName)
+        /// <param name = "groupName"> グループ名 </param>
+        /// <returns> 成功したかどうか </returns>
+        private bool AddSyncGroup(string groupName)
         {
-            if (!string.IsNullOrEmpty(ScrollGroup) && (this.AssociatedObject is ScrollViewer || this.AssociatedObject is ScrollBar))
+            if (string.IsNullOrEmpty(ScrollGroup))
             {
-                if (!SyncGroups.ContainsKey(GroupName))
-                    SyncGroups.Add(GroupName, new List<Control>());
-                SyncGroups[GroupName].Add(this.AssociatedObject);
+                return false;
+            }
+            if (SyncGroups.ContainsKey(groupName) == false)
+            {
+                SyncGroups.Add(groupName, new List<Control>());
+            }
+            SyncGroups[groupName].Add(AssociatedObject);
 
-                ScrollViewer sv = this.AssociatedObject as ScrollViewer;
-                ScrollBar sb = this.AssociatedObject as ScrollBar;
+            var sv = AssociatedObject as ScrollViewer;
+            var sb = AssociatedObject as ScrollBar;
 
-                if (sv != null)
-                    sv.ScrollChanged += ScrollViewerScrolled;
-                if (sb != null)
-                    sb.ValueChanged += ScrollBarScrolled;
-
-                return true;
+            if (sv != null)
+            {
+                sv.ScrollChanged += ScrollViewerScrolled;
+            }
+            else if (sb != null)
+            {
+                sb.ValueChanged += ScrollBarScrolled;
             }
             else
+            {
                 return false;
+            }
+
+            return true;
         }
 
         /// <summary>
         /// 同期グループから削除するメソッド
         /// </summary>
-        /// <param name="GroupName">グループ名</param>
-        /// <returns>成功したかどうか</returns>
-        bool RemoveSyncGroup(string GroupName)
+        /// <param name = "groupName"> グループ名 </param>
+        /// <returns> 成功したかどうか </returns>
+        private bool RemoveSyncGroup(string groupName)
         {
-            if (!string.IsNullOrEmpty(ScrollGroup) && (this.AssociatedObject is ScrollViewer || this.AssociatedObject is ScrollBar))
+            if (string.IsNullOrEmpty(ScrollGroup))
             {
-                ScrollViewer sv = this.AssociatedObject as ScrollViewer;
-                ScrollBar sb = this.AssociatedObject as ScrollBar;
+                return false;
+            }
+            var sv = AssociatedObject as ScrollViewer;
+            var sb = AssociatedObject as ScrollBar;
 
-                if (sv != null)
-                    sv.ScrollChanged -= ScrollViewerScrolled;
-                if (sb != null)
-                    sb.ValueChanged -= ScrollBarScrolled;
-
-                SyncGroups[GroupName].Remove(this.AssociatedObject);
-                if (SyncGroups[GroupName].Count == 0)
-                    SyncGroups.Remove(GroupName);
-
-                return true;
+            if (sv != null)
+            {
+                sv.ScrollChanged -= ScrollViewerScrolled;
+            }
+            else if (sb != null)
+            {
+                sb.ValueChanged -= ScrollBarScrolled;
             }
             else
+            {
                 return false;
+            }
+
+            SyncGroups[groupName].Remove(AssociatedObject);
+            if (SyncGroups[groupName].Count == 0)
+            {
+                SyncGroups.Remove(groupName);
+            }
+
+            return true;
         }
 
         /// <summary>
         /// ScrollViewerの場合の変更通知イベントハンドラ
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void ScrollViewerScrolled(object sender, ScrollChangedEventArgs e)
+        /// <param name = "sender"> </param>
+        /// <param name = "e"> </param>
+        private void ScrollViewerScrolled(object sender, ScrollChangedEventArgs e)
         {
             UpdateScrollValue(sender, Orientation == Orientation.Horizontal ? e.HorizontalOffset : e.VerticalOffset);
         }
@@ -128,9 +156,9 @@ namespace PMMEditor.Views.Behaviors
         /// <summary>
         /// ScrollBarの場合の変更通知イベントハンドラ
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void ScrollBarScrolled(object sender, RoutedPropertyChangedEventArgs<double> e)
+        /// <param name = "sender"> </param>
+        /// <param name = "e"> </param>
+        private void ScrollBarScrolled(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             UpdateScrollValue(sender, e.NewValue);
         }
@@ -138,20 +166,26 @@ namespace PMMEditor.Views.Behaviors
         /// <summary>
         /// スクロール値を設定するメソッド
         /// </summary>
-        /// <param name="sender">スクロール値を更新してきたコントロール</param>
-        /// <param name="NewValue">新しいスクロール値</param>
-        void UpdateScrollValue(object sender, double NewValue)
+        /// <param name = "sender"> スクロール値を更新してきたコントロール </param>
+        /// <param name = "newValue"> 新しいスクロール値 </param>
+        private void UpdateScrollValue(object sender, double newValue)
         {
-            IEnumerable<Control> others = SyncGroups[ScrollGroup].Where(p => p != sender);
+            IEnumerable<Control> others = SyncGroups[ScrollGroup].Where(p => !Equals(p, sender));
 
-            foreach (ScrollBar sb in others.OfType<ScrollBar>().Where(p => p.Orientation == Orientation))
-                sb.Value = NewValue;
-            foreach (ScrollViewer sv in others.OfType<ScrollViewer>())
+            foreach (var sb in others.OfType<ScrollBar>().Where(p => p.Orientation == Orientation))
+            {
+                sb.Value = newValue;
+            }
+            foreach (var sv in others.OfType<ScrollViewer>())
             {
                 if (Orientation == Orientation.Horizontal)
-                    sv.ScrollToHorizontalOffset(NewValue);
+                {
+                    sv.ScrollToHorizontalOffset(newValue);
+                }
                 else
-                    sv.ScrollToVerticalOffset(NewValue);
+                {
+                    sv.ScrollToVerticalOffset(newValue);
+                }
             }
         }
     }
