@@ -104,11 +104,6 @@ namespace PMMEditor.Views
 
         #endregion
 
-        protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
-        {
-            return null;
-        }
-        
         #region 測定、配置
 
         private double GetPosition(double x, double indexWidth, UIElement child)

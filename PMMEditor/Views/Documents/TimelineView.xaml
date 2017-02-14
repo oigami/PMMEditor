@@ -432,6 +432,7 @@
                 <panes:TimelineControl.ItemsPanel>
                   <ItemsPanelTemplate>
                     <views:TimelinePanel
+                      IsHitTestVisible="False"
                       Alignment="Center"
                       IndexWidth="14"
                       MaxIndex="{Binding DataContext.MaxFrameIndex, RelativeSource={RelativeSource AncestorType=local:TimelineView}}"
