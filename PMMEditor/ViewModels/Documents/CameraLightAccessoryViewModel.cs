@@ -14,6 +14,8 @@ using Livet.EventListeners;
 using Livet.Messaging.Windows;
 using PMMEditor.Models;
 using PMMEditor.Views.Documents;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 
 namespace PMMEditor.ViewModels.Documents
 {
@@ -25,21 +27,14 @@ namespace PMMEditor.ViewModels.Documents
                 args =>
                 {
                     var accessoryList = _model.MmdAccessoryList.List;
-                    foreach (var item in args.SelectedItems.Select((d, i) => new {d, i}))
+                    if (accessoryList.All(item => item.BoneKeyList[0].CanSelectedFrameMove(args.DiffFrame))) {
+                        return;
+                    }
+                    foreach (var item in accessoryList)
                     {
-                        bool isOk = accessoryList[item.i].BoneKeyList[0].CanMoveAll(item.d.Select(i => i.Index),
-                                                                                    args.DiffFrame);
-                        if (isOk == false)
-                        {
-                            return;
-                        }
+                        item.BoneKeyList[0].SelectedFrameMove(args.DiffFrame);
                     }
 
-                    foreach (var item in args.SelectedItems.Select((d, i) => new {d, i}))
-                    {
-                        accessoryList[item.i].BoneKeyList[0].MoveAll(item.d.Select(i => i.Index),
-                                                                     args.DiffFrame);
-                    }
                 });
         }
 
@@ -57,6 +52,8 @@ namespace PMMEditor.ViewModels.Documents
                         item.BoneKeyList[0].Select(frame =>
                         {
                             var res = new TimelineFrameData(frame.Key, frame.Value.IsSelected);
+                            res.ToReactivePropertyAsSynchronized(data => data.IsSelected)
+                               .Subscribe(isSelected => item.BoneKeyList[0].Select(res.FrameNumber, isSelected));
                             frame.Value.MoveChanged += (index, diff) => { res.FrameNumber = index + diff; };
                             MaxFrameIndex = Math.Max(res.FrameNumber, MaxFrameIndex);
                             return res;
