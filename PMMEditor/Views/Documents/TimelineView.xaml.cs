@@ -23,7 +23,8 @@ namespace PMMEditor.Views.Documents
 {
     public class KeyFrameMoveEventArgs
     {
-        public KeyFrameMoveEventArgs(IEnumerable<TimelineControl> controls, IEnumerable<IEnumerable<TimelineItem>> selectedItems,
+        public KeyFrameMoveEventArgs(IEnumerable<TimelineControl> controls,
+                                     IEnumerable<IEnumerable<TimelineItem>> selectedItems,
                                      int diffFrame)
         {
             Controls = controls;
@@ -124,6 +125,10 @@ namespace PMMEditor.Views.Documents
             foreach (var o in TimelineViewer.Items)
             {
                 var c = (ContentPresenter) TimelineViewer.ItemContainerGenerator.ContainerFromItem(o);
+                if (c == null)
+                {
+                    yield break;
+                }
                 yield return c.ContentTemplate.FindName("TimelineControl", c) as TimelineControl;
             }
         }
@@ -150,7 +155,7 @@ namespace PMMEditor.Views.Documents
         {
             IEnumerable<TimelineControl> timeline = GetTimeline();
             IEnumerable<IEnumerable<TimelineItem>> selectedItems =
-                timeline.Select(i =>i.SelectedItems.Cast<TimelineItem>());
+                timeline.Select(i => i.SelectedItems.Cast<TimelineItem>());
             return new KeyFrameMoveEventArgs(timeline, selectedItems, diff);
         }
 
@@ -238,14 +243,32 @@ namespace PMMEditor.Views.Documents
 
         #region Visual変更通知プロパティ
 
-        public Style TimelineGridStyle
+        public Style TimelinePanelStyle
         {
-            get { return (Style) GetValue(TimelineGridStyleProperty); }
-            set { SetValue(TimelineGridStyleProperty, value); }
+            get { return (Style) GetValue(TimelinePanelStyleProperty); }
+            set { SetValue(TimelinePanelStyleProperty, value); }
         }
 
-        public static readonly DependencyProperty TimelineGridStyleProperty =
-            DependencyProperty.Register("TimelineGridStyle",
+        public static readonly DependencyProperty TimelinePanelStyleProperty =
+            DependencyProperty.Register(nameof(TimelinePanelStyle),
+                                        typeof(Style),
+                                        typeof(TimelineView),
+                                        new FrameworkPropertyMetadata(null,
+                                                                      FrameworkPropertyMetadataOptions
+                                                                          .AffectsArrange));
+
+        #endregion
+
+        #region Visual変更通知プロパティ
+
+        public Style AllGridStyle
+        {
+            get { return (Style) GetValue(AllGridStyleProperty); }
+            set { SetValue(AllGridStyleProperty, value); }
+        }
+
+        public static readonly DependencyProperty AllGridStyleProperty =
+            DependencyProperty.Register(nameof(AllGridStyle),
                                         typeof(Style),
                                         typeof(TimelineView),
                                         new FrameworkPropertyMetadata(null,
@@ -298,6 +321,7 @@ namespace PMMEditor.Views.Documents
             set { SetValue(UnselectedContainerTemplateProperty, value); }
         }
 
+
         public static readonly DependencyProperty UnselectedContainerTemplateProperty =
             DependencyProperty.Register("UnselectedContainerTemplate",
                                         typeof(ControlTemplate),
@@ -307,5 +331,10 @@ namespace PMMEditor.Views.Documents
                                                                           .AffectsArrange));
 
         #endregion
+
+        private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = false;
+        }
     }
 }

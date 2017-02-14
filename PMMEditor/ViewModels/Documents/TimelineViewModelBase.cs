@@ -157,6 +157,7 @@ namespace PMMEditor.ViewModels.Documents
                 }
                 _maxFrameIndex = value;
                 GridFrameNumberList.Resize(MaxFrameIndex);
+                RaisePropertyChanged();
                 RaisePropertyChanged(nameof(GridFrameNumberList));
             }
         }
