@@ -27,7 +27,8 @@ namespace PMMEditor.ViewModels.Documents
                 args =>
                 {
                     var accessoryList = _model.MmdAccessoryList.List;
-                    if (accessoryList.All(item => item.BoneKeyList[0].CanSelectedFrameMove(args.DiffFrame))) {
+                    if (accessoryList.All(item => item.BoneKeyList[0].CanSelectedFrameMove(args.DiffFrame)) == false)
+                    {
                         return;
                     }
                     foreach (var item in accessoryList)
@@ -53,7 +54,7 @@ namespace PMMEditor.ViewModels.Documents
                         {
                             var res = new TimelineFrameData(frame.Key, frame.Value.IsSelected);
                             res.ToReactivePropertyAsSynchronized(data => data.IsSelected)
-                               .Subscribe(isSelected => item.BoneKeyList[0].Select(res.FrameNumber, isSelected));
+                               .Subscribe(isSelected => frame.Value.IsSelected = isSelected);
                             frame.Value.MoveChanged += (index, diff) => { res.FrameNumber = index + diff; };
                             MaxFrameIndex = Math.Max(res.FrameNumber, MaxFrameIndex);
                             return res;

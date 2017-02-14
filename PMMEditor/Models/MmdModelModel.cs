@@ -31,8 +31,6 @@ namespace PMMEditor.Models
             public int[] InterpolationRotation { get; set; }
 
             public bool IsPhysicsDisabled { get; set; }
-
-            public bool IsSelected { get; set; }
         }
 
         private readonly List<KeyFrameList<BoneKeyFrame>> _boneKeyList = new List<KeyFrameList<BoneKeyFrame>>();

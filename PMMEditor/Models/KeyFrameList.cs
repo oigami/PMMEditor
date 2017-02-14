@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Livet;
+using Reactive.Bindings.Extensions;
 
 namespace PMMEditor.Models
 {
@@ -13,24 +14,30 @@ namespace PMMEditor.Models
     public class KeyFrameBase : NotificationObject
     {
         public MoveChangedHandler MoveChanged;
+
+        #region IsSelected変更通知プロパティ
+
+        private bool _IsSelected;
+
+        public bool IsSelected
+        {
+            get { return _IsSelected; }
+            set
+            {
+                if (_IsSelected == value)
+                {
+                    return;
+                }
+                _IsSelected = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion
     }
 
     public class KeyFrameList<T> : Dictionary<int, T> where T : KeyFrameBase
     {
-        private readonly HashSet<int> _selectedItems = new HashSet<int>();
-
-        public void Select(int index, bool isSelect)
-        {
-            if (isSelect)
-            {
-                _selectedItems.Add(index);
-            }
-            else
-            {
-                _selectedItems.Remove(index);
-            }
-        }
-
         public KeyFrameList(string name)
         {
             Name = name;
@@ -40,58 +47,58 @@ namespace PMMEditor.Models
 
         #region CanMoveメソッド
 
-        public bool CanMove(int nowIndex, int diff, bool isOverride = false)
+        private bool CanMove(int nowIndex, int diff, bool isOverride = false)
         {
             if (nowIndex + diff < 0)
             {
                 return false;
             }
-            if (ContainsKey(nowIndex) == false)
+            if (!ContainsKey(nowIndex + diff))
             {
-                return false;
+                return true;
             }
-            return !ContainsKey(nowIndex + diff) || isOverride;
+            return this[nowIndex + diff].IsSelected || isOverride;
         }
 
-        public bool CanMoveAll(IEnumerable<int> nowIndex, int diff, bool isOverride = false)
+        private bool CanMoveAll(IEnumerable<int> nowIndex, int diff, bool isOverride = false)
         {
             return nowIndex.Any() == false || nowIndex.All(i => CanMove(i, diff, isOverride));
         }
 
         public bool CanSelectedFrameMove(int diff, bool isOverride = false)
         {
-            return CanMoveAll(_selectedItems, diff, isOverride);
+            var selectedIndex = this.Where(v => v.Value.IsSelected).Select(v => v.Key);
+            return CanMoveAll(selectedIndex, diff, isOverride);
         }
 
         #endregion
 
         #region Moveメソッド
 
-        public bool Move(int nowIndex, int diff, bool isOverride = false)
+        public void Move(KeyValuePair<int, T> nowIndex, int diff)
         {
-            if (CanMove(nowIndex, diff, isOverride) == false)
-            {
-                return false;
-            }
-            var p = this[nowIndex];
-            Remove(nowIndex);
-            this[nowIndex + diff] = p;
-            p.MoveChanged(nowIndex, diff);
-            MoveChanged?.Invoke(nowIndex, diff);
-            return true;
+            var p = nowIndex.Value;
+            this[nowIndex.Key + diff] = p;
+            p.MoveChanged(nowIndex.Key, diff);
+            MoveChanged?.Invoke(nowIndex.Key, diff);
         }
 
-        public void MoveAll(IEnumerable<int> nowIndex, int diff, bool isOverride = false)
+        private void MoveAll(IEnumerable<KeyValuePair<int, T>> nowIndex, int diff)
         {
+            foreach (var item in nowIndex)
+            {
+                Remove(item.Key);
+            }
             foreach (var i in nowIndex)
             {
-                Move(i, diff, isOverride);
+                Move(i, diff);
             }
         }
 
-        public void SelectedFrameMove(int diff, bool isOverride = false)
+        public void SelectedFrameMove(int diff)
         {
-            MoveAll(_selectedItems, diff, isOverride);
+            var selectedIndex = this.Where(v => v.Value.IsSelected).ToList();
+            MoveAll(selectedIndex, diff);
         }
 
         #endregion
