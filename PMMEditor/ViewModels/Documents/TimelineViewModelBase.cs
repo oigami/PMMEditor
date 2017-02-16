@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,6 +10,9 @@ using Livet;
 using PMMEditor.Models;
 using Livet.Commands;
 using PMMEditor.Views.Documents;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
+using System.Reactive.Disposables;
 
 namespace PMMEditor.ViewModels.Documents
 {
@@ -79,11 +83,23 @@ namespace PMMEditor.ViewModels.Documents
 
         #endregion
 
-        public List<TimelineFrameData> Frame { get; set; }
+        public ReadOnlyReactiveCollection<TimelineFrameData> Frame { get; set; }
 
         public string Name { get; set; }
 
         public List<TimelineKeyFrameList> Children { get; set; }
+
+        public static TimelineKeyFrameList Create<T>(KeyFrameList<T> list) where T : KeyFrameBase
+        {
+            var res = new TimelineKeyFrameList
+            {
+                Frame = list.ToReadOnlyReactiveCollection(list.ToCollectionChanged<KeyValuePair<int, T>>(),
+                                                          v => new TimelineFrameData(v.Key, v.Value.IsSelected)),
+                Name = list.Name
+            };
+            res.CompositeDisposable.Add(res.Frame);
+            return res;
+        }
     }
 
     public abstract class TimelineViewModelBase : DocumentViewModelBase
@@ -109,7 +125,6 @@ namespace PMMEditor.ViewModels.Documents
                 {
                     break;
                 }
-                maxFrameWidth = Math.Max(maxFrameWidth, item.FrameNumber);
                 res.Add(new TimelineFrameData {FrameNumber = item.FrameNumber});
                 nowIndex = item.NextIndex;
             }
@@ -124,43 +139,13 @@ namespace PMMEditor.ViewModels.Documents
 
         #region ListOfKeyFrameList変更通知プロパティ
 
-        private ObservableCollection<TimelineKeyFrameList> _ListOfKeyFrameList;
-
-        public ObservableCollection<TimelineKeyFrameList> ListOfKeyFrameList
-        {
-            get { return _ListOfKeyFrameList; }
-            set
-            {
-                if (_ListOfKeyFrameList == value)
-                {
-                    return;
-                }
-                _ListOfKeyFrameList = value;
-                RaisePropertyChanged();
-            }
-        }
+        public ReadOnlyReactiveCollection<TimelineKeyFrameList> ListOfKeyFrameList { get; set; }
 
         #endregion
 
         #region MaxFrameIndex変更通知プロパティ
 
-        private int _maxFrameIndex;
-
-        public int MaxFrameIndex
-        {
-            get { return _maxFrameIndex; }
-            set
-            {
-                if (_maxFrameIndex == value)
-                {
-                    return;
-                }
-                _maxFrameIndex = value;
-                GridFrameNumberList.Resize(MaxFrameIndex);
-                RaisePropertyChanged();
-                RaisePropertyChanged(nameof(GridFrameNumberList));
-            }
-        }
+        public ReactiveProperty<int> MaxFrameIndex { get; set; } = new ReactiveProperty<int>();
 
         #endregion
 

@@ -5,6 +5,7 @@ using System.Text;
 using Livet;
 using Livet.EventListeners;
 using PMMEditor.Models;
+using Reactive.Bindings.Extensions;
 
 namespace PMMEditor.ViewModels.Panes
 {
@@ -20,7 +21,7 @@ namespace PMMEditor.ViewModels.Panes
             {
                 nameof(_model.PmmStruct),
                 (_, __) => RaisePropertyChanged(nameof(PmmStruct))
-            };
+            }.AddTo(CompositeDisposable);
         }
 
         public override string Title { get; } = "Camera";

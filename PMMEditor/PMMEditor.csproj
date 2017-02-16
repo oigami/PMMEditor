@@ -132,6 +132,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\CameraLightAccessoryTimelineModel.cs" />
     <Compile Include="Models\KeyFrameList.cs" />
     <Compile Include="Models\MmdAccessoryList.cs" />
     <Compile Include="Models\MmdAccessoryModel.cs" />

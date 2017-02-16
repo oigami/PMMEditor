@@ -434,7 +434,7 @@
                     <views:TimelinePanel
                       Alignment="Center"
                       IndexWidth="14"
-                      MaxIndex="{Binding DataContext.MaxFrameIndex, RelativeSource={RelativeSource AncestorType=local:TimelineView}}"
+                      MaxIndex="{Binding DataContext.MaxFrameIndex.Value, RelativeSource={RelativeSource AncestorType=local:TimelineView}}"
                       Style="{Binding Path=TimelinePanelStyle, RelativeSource={RelativeSource AncestorType=local:TimelineView}}" />
                   </ItemsPanelTemplate>
                 </panes:TimelineControl.ItemsPanel>

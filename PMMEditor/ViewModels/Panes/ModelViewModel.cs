@@ -5,6 +5,7 @@ using System.Text;
 using Livet;
 using Livet.EventListeners;
 using PMMEditor.Models;
+using Reactive.Bindings.Extensions;
 
 namespace PMMEditor.ViewModels.Panes
 {
@@ -24,7 +25,7 @@ namespace PMMEditor.ViewModels.Panes
                     RaisePropertyChanged(nameof(PmmStruct));
                     RaisePropertyChanged(nameof(ModelList));
                 }
-            };
+            }.AddTo(CompositeDisposable); 
         }
 
         public override string Title { get; } = "Model";

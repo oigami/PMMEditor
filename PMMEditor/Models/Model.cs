@@ -24,8 +24,8 @@ namespace PMMEditor.Models
         public async Task OpenPmm(byte[] pmmData)
         {
             PmmStruct = await Pmm.ReadAsync(pmmData);
-            MmdAccessoryList = new MmdAccessoryList();
             await MmdAccessoryList.Set(PmmStruct.AccessoryDatas);
+            RaisePropertyChanged(nameof(MmdAccessoryList));
         }
 
         public async Task SavePmm(string filename)
@@ -198,7 +198,7 @@ namespace PMMEditor.Models
 
         #region MmdAccessoryList変更通知プロパティ
 
-        private MmdAccessoryList _mmdAccessoryList;
+        private MmdAccessoryList _mmdAccessoryList = new MmdAccessoryList();
 
         public MmdAccessoryList MmdAccessoryList
         {

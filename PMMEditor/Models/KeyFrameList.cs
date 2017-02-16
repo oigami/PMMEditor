@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,7 +38,16 @@ namespace PMMEditor.Models
         #endregion
     }
 
-    public class KeyFrameList<T> : Dictionary<int, T> where T : KeyFrameBase
+    public interface IKeyFrameList : IDictionary, INotifyCollectionChanged
+    {
+        bool CanSelectedFrameMove(int diff, bool isOverride = false);
+
+        void SelectedFrameMove(int diff);
+        
+        string Name { get; }
+    }
+
+    public class KeyFrameList<T> : Dictionary<int, T>, IKeyFrameList where T : KeyFrameBase
     {
         public KeyFrameList(string name)
         {
@@ -67,7 +78,7 @@ namespace PMMEditor.Models
 
         public bool CanSelectedFrameMove(int diff, bool isOverride = false)
         {
-            var selectedIndex = this.Where(v => v.Value.IsSelected).Select(v => v.Key);
+            var selectedIndex = ((Dictionary<int,T>) this).Where(v => v.Value.IsSelected).Select(v => v.Key);
             return CanMoveAll(selectedIndex, diff, isOverride);
         }
 
@@ -79,7 +90,7 @@ namespace PMMEditor.Models
         {
             var p = nowIndex.Value;
             this[nowIndex.Key + diff] = p;
-            p.MoveChanged(nowIndex.Key, diff);
+            p.MoveChanged?.Invoke(nowIndex.Key, diff);
             MoveChanged?.Invoke(nowIndex.Key, diff);
         }
 
@@ -144,5 +155,7 @@ namespace PMMEditor.Models
                 return res;
             });
         }
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
     }
 }

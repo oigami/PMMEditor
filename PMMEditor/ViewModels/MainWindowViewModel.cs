@@ -13,6 +13,7 @@ using Livet.Messaging;
 using Microsoft.Win32;
 using PMMEditor.ViewModels.Documents;
 using PMMEditor.ViewModels.Panes;
+using Reactive.Bindings.Extensions;
 
 namespace PMMEditor.ViewModels
 {
@@ -81,10 +82,10 @@ namespace PMMEditor.ViewModels
             }
 #endif
 
-            AddPane(() => new HeaderViewModel(_model));
-            AddPane(() => new ModelViewModel(_model));
-            AddPane(() => new CameraViewModel(_model));
-            AddPane(() => new AccessoryViewModel(_model));
+            AddPane(() => new HeaderViewModel(_model).AddTo(CompositeDisposable));
+            AddPane(() => new ModelViewModel(_model).AddTo(CompositeDisposable));
+            AddPane(() => new CameraViewModel(_model).AddTo(CompositeDisposable));
+            AddPane(() => new AccessoryViewModel(_model).AddTo(CompositeDisposable));
         }
 
         #region PmmStruct変更通知プロパティ
@@ -178,7 +179,7 @@ namespace PMMEditor.ViewModels
         {
             await AddDocument(async () =>
             {
-                var res = new CameraLightAccessoryViewModel(_model);
+                var res = new CameraLightAccessoryViewModel(_model).AddTo(CompositeDisposable);
                 await res.Initialize();
                 return res;
             }, CameraLightAccessoryViewModel.GetContentId());

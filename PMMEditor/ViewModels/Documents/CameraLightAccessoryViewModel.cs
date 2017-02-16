@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Livet;
 using Livet.Commands;
@@ -16,13 +17,20 @@ using PMMEditor.Models;
 using PMMEditor.Views.Documents;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System.Reactive.Disposables;
 
 namespace PMMEditor.ViewModels.Documents
 {
     public class CameraLightAccessoryViewModel : TimelineViewModelBase
     {
+        private readonly CameraLightAccessoryTimelineModel _timelineModel;
+
         public CameraLightAccessoryViewModel(Model model) : base(model)
         {
+            _timelineModel = new CameraLightAccessoryTimelineModel(model).AddTo(CompositeDisposable);
+            MaxFrameIndex =
+                _timelineModel.ObserveProperty(m => m.MaxFrameIndex).ToReactiveProperty().AddTo(CompositeDisposable);
+            MaxFrameIndex.Subscribe(i => GridFrameNumberList.Resize(i)).AddTo(CompositeDisposable);
             KeyFrameMoveDeltaCommand = new ListenerCommand<KeyFrameMoveEventArgs>(
                 args =>
                 {
@@ -35,33 +43,15 @@ namespace PMMEditor.ViewModels.Documents
                     {
                         item.BoneKeyList[0].SelectedFrameMove(args.DiffFrame);
                     }
-
                 });
         }
 
         public async Task Initialize()
         {
-            ListOfKeyFrameList = new ObservableCollection<TimelineKeyFrameList>(await Task.Run(() =>
-            {
-                var list = new List<TimelineKeyFrameList>();
-
-                var accessoryData = _model.MmdAccessoryList.List;
-                list.AddRange(accessoryData.Select(item => new TimelineKeyFrameList
-                {
-                    Name = item.Name,
-                    Frame =
-                        item.BoneKeyList[0].Select(frame =>
-                        {
-                            var res = new TimelineFrameData(frame.Key, frame.Value.IsSelected);
-                            res.ToReactivePropertyAsSynchronized(data => data.IsSelected)
-                               .Subscribe(isSelected => frame.Value.IsSelected = isSelected);
-                            frame.Value.MoveChanged += (index, diff) => { res.FrameNumber = index + diff; };
-                            MaxFrameIndex = Math.Max(res.FrameNumber, MaxFrameIndex);
-                            return res;
-                        }).ToList()
-                }));
-                return list;
-            }));
+            ListOfKeyFrameList =
+                _timelineModel.AccessoryKeyFrameLists
+                      .ToReadOnlyReactiveCollection(TimelineKeyFrameList.Create)
+                      .AddTo(CompositeDisposable);
         }
 
         public static string GetTitle() => "Camera, Light, Accessory Timeline";
