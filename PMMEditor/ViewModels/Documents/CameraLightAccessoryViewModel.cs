@@ -1,23 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.ComponentModel;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Livet;
 using Livet.Commands;
-using Livet.Messaging;
-using Livet.Messaging.IO;
-using Livet.EventListeners;
-using Livet.Messaging.Windows;
 using PMMEditor.Models;
 using PMMEditor.Views.Documents;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System.Reactive.Disposables;
 
 namespace PMMEditor.ViewModels.Documents
 {
@@ -48,10 +41,43 @@ namespace PMMEditor.ViewModels.Documents
 
         public async Task Initialize()
         {
-            ListOfKeyFrameList =
-                _timelineModel.AccessoryKeyFrameLists
-                      .ToReadOnlyReactiveCollection(TimelineKeyFrameList.Create)
-                      .AddTo(CompositeDisposable);
+            ListOfKeyFrameList
+                = Enumerable
+                    .Range(0, 3)
+                    .Select(i => new TimelineKeyFrameList {Name = "test" + i})
+                    .Concat(_timelineModel.AccessoryKeyFrameLists.Select(
+                        TimelineKeyFrameList.Create))
+                    .ToReadOnlyReactiveCollection(
+                        _timelineModel
+                            .AccessoryKeyFrameLists
+                            .ToCollectionChanged()
+                            .SelectMany(i =>
+                            {
+                                var res = new CollectionChanged<TimelineKeyFrameList>
+                                {
+                                    Action = i.Action,
+                                    Index = i.Index + 3,
+                                    OldIndex = i.OldIndex + 3,
+                                    Value = i.Value != null
+                                        ? TimelineKeyFrameList.Create(i.Value)
+                                        : null
+                                };
+                                return
+                                    Enumerable.Range(0, 1)
+                                              .Select(_ => res)
+                                              .Concat(res.Action == NotifyCollectionChangedAction.Reset
+                                                  ? Enumerable.Range(0, 3)
+                                                              .Select(
+                                                                  x => CollectionChanged
+                                                                      <TimelineKeyFrameList>.Add(
+                                                                          x,
+                                                                          new TimelineKeyFrameList
+                                                                          {
+                                                                              Name = "test" + x
+                                                                          }))
+                                                  : Enumerable.Empty<CollectionChanged<TimelineKeyFrameList>>());
+                            }))
+                    .AddTo(CompositeDisposable);
         }
 
         public static string GetTitle() => "Camera, Light, Accessory Timeline";

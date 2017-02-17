@@ -67,7 +67,7 @@ namespace PMMEditor.Models
             var keyFrame = await KeyFrameList<BoneKeyFrame>.CreateKeyFrameArray(accessoryData.KeyFrames);
             _boneKeyList.Add(await Task.Run(async () =>
             {
-                var list = new KeyFrameList<BoneKeyFrame>("");
+                var list = new KeyFrameList<BoneKeyFrame>(Name);
 
                 await list.CreateKeyFrame(keyFrame, accessoryData.InitFrame, i =>
                 {

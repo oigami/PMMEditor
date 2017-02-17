@@ -87,7 +87,7 @@ namespace PMMEditor.ViewModels.Documents
 
         public string Name { get; set; }
 
-        public List<TimelineKeyFrameList> Children { get; set; }
+        public ReadOnlyReactiveCollection<TimelineKeyFrameList> Children { get; set; }
 
         public static TimelineKeyFrameList Create<T>(KeyFrameList<T> list) where T : KeyFrameBase
         {
