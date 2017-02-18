@@ -330,44 +330,6 @@
 
     <Grid Grid.Column="2">
 
-      <ScrollViewer
-        Margin="0,0,17,0"
-        HorizontalScrollBarVisibility="Hidden"
-        VerticalScrollBarVisibility="Disabled">
-        <i:Interaction.Behaviors>
-          <behaviors:ScrollSyncronizingBehavior
-            Orientation="Horizontal"
-            ScrollGroup="Group1" />
-        </i:Interaction.Behaviors>
-        <!--  タイムラインの数値  -->
-        <panes:TimelineControl
-          HorizontalAlignment="Left"
-          VerticalAlignment="Top"
-          ItemsSource="{Binding GridFrameNumberList}">
-          <panes:TimelineControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <views:TimelinePanel
-                Alignment="Center"
-                IndexWidth="14" />
-            </ItemsPanelTemplate>
-          </panes:TimelineControl.ItemsPanel>
-          <panes:TimelineControl.ItemContainerStyle>
-            <Style TargetType="{x:Type panes:TimelineItem}">
-              <Setter Property="Index" Value="{Binding}" />
-              <Setter Property="Template">
-                <Setter.Value>
-                  <ControlTemplate TargetType="panes:TimelineItem">
-                    <TextBlock
-                      Height="14"
-                      Text="{Binding}"
-                      TextAlignment="Center" />
-                  </ControlTemplate>
-                </Setter.Value>
-              </Setter>
-            </Style>
-          </panes:TimelineControl.ItemContainerStyle>
-        </panes:TimelineControl>
-      </ScrollViewer>
 
       <Grid Margin="0,14,0,0">
 
@@ -472,6 +434,75 @@
         </ItemsControl>
 
       </Grid>
+      <views:MyScrollViewer
+        Margin="0,0,17,17"
+        Background="{x:Null}"
+        HorizontalScrollBarVisibility="Hidden"
+        VerticalScrollBarVisibility="Disabled">
+        <i:Interaction.Behaviors>
+          <behaviors:ScrollSyncronizingBehavior
+            Orientation="Horizontal"
+            ScrollGroup="Group1" />
+        </i:Interaction.Behaviors>
+        <Grid Background="{x:Null}">
+
+          <!--  タイムラインの数値  -->
+          <panes:TimelineControl
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Background="{x:Null}"
+            ItemsSource="{Binding GridFrameNumberList}">
+            <panes:TimelineControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <views:TimelinePanel
+                  Alignment="Center"
+                  IndexWidth="14" />
+              </ItemsPanelTemplate>
+            </panes:TimelineControl.ItemsPanel>
+            <panes:TimelineControl.ItemContainerStyle>
+              <Style TargetType="{x:Type panes:TimelineItem}">
+                <Setter Property="Index" Value="{Binding}" />
+                <Setter Property="Template">
+                  <Setter.Value>
+                    <ControlTemplate TargetType="panes:TimelineItem">
+                      <TextBlock
+                        Height="14"
+                        Text="{Binding}"
+                        TextAlignment="Center" />
+                    </ControlTemplate>
+                  </Setter.Value>
+                </Setter>
+              </Style>
+            </panes:TimelineControl.ItemContainerStyle>
+          </panes:TimelineControl>
+
+          <!--  現在のフレーム  -->
+          <views:TimelinePanel
+            Alignment="Center"
+            Background="{x:Null}"
+            IndexWidth="14"
+            IsHitTestVisible="False">
+            <DockPanel
+              views:TimelinePanel.Index="9"
+              Background="{x:Null}">
+              <TextBlock
+                DockPanel.Dock="Top"
+                Foreground="LightSeaGreen"
+                Text="9" />
+              <Line
+                HorizontalAlignment="Center"
+                VerticalAlignment="Stretch"
+                Stretch="UniformToFill"
+                Stroke="Red"
+                X1="7"
+                X2="7"
+                Y1="0"
+                Y2="14" />
+            </DockPanel>
+          </views:TimelinePanel>
+
+        </Grid>
+      </views:MyScrollViewer>
     </Grid>
   </Grid>
 </UserControl>
