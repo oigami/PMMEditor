@@ -25,7 +25,7 @@ namespace PMMEditor.Models
         {
             PmmStruct = await Pmm.ReadAsync(pmmData);
             await MmdAccessoryList.Set(PmmStruct.AccessoryDatas);
-            RaisePropertyChanged(nameof(MmdAccessoryList));
+            await Camera.Set(PmmStruct.CameraKeyFrames, PmmStruct.CameraInitFrame);
         }
 
         public async Task SavePmm(string filename)
@@ -210,6 +210,26 @@ namespace PMMEditor.Models
                     return;
                 }
                 _mmdAccessoryList = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion
+
+        #region Camera変更通知プロパティ
+
+        private MmdCameraModel _Camera = new MmdCameraModel();
+
+        public MmdCameraModel Camera
+        {
+            get { return _Camera; }
+            set
+            {
+                if (_Camera == value)
+                {
+                    return;
+                }
+                _Camera = value;
                 RaisePropertyChanged();
             }
         }

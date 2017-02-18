@@ -136,6 +136,7 @@
     <Compile Include="Models\KeyFrameList.cs" />
     <Compile Include="Models\MmdAccessoryList.cs" />
     <Compile Include="Models\MmdAccessoryModel.cs" />
+    <Compile Include="Models\MmdCameraModel.cs" />
     <Compile Include="Models\MmdModelList.cs" />
     <Compile Include="Models\MmdModelModel.cs" />
     <Compile Include="Models\Pmm.cs" />
