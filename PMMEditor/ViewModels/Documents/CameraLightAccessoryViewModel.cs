@@ -64,13 +64,13 @@ namespace PMMEditor.ViewModels.Documents
             {
                 _countList[1] = _other.Count;
 
-                i.Index += _countList[1];
-                i.OldIndex += _countList[1];
+                i.Index += _countList[0];
+                i.OldIndex += _countList[0];
                 CollectionChange(i);
             }).AddTo(_disposable);
         }
 
-        public new event NotifyCollectionChangedEventHandler CollectionChanged;
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         /// <summary> アンマネージ リソースの解放またはリセットに関連付けられているアプリケーション定義のタスクを実行します。 </summary>
         public void Dispose()
@@ -87,7 +87,7 @@ namespace PMMEditor.ViewModels.Documents
 
         /// <summary> コレクションを反復処理する列挙子を返します。 </summary>
         /// <returns> コレクションの反復処理に使用できる列挙子。 </returns>
-        public new IEnumerator<T> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
             foreach (var item in _self)
             {
@@ -186,13 +186,13 @@ namespace PMMEditor.ViewModels.Documents
         /// <returns>
         /// <see cref = "T:System.Collections.Generic.ICollection`1" /> に格納されている要素の数。
         /// </returns>
-        public int Count { get; }
+        public int Count  => _self.Count + _other.Count;
 
         /// <summary>
         /// <see cref = "T:System.Collections.Generic.ICollection`1" /> が読み取り専用かどうかを示す値を取得します。
         /// </summary>
         /// <returns> true が読み取り専用である場合は <see cref = "T:System.Collections.Generic.ICollection`1" />。それ以外の場合は false。 </returns>
-        public bool IsReadOnly { get; }
+        public bool IsReadOnly { get; } = true;
 
         /// <summary>
         /// <see cref = "T:System.Collections.Generic.IList`1" /> 内の特定の項目のインデックスを確認します。
