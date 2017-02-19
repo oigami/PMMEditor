@@ -40,13 +40,12 @@ namespace PMMEditor.Models
             public int[] InterpolationAngleView { get; set; }
         }
 
-        private readonly List<KeyFrameList<BoneKeyFrame>> _boneKeyList = new List<KeyFrameList<BoneKeyFrame>>();
 
         #region BoneKeyList変更通知プロパティ
 
-        private ReadOnlyCollection<KeyFrameList<BoneKeyFrame>> _BoneKeyList;
+        private ObservableCollection<KeyFrameList<BoneKeyFrame>> _BoneKeyList=new ObservableCollection<KeyFrameList<BoneKeyFrame>>();
 
-        public ReadOnlyCollection<KeyFrameList<BoneKeyFrame>> BoneKeyList
+        public ObservableCollection<KeyFrameList<BoneKeyFrame>> BoneKeyList
         {
             get { return _BoneKeyList; }
             set
@@ -64,9 +63,9 @@ namespace PMMEditor.Models
 
         public async Task Set(List<PmmStruct.CameraFrame> cameraData, PmmStruct.CameraFrame cameraInitFrame)
         {
-            _boneKeyList.Clear();
+            BoneKeyList.Clear();
             var keyFrame = await KeyFrameList<BoneKeyFrame>.CreateKeyFrameArray(cameraData);
-            _boneKeyList.Add(await Task.Run(async () =>
+            BoneKeyList.Add(await Task.Run(async () =>
             {
                 var list = new KeyFrameList<BoneKeyFrame>("");
                 Func<sbyte[], int[]> createArray4 = i => new int[] {i[0], i[1], i[2], i[3]};
@@ -94,7 +93,6 @@ namespace PMMEditor.Models
                 });
                 return list;
             }));
-            BoneKeyList = new ReadOnlyCollection<KeyFrameList<BoneKeyFrame>>(_boneKeyList);
         }
     }
 }

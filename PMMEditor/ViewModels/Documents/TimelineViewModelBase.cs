@@ -89,16 +89,21 @@ namespace PMMEditor.ViewModels.Documents
 
         public ReadOnlyReactiveCollection<TimelineKeyFrameList> Children { get; set; }
 
-        public static TimelineKeyFrameList Create<T>(KeyFrameList<T> list) where T : KeyFrameBase
+        public static TimelineKeyFrameList Create<T>(KeyFrameList<T> list, string name) where T : KeyFrameBase
         {
             var res = new TimelineKeyFrameList
             {
                 Frame = list.ToReadOnlyReactiveCollection(list.ToCollectionChanged<KeyValuePair<int, T>>(),
                                                           v => new TimelineFrameData(v.Key, v.Value.IsSelected)),
-                Name = list.Name
+                Name = name
             };
             res.CompositeDisposable.Add(res.Frame);
             return res;
+        }
+
+        public static TimelineKeyFrameList Create<T>(KeyFrameList<T> list) where T : KeyFrameBase
+        {
+            return Create(list, list.Name);
         }
     }
 
@@ -139,7 +144,7 @@ namespace PMMEditor.ViewModels.Documents
 
         #region ListOfKeyFrameList変更通知プロパティ
 
-        public ReadOnlyReactiveCollection<TimelineKeyFrameList> ListOfKeyFrameList { get; set; }
+        public ReadOnlyMultiCollection<TimelineKeyFrameList> ListOfKeyFrameList { get; set; }
 
         #endregion
 

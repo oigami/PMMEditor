@@ -24,8 +24,8 @@ namespace PMMEditor.Models
         public async Task OpenPmm(byte[] pmmData)
         {
             PmmStruct = await Pmm.ReadAsync(pmmData);
-            await MmdAccessoryList.Set(PmmStruct.AccessoryDatas);
             await Camera.Set(PmmStruct.CameraKeyFrames, PmmStruct.CameraInitFrame);
+            await MmdAccessoryList.Set(PmmStruct.AccessoryDatas);
         }
 
         public async Task SavePmm(string filename)
