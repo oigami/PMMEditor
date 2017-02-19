@@ -267,11 +267,14 @@ namespace PMMEditor.ViewModels.Documents
     {
         private readonly CameraLightAccessoryTimelineModel _timelineModel;
         private readonly ReadOnlyReactiveCollection<TimelineKeyFrameList> _cameraKeyList;
+        private readonly ReadOnlyReactiveCollection<TimelineKeyFrameList> _lightKeyList;
 
         public CameraLightAccessoryViewModel(Model model) : base(model)
         {
             _cameraKeyList =
                 _model.Camera.BoneKeyList.ToReadOnlyReactiveCollection(i => TimelineKeyFrameList.Create(i, "Camera"));
+            _lightKeyList =
+                _model.Light.BoneKeyList.ToReadOnlyReactiveCollection(i => TimelineKeyFrameList.Create(i, "Light"));
             _timelineModel = new CameraLightAccessoryTimelineModel(model).AddTo(CompositeDisposable);
             MaxFrameIndex =
                 _timelineModel.ObserveProperty(m => m.MaxFrameIndex).ToReactiveProperty().AddTo(CompositeDisposable);
@@ -293,7 +296,7 @@ namespace PMMEditor.ViewModels.Documents
 
         public async Task Initialize()
         {
-            ListOfKeyFrameList = _cameraKeyList.MultiMerge(
+            ListOfKeyFrameList = _cameraKeyList.MultiMerge(_lightKeyList).MultiMerge(
                 _timelineModel.AccessoryKeyFrameLists
                               .ToReadOnlyReactiveCollection(TimelineKeyFrameList.Create));
         }
