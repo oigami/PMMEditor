@@ -60,7 +60,7 @@ namespace PMMEditor.ViewModels.Documents
                 CollectionChange(i);
             }).AddTo(_disposable);
 
-            ((INotifyCollectionChanged)_other).ToCollectionChanged<T>().Subscribe(i =>
+            ((INotifyCollectionChanged) _other).ToCollectionChanged<T>().Subscribe(i =>
             {
                 _countList[1] = _other.Count;
 
@@ -186,7 +186,7 @@ namespace PMMEditor.ViewModels.Documents
         /// <returns>
         /// <see cref = "T:System.Collections.Generic.ICollection`1" /> に格納されている要素の数。
         /// </returns>
-        public int Count  => _self.Count + _other.Count;
+        public int Count => _self.Count + _other.Count;
 
         /// <summary>
         /// <see cref = "T:System.Collections.Generic.ICollection`1" /> が読み取り専用かどうかを示す値を取得します。
@@ -261,6 +261,17 @@ namespace PMMEditor.ViewModels.Documents
         {
             return new ReadOnlyMultiCollection<T>(self, other);
         }
+
+        public static ReadOnlyMultiCollection<T> Merge<T>(
+            params IList<T>[] arr)
+        {
+            ReadOnlyMultiCollection<T> self = arr[0].MultiMerge(arr[1]);
+            for (int i = 2; i < arr.Length; i++)
+            {
+                self = new ReadOnlyMultiCollection<T>(self, arr[i]);
+            }
+            return self;
+        }
     }
 
     public class CameraLightAccessoryViewModel : TimelineViewModelBase
@@ -296,7 +307,9 @@ namespace PMMEditor.ViewModels.Documents
 
         public async Task Initialize()
         {
-            ListOfKeyFrameList = _cameraKeyList.MultiMerge(_lightKeyList).MultiMerge(
+            ListOfKeyFrameList = ReadOnlyMutliCollection.Merge(
+                _cameraKeyList,
+                _lightKeyList,
                 _timelineModel.AccessoryKeyFrameLists
                               .ToReadOnlyReactiveCollection(TimelineKeyFrameList.Create));
         }
