@@ -284,12 +284,16 @@ namespace PMMEditor.ViewModels.Documents
         {
             _cameraKeyList =
                 _model.Camera.BoneKeyList.ToReadOnlyReactiveCollection(i => TimelineKeyFrameList.Create(i, "Camera"));
+
             _lightKeyList =
                 _model.Light.BoneKeyList.ToReadOnlyReactiveCollection(i => TimelineKeyFrameList.Create(i, "Light"));
+
             _timelineModel = new CameraLightAccessoryTimelineModel(model).AddTo(CompositeDisposable);
+
             MaxFrameIndex =
                 _timelineModel.ObserveProperty(m => m.MaxFrameIndex).ToReactiveProperty().AddTo(CompositeDisposable);
             MaxFrameIndex.Subscribe(i => GridFrameNumberList.Resize(i)).AddTo(CompositeDisposable);
+
             KeyFrameMoveDeltaCommand = new ListenerCommand<KeyFrameMoveEventArgs>(
                 args =>
                 {

@@ -18,44 +18,37 @@ namespace PMMEditor.ViewModels.Documents
 {
     public class TimelineFrameData : ViewModel
     {
-        public TimelineFrameData(int frame = -1, bool isSelected = false)
+        private readonly KeyFrameBase _keyFrameBase;
+
+        public TimelineFrameData(KeyFrameBase keyFrameBase)
         {
-            FrameNumber = frame;
-            IsSelected = isSelected;
+            _keyFrameBase = keyFrameBase;
+
+            _keyFrameBase.ObserveProperty(x => x.FrameNumber)
+                         .Subscribe(x => RaisePropertyChanged(nameof(FrameNumber)))
+                         .AddTo(CompositeDisposable);
+
+            _keyFrameBase.ObserveProperty(x => x.IsSelected)
+                         .Subscribe(x => RaisePropertyChanged(nameof(IsSelected)))
+                         .AddTo(CompositeDisposable);
         }
 
         #region FrameNumber変更通知プロパティ
 
-        private int _FrameNumber;
-
-        public int FrameNumber
-        {
-            get { return _FrameNumber; }
-            set
-            {
-                if (_FrameNumber == value)
-                {
-                    return;
-                }
-                _FrameNumber = value;
-                RaisePropertyChanged();
-            }
-        }
+        public int FrameNumber => _keyFrameBase.FrameNumber;
 
         #endregion
 
-        private bool _IsSelected;
-
         public bool IsSelected
         {
-            get { return _IsSelected; }
+            get { return _keyFrameBase.IsSelected; }
             set
             {
-                if (_IsSelected == value)
+                if (_keyFrameBase.IsSelected == value)
                 {
                     return;
                 }
-                _IsSelected = value;
+                _keyFrameBase.IsSelected = value;
                 RaisePropertyChanged();
             }
         }
@@ -93,8 +86,9 @@ namespace PMMEditor.ViewModels.Documents
         {
             var res = new TimelineKeyFrameList
             {
-                Frame = list.ToReadOnlyReactiveCollection(list.ToCollectionChanged<KeyValuePair<int, T>>(),
-                                                          v => new TimelineFrameData(v.Key, v.Value.IsSelected)),
+                Frame = list.ToReadOnlyReactiveCollection(
+                    list.ToCollectionChanged<KeyValuePair<int, T>>(),
+                    v => new TimelineFrameData(v.Value)),
                 Name = name
             };
             res.CompositeDisposable.Add(res.Frame);
@@ -110,32 +104,6 @@ namespace PMMEditor.ViewModels.Documents
     public abstract class TimelineViewModelBase : DocumentViewModelBase
     {
         protected readonly Model _model;
-
-        protected List<TimelineFrameData> CreateList<T>(List<T> frameList, T beginFrame)
-            where T : PmmStruct.IKeyFrame
-        {
-            var maxFrameWidth = MaxFrameIndex;
-            if (beginFrame == null)
-            {
-                return null;
-            }
-            var res = new List<TimelineFrameData>();
-            var item = beginFrame;
-            res.Add(new TimelineFrameData {FrameNumber = item.FrameNumber});
-            int nowIndex = item.NextIndex;
-            while (nowIndex != 0)
-            {
-                item = frameList.FirstOrDefault(frame => frame.DataIndex == nowIndex);
-                if (item == null)
-                {
-                    break;
-                }
-                res.Add(new TimelineFrameData {FrameNumber = item.FrameNumber});
-                nowIndex = item.NextIndex;
-            }
-            MaxFrameIndex = maxFrameWidth;
-            return res;
-        }
 
         public TimelineViewModelBase(Model model)
         {

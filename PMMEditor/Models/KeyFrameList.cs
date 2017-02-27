@@ -133,14 +133,13 @@ namespace PMMEditor.Models
             var p = nowIndex.Value;
             _item[nowIndex.Key + diff] = p;
             p.FrameNumber = nowIndex.Key + diff;
-            MoveChanged?.Invoke(nowIndex.Key, diff);
         }
 
         private void MoveAll(IEnumerable<KeyValuePair<int, T>> nowIndex, int diff)
         {
             foreach (var item in nowIndex)
             {
-                Remove(item.Key);
+                _item.Remove(item.Key);
             }
             foreach (var i in nowIndex)
             {
@@ -155,8 +154,6 @@ namespace PMMEditor.Models
         }
 
         #endregion
-
-        public event MoveChangedHandler MoveChanged;
 
         public async Task CreateKeyFrame<TIn>(
             TIn[] frame,
@@ -201,6 +198,11 @@ namespace PMMEditor.Models
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
+        private void OnCollectionChanged(NotifyCollectionChangedEventArgs args)
+        {
+            CollectionChanged?.Invoke(this, args);
+        }
+
         /// <summary> コレクションを反復処理する列挙子を返します。 </summary>
         /// <returns> コレクションを反復処理するために使用できる <see cref = "T:System.Collections.IEnumerator" /> オブジェクト。 </returns>
         IEnumerator IEnumerable.GetEnumerator() => _item.GetEnumerator();
@@ -223,8 +225,7 @@ namespace PMMEditor.Models
             _item.Add(item.Key, item.Value);
             item.Value.FrameNumber = item.Key;
             MaxFrame = Math.Max(MaxFrame, item.Key);
-            CollectionChanged?.Invoke(this,
-                                      new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
         }
 
         /// <summary>
@@ -236,7 +237,7 @@ namespace PMMEditor.Models
         void ICollection<KeyValuePair<int, T>>.Clear()
         {
             _item.Clear();
-            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         /// <summary>
@@ -348,13 +349,16 @@ namespace PMMEditor.Models
         /// </exception>
         public bool Remove(int key)
         {
-            var res = _item.Remove(key);
-            if (res)
+            T val;
+            if (!_item.TryGetValue(key, out val))
             {
-                CollectionChanged?.Invoke(this,
-                                          new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove));
+                return false;
             }
-            return res;
+
+            _item.Remove(key);
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove,
+                                                                     new KeyValuePair<int, T>(key, val)));
+            return true;
         }
 
         /// <summary> 指定したキーに関連付けられている値を取得します。 </summary>
@@ -500,7 +504,7 @@ namespace PMMEditor.Models
         void IDictionary.Clear()
         {
             _item.Clear();
-            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         /// <summary>
