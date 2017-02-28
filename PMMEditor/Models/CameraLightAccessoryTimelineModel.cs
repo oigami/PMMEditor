@@ -20,27 +20,71 @@ namespace PMMEditor.Models
 
         public ReadOnlyReactiveCollection<KeyFrameList<MmdAccessoryModel.BoneKeyFrame>> AccessoryKeyFrameLists { get; }
 
-        public CameraLightAccessoryTimelineModel(Model model)
+        public ReadOnlyReactiveCollection<KeyFrameList<MmdCameraModel.BoneKeyFrame>> CamerakeyFrameLists { get; }
+
+        public ReadOnlyReactiveCollection<KeyFrameList<MmdLightModel.BoneKeyFrame>> LightkeyFrameLists { get; }
+
+        private void MaxFrameEventSubscribe<T>(ReadOnlyReactiveCollection<KeyFrameList<T>> list) where T : KeyFrameBase
         {
-            AccessoryKeyFrameLists =
-                model.MmdAccessoryList.List.ToReadOnlyReactiveCollection(i => i.BoneKeyList[0]).AddTo(Disposable);
-            AccessoryKeyFrameLists.ObserveElementProperty(i => i.MaxFrame)
-                                  .Subscribe(i => MaxFrameIndex = Math.Max(MaxFrameIndex, i.Value)).AddTo(Disposable);
-            foreach (var item in AccessoryKeyFrameLists)
+            list.ObserveElementProperty(i => i.MaxFrame)
+                .Subscribe(i => MaxFrameIndex = Math.Max(MaxFrameIndex, i.Value)).AddTo(Disposable);
+            foreach (var item in list)
             {
                 MaxFrameIndex = Math.Max(MaxFrameIndex, item.MaxFrame);
             }
 
-            AccessoryKeyFrameLists
-                .ObserveAddChanged()
+            list.ObserveAddChanged()
                 .Subscribe(item =>
                 {
-                    item.ObserveProperty(i=>i.MaxFrame).Subscribe(i => MaxFrameIndex = Math.Max(MaxFrameIndex, i)).AddTo(Disposable);
+                    item.ObserveProperty(i => i.MaxFrame).Subscribe(i => MaxFrameIndex = Math.Max(MaxFrameIndex, i))
+                        .AddTo(Disposable);
                     foreach (var boneKeyFrame in item)
                     {
                         MaxFrameIndex = Math.Max(boneKeyFrame.Key, MaxFrameIndex);
-                     }
+                    }
                 }).AddTo(Disposable);
+        }
+
+        public CameraLightAccessoryTimelineModel(Model model)
+        {
+            AccessoryKeyFrameLists =
+                model.MmdAccessoryList.List.ToReadOnlyReactiveCollection(i => i.BoneKeyList[0]).AddTo(Disposable);
+            MaxFrameEventSubscribe(AccessoryKeyFrameLists);
+
+            CamerakeyFrameLists = model.Camera.BoneKeyList.ToReadOnlyReactiveCollection();
+            MaxFrameEventSubscribe(CamerakeyFrameLists);
+
+            LightkeyFrameLists = model.Light.BoneKeyList.ToReadOnlyReactiveCollection();
+            MaxFrameEventSubscribe(LightkeyFrameLists);
+        }
+
+        private static bool CanMove<T>(int diffFrame, ReadOnlyReactiveCollection<KeyFrameList<T>> list)
+            where T : KeyFrameBase
+        {
+            return list.All(x => x.CanSelectedFrameMove(diffFrame));
+        }
+
+        private static void Move<T>(int diffFrame, ReadOnlyReactiveCollection<KeyFrameList<T>> list)
+            where T : KeyFrameBase
+        {
+            foreach (var item in list)
+            {
+                item.SelectedFrameMove(diffFrame);
+            }
+        }
+
+        public void Move(int diffFrame)
+        {
+            if (CanMove(diffFrame, AccessoryKeyFrameLists) == false ||
+                CanMove(diffFrame, CamerakeyFrameLists) == false ||
+                CanMove(diffFrame, LightkeyFrameLists) == false)
+            {
+                return;
+            }
+
+            Move(diffFrame, AccessoryKeyFrameLists);
+            Move(diffFrame, CamerakeyFrameLists);
+            Move(diffFrame, LightkeyFrameLists);
         }
 
         #region MaxFrameIndex変更通知プロパティ

@@ -282,31 +282,22 @@ namespace PMMEditor.ViewModels.Documents
 
         public CameraLightAccessoryViewModel(Model model) : base(model)
         {
+            _timelineModel = new CameraLightAccessoryTimelineModel(model).AddTo(CompositeDisposable);
+
             _cameraKeyList =
-                _model.Camera.BoneKeyList.ToReadOnlyReactiveCollection(i => TimelineKeyFrameList.Create(i, "Camera"));
+                _timelineModel.CamerakeyFrameLists.ToReadOnlyReactiveCollection(
+                    i => TimelineKeyFrameList.Create(i, "Camera")).AddTo(CompositeDisposable);
 
             _lightKeyList =
-                _model.Light.BoneKeyList.ToReadOnlyReactiveCollection(i => TimelineKeyFrameList.Create(i, "Light"));
-
-            _timelineModel = new CameraLightAccessoryTimelineModel(model).AddTo(CompositeDisposable);
+                _timelineModel.LightkeyFrameLists.ToReadOnlyReactiveCollection(
+                    i => TimelineKeyFrameList.Create(i, "Light")).AddTo(CompositeDisposable);
 
             MaxFrameIndex =
                 _timelineModel.ObserveProperty(m => m.MaxFrameIndex).ToReactiveProperty().AddTo(CompositeDisposable);
             MaxFrameIndex.Subscribe(i => GridFrameNumberList.Resize(i)).AddTo(CompositeDisposable);
 
             KeyFrameMoveDeltaCommand = new ListenerCommand<KeyFrameMoveEventArgs>(
-                args =>
-                {
-                    var accessoryList = _model.MmdAccessoryList.List;
-                    if (accessoryList.All(item => item.BoneKeyList[0].CanSelectedFrameMove(args.DiffFrame)) == false)
-                    {
-                        return;
-                    }
-                    foreach (var item in accessoryList)
-                    {
-                        item.BoneKeyList[0].SelectedFrameMove(args.DiffFrame);
-                    }
-                });
+                args => _timelineModel.Move(args.DiffFrame));
         }
 
         public async Task Initialize()
@@ -315,7 +306,7 @@ namespace PMMEditor.ViewModels.Documents
                 _cameraKeyList,
                 _lightKeyList,
                 _timelineModel.AccessoryKeyFrameLists
-                              .ToReadOnlyReactiveCollection(TimelineKeyFrameList.Create));
+                              .ToReadOnlyReactiveCollection(TimelineKeyFrameList.Create)).AddTo(CompositeDisposable);
         }
 
         public static string GetTitle() => "Camera, Light, Accessory Timeline";
