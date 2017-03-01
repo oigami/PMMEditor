@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Livet;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using Xceed.Wpf.Toolkit;
 
 namespace PMMEditor.Models
 {

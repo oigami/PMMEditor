@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -9,7 +8,6 @@ using Livet;
 using PMMEditor.Models;
 using Livet.Commands;
 using Livet.EventListeners;
-using Livet.Messaging;
 using Microsoft.Win32;
 using PMMEditor.MMDFileParser;
 using PMMEditor.ViewModels.Documents;

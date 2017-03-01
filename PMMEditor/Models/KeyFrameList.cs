@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Livet;
-using Livet.Behaviors.ControlBinding.OneWay;
 using PMMEditor.MMDFileParser;
-using Reactive.Bindings.Extensions;
-using Xceed.Wpf.DataGrid.Markup;
 
 namespace PMMEditor.Models
 {
@@ -456,7 +451,7 @@ namespace PMMEditor.Models
         /// <returns>
         /// <see cref = "T:System.Collections.ICollection" /> へのアクセスを同期するために使用できるオブジェクト。
         /// </returns>
-        public object SyncRoot { get; }
+        public object SyncRoot { get; } = null;
 
         /// <summary>
         /// <see cref = "T:System.Collections.ICollection" /> へのアクセスが同期されている (スレッド セーフである) かどうかを示す値を取得します。

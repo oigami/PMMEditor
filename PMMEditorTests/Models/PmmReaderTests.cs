@@ -3,7 +3,6 @@ using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using PMMEditor.MMDFileParser;
-using PMMEditor.Models;
 
 namespace PMMEditorTests.Models
 {
@@ -15,7 +14,7 @@ namespace PMMEditorTests.Models
         {
             try
             {
-                var data = Pmm.ReadFile("C:/tool/MikuMikuDance_v926x64/UserFile/サンプル（きしめんAllStar).pmm");
+                Pmm.ReadFile("C:/tool/MikuMikuDance_v926x64/UserFile/サンプル（きしめんAllStar).pmm");
             }
             catch (Exception e)
             {

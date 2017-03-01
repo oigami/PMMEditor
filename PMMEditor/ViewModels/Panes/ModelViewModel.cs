@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Livet;
+﻿using System.Collections.Generic;
 using Livet.EventListeners;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models;
@@ -26,7 +22,7 @@ namespace PMMEditor.ViewModels.Panes
                     RaisePropertyChanged(nameof(PmmStruct));
                     RaisePropertyChanged(nameof(ModelList));
                 }
-            }.AddTo(CompositeDisposable); 
+            }.AddTo(CompositeDisposable);
         }
 
         public override string Title { get; } = "Model";

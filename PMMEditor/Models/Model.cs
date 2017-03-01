@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
@@ -26,7 +24,7 @@ namespace PMMEditor.Models
         {
             PmmStruct = await Pmm.ReadAsync(pmmData);
             await Camera.Set(PmmStruct.CameraKeyFrames, PmmStruct.CameraInitFrame);
-            await Light.Set(PmmStruct.LightKeyFrames,PmmStruct.LightInitFrame);
+            await Light.Set(PmmStruct.LightKeyFrames, PmmStruct.LightInitFrame);
             await MmdAccessoryList.Set(PmmStruct.AccessoryDatas);
         }
 
@@ -239,21 +237,23 @@ namespace PMMEditor.Models
         #endregion
 
         #region Light変更通知プロパティ
-        private MmdLightModel _Light=new MmdLightModel();
+
+        private MmdLightModel _Light = new MmdLightModel();
 
         public MmdLightModel Light
         {
-            get
-            { return _Light; }
+            get { return _Light; }
             set
-            { 
+            {
                 if (_Light == value)
+                {
                     return;
+                }
                 _Light = value;
                 RaisePropertyChanged();
             }
         }
-        #endregion
 
+        #endregion
     }
 }

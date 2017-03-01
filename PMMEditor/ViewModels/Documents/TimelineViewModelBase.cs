@@ -1,18 +1,12 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows.Documents;
-using System.Windows.Input;
 using Livet;
 using PMMEditor.Models;
 using Livet.Commands;
 using PMMEditor.Views.Documents;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System.Reactive.Disposables;
 
 namespace PMMEditor.ViewModels.Documents
 {

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
 using Livet;
@@ -41,10 +39,10 @@ namespace PMMEditor.Models
             public int[] InterpolationAngleView { get; set; }
         }
 
-
         #region BoneKeyList変更通知プロパティ
 
-        private ObservableCollection<KeyFrameList<BoneKeyFrame>> _BoneKeyList=new ObservableCollection<KeyFrameList<BoneKeyFrame>>();
+        private ObservableCollection<KeyFrameList<BoneKeyFrame>> _BoneKeyList =
+            new ObservableCollection<KeyFrameList<BoneKeyFrame>>();
 
         public ObservableCollection<KeyFrameList<BoneKeyFrame>> BoneKeyList
         {

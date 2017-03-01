@@ -1,10 +1,5 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Threading;
+﻿using System.Windows;
 using Livet;
-using Livet.Behaviors.ControlBinding.OneWay;
-using Xceed.Wpf.AvalonDock;
-using Livet.Commands;
 
 namespace PMMEditor.ViewModels.Panes
 {

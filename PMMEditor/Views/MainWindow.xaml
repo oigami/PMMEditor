@@ -5,7 +5,6 @@
   xmlns:avalonDock="http://schemas.xceed.com/wpf/xaml/avalondock"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:documents="clr-namespace:PMMEditor.Views.Documents"
-  xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
   xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
   xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -18,10 +17,6 @@
   Width="640"
   Height="480"
   mc:Ignorable="d">
-
-  <Window.Resources>
-    <v:ByteArrayToStringConverter x:Key="ByteArrayToStringConverter" />
-  </Window.Resources>
 
   <Window.DataContext>
     <vm:MainWindowViewModel />

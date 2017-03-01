@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PMMEditor.MMDFileParser
 {
@@ -32,7 +31,7 @@ namespace PMMEditor.MMDFileParser
 
         protected sbyte ReadSByte()
         {
-            return (sbyte)ReadByte(1)[0];
+            return (sbyte) ReadByte(1)[0];
         }
 
         protected short ReadInt16()
@@ -49,10 +48,12 @@ namespace PMMEditor.MMDFileParser
         {
             return BitConverter.ToInt32(ReadByte(4), 0);
         }
+
         protected uint ReadUInt()
         {
             return BitConverter.ToUInt32(ReadByte(4), 0);
         }
+
         protected float ReadFloat()
         {
             return BitConverter.ToSingle(ReadByte(4), 0);
@@ -120,17 +121,14 @@ namespace PMMEditor.MMDFileParser
 
         #endregion StringTypeRead
 
-
         protected Vector2 ReadVector2()
         {
-            return new Vector2(ReadFloat(),ReadFloat());
+            return new Vector2(ReadFloat(), ReadFloat());
         }
 
         protected Vector3 ReadVector3()
         {
             return new Vector3(ReadFloat(), ReadFloat(), ReadFloat());
         }
-
-
     }
 }

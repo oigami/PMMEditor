@@ -1,33 +1,32 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 
 namespace PMMEditor.Views
 {
     /// <summary>
     /// NameAndValueText.xaml の相互作用ロジック
     /// </summary>
-    public partial class NameAndValueText : UserControl
+    public partial class NameAndValueText
     {
         public static readonly DependencyProperty ValueProperty =
             DependencyProperty.Register(
-                                        nameof(Value),
-                                        typeof(string),
-                                        typeof(NameAndValueText),
-                                        new PropertyMetadata(null));
+                nameof(Value),
+                typeof(string),
+                typeof(NameAndValueText),
+                new PropertyMetadata(null));
 
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register(
-                                        nameof(Text),
-                                        typeof(string),
-                                        typeof(NameAndValueText),
-                                        new PropertyMetadata(null));
+                nameof(Text),
+                typeof(string),
+                typeof(NameAndValueText),
+                new PropertyMetadata(null));
 
         public static readonly DependencyProperty ValueWidthProperty =
             DependencyProperty.Register(
-                                        nameof(ValueWidth),
-                                        typeof(double),
-                                        typeof(NameAndValueText),
-                                        new PropertyMetadata(double.NaN));
+                nameof(ValueWidth),
+                typeof(double),
+                typeof(NameAndValueText),
+                new PropertyMetadata(double.NaN));
 
         public NameAndValueText()
         {

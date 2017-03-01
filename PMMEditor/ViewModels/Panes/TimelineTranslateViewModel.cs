@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
-using Livet;
-using Livet.Behaviors.ControlBinding.OneWay;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models;
-using PMMEditor.ViewModels.Panes;
 
 namespace PMMEditor.ViewModels.Panes
 {
