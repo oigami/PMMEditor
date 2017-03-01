@@ -587,16 +587,14 @@ namespace PMMEditor.MMDFileParser
         #endregion SelectorChoiceInfo
     }
 
-    public class PmmReader
+    internal class PmmReader : MMDFileReaderBase
     {
         private readonly byte[] _binaryData;
-
-        private readonly byte[] _buffer = new byte[256];
-        private Stream _stream;
 
         public PmmReader(byte[] binaryData)
         {
             _binaryData = binaryData;
+            _buffer = new byte[256];
         }
 
         public PmmStruct Read()
@@ -1029,100 +1027,6 @@ namespace PMMEditor.MMDFileParser
         }
 
         #endregion OpTypeRead
-
-        #region PrimitiveTypeRead
-
-        private byte[] ReadByte(int size)
-        {
-            var len = _stream.Read(_buffer, 0, size);
-            if (len != size)
-            {
-                throw new ArgumentException("");
-            }
-            return _buffer;
-        }
-
-        private byte ReadByte()
-        {
-            return ReadByte(1)[0];
-        }
-
-        private sbyte ReadSByte()
-        {
-            return (sbyte) ReadByte(1)[0];
-        }
-
-        private int ReadInt()
-        {
-            return BitConverter.ToInt32(ReadByte(4), 0);
-        }
-
-        private float ReadFloat()
-        {
-            return BitConverter.ToSingle(ReadByte(4), 0);
-        }
-
-        private bool ReadBool()
-        {
-            return ReadByte() != 0;
-        }
-
-        #endregion PrimitiveTypeRead
-
-        #region ArrayTypeRead
-
-        private T[] ReadArray<T>(int size, Func<T> func)
-        {
-            var t = new T[size];
-            for (var i = 0; i < size; i++)
-            {
-                t[i] = func();
-            }
-            return t;
-        }
-
-        private T[] ReadVArray<T>(Func<T> func)
-        {
-            var size = ReadInt();
-            return ReadArray(size, func);
-        }
-
-        private List<T> ReadList<T>(int size, Func<T> func)
-        {
-            var t = new List<T>(size);
-            for (var i = 0; i < size; i++)
-            {
-                t.Add(func());
-            }
-            return t;
-        }
-
-        private List<T> ReadVList<T>(Func<T> func)
-        {
-            var size = ReadInt();
-            return ReadList(size, func);
-        }
-
-        #endregion ArrayTypeRead
-
-        #region StringTypeRead
-
-        private string ReadVString()
-        {
-            return ReadFixedString(ReadByte());
-        }
-
-        private string ReadFixedString(int count)
-        {
-            return Encoding.GetEncoding("shift_jis").GetString(ReadByte(count), 0, count);
-        }
-
-        private string ReadFixedStringTerminationChar(int count)
-        {
-            return string.Concat(ReadFixedString(count).TakeWhile(s => s != '\0'));
-        }
-
-        #endregion StringTypeRead
 
         #region TheOtherTypeRead
 

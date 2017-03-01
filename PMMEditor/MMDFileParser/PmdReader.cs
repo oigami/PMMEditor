@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PMMEditor.MMDFileParser
 {
@@ -28,7 +25,7 @@ namespace PMMEditor.MMDFileParser
 
         #region 頂点
 
-        class Vertex
+        public class Vertex
         {
             public Vector3 Position { get; set; }
 
@@ -46,6 +43,8 @@ namespace PMMEditor.MMDFileParser
             public bool IsEdgeEnabled { get; set; }
         }
 
+        public List<Vertex> Vertices { get; set; }
+
         #endregion
 
         #region 頂点インデックス
@@ -56,7 +55,7 @@ namespace PMMEditor.MMDFileParser
 
         #region 材質
 
-        class Color
+        public class Color
         {
             public float R { get; set; }
 
@@ -65,7 +64,7 @@ namespace PMMEditor.MMDFileParser
             public float B { get; set; }
         }
 
-        class Material
+        public class Material
         {
             public Color Diffuse { get; set; }
 
@@ -87,11 +86,13 @@ namespace PMMEditor.MMDFileParser
             public string TextureFilename { get; set; }
         }
 
+        public List<Material> Materials { get; set; }
+
         #endregion
 
         #region ボーン
 
-        enum BoneKind
+        public enum BoneKind
         {
             Rotate,
             RotateAndMove,
@@ -105,7 +106,7 @@ namespace PMMEditor.MMDFileParser
             RotationAssociated
         }
 
-        class Bone
+        public class Bone
         {
             [StringLength(20)]
             public string Name { get; set; }
@@ -121,11 +122,13 @@ namespace PMMEditor.MMDFileParser
             public Vector3 Position { get; set; }
         }
 
+        public List<Bone> Bones { get; set; }
+
         #endregion
 
         #region IK
 
-        class IK
+        public class IK
         {
             public ushort BoneIndex { get; set; }
 
@@ -138,11 +141,13 @@ namespace PMMEditor.MMDFileParser
             public List<ushort> IKChildBoneIndex { get; set; }
         }
 
+        public List<IK> IKs { get; set; }
+
         #endregion
 
         #region 表情
 
-        enum SkinKind
+        public enum SkinKind
         {
             Base,
             Eyebrow,
@@ -151,60 +156,95 @@ namespace PMMEditor.MMDFileParser
             Others
         }
 
-        class SkinVertex
+        public class SkinVertex
         {
             public uint VertexIndex { get; set; }
 
             public Vector3 VertexPosition { get; set; }
         }
 
-        class Skin
+        public class Skin
         {
             [StringLength(20)]
             public string Name { get; set; }
 
-            public uint SkinVertexCount { get; set; }
 
             public SkinKind Kind { get; set; }
 
             public List<SkinVertex> SkinVertices { get; set; }
         }
 
+        public List<Skin> Skins { get; set; }
+
         #endregion
 
         #region 表示枠
 
-        class BoneDisp
+        [StringLength(20)]
+        public List<string> BoneDispNames { get; set; }
+
+        public List<ushort> SkinIndices { get; set; }
+
+        public class BoneDisp
         {
             public ushort BoneIndex { get; set; }
 
             public byte BoneDispFrameIndex { get; set; }
         }
 
+        public List<BoneDisp> BoneDisps { get; set; }
+
         #endregion
+
+        #region 英語
+
+        public class EnglishNames
+        {
+            [StringLength(20)]
+            public string ModelName { get; set; }
+
+            [StringLength(256)]
+            public string Comment { get; set; }
+
+            [StringLength(20)]
+            public List<string> BoneName { get; set; }
+
+            [StringLength(50)]
+            public List<string> SkinName { get; set; }
+
+            [StringLength(50)]
+            public List<string> BoneDipsName { get; set; }
+        }
+
+        public EnglishNames EnglishName { get; set; }
+
+        #endregion
+
+        [StringLength(100)]
+        public List<string> ToonFilenames { get; set; }
 
         #region 剛体
 
-        enum RigidBodyShapeKind
+        public enum RigidBodyShapeKind
         {
             Sphere,
             Box,
             Capsule
         }
 
-        enum RigidBodyKind
+        public enum RigidBodyKind
         {
             BoneTracking,
             Physics,
             PhysicsAndBonePositionTracking
         }
 
-        class RigidBody
+        public class RigidBody
         {
             [StringLength(20)]
             public string Name { get; set; }
 
-            public ushort? BoneIndex { get; set; }
+            public ushort? RelationBoneIndex { get; set; }
 
             public byte GroupIndex { get; set; }
 
@@ -236,11 +276,13 @@ namespace PMMEditor.MMDFileParser
             public RigidBodyKind Kind { get; set; }
         }
 
+        public List<RigidBody> RigidBodies { get; set; }
+
         #endregion
 
         #region ジョイント
 
-        class Joint
+        public class Joint
         {
             [StringLength(20)]
             public string Name { get; set; }
@@ -266,17 +308,19 @@ namespace PMMEditor.MMDFileParser
             public Vector3 SpringRotation { get; set; }
         }
 
+        public List<Joint> Joints { get; set; }
+
         #endregion
     }
 
-    public class PmdReader
+    internal class PmdReader : MMDFileReaderBase
     {
         private readonly byte[] _binaryData;
-        private Stream _stream;
 
         public PmdReader(byte[] binaryData)
         {
             _binaryData = binaryData;
+            _buffer = new byte[256];
         }
 
         public PmdStruct Read()
@@ -284,8 +328,195 @@ namespace PMMEditor.MMDFileParser
             _stream = new MemoryStream(_binaryData);
             var o = new PmdStruct();
 
+            #region ヘッダ
+
+            o.Magic = ReadFixedString(3);
+            o.Version = ReadFloat();
+            o.ModelName = ReadFixedStringTerminationChar(20);
+            o.Comment = ReadFixedStringTerminationChar(256);
+
+            #endregion
+
+            #region 頂点
+
+            o.Vertices = ReadVList(ReadVertex);
+            o.VertexIndex = ReadVList(ReadUInt16);
+
+            #endregion
+
+            o.Materials = ReadVList(ReadMaterial);
+
+            o.Bones = ReadList(ReadUInt16(), ReadBone);
+
+            o.IKs = ReadList(ReadUInt16(), ReadIK);
+
+            o.Skins = ReadList(ReadUInt16(), ReadSkin);
+
+            o.SkinIndices = ReadList(ReadByte(), ReadUInt16);
+
+            o.BoneDispNames = ReadList(ReadByte(), () => ReadFixedStringTerminationChar(20));
+
+            o.BoneDisps = ReadVList(() => new PmdStruct.BoneDisp
+            {
+                BoneIndex = ReadUInt16(),
+                BoneDispFrameIndex = ReadByte()
+            });
+
+            var hasEnglishName = ReadByte() == 0;
+            if (hasEnglishName)
+            {
+                o.EnglishName = new PmdStruct.EnglishNames
+                {
+                    ModelName = ReadFixedStringTerminationChar(20),
+                    Comment = ReadFixedStringTerminationChar(256),
+                    BoneName = ReadList(o.Bones.Count, () => ReadFixedStringTerminationChar(20)),
+                    SkinName = ReadList(Math.Max(0, o.Skins.Count - 1),
+                                        () => ReadFixedStringTerminationChar(50)),
+                    BoneDipsName = ReadList(o.BoneDispNames.Count,
+                                            () => ReadFixedStringTerminationChar(50))
+                };
+            }
+
+            o.ToonFilenames = ReadList(10, () => ReadFixedStringTerminationChar(100));
+
+            o.RigidBodies = ReadVList(ReadRigidBody);
+
+            o.Joints = ReadVList(ReadJoint);
 
             return o;
+        }
+
+
+        private PmdStruct.Vertex ReadVertex()
+        {
+            return new PmdStruct.Vertex
+            {
+                Position = ReadVector3(),
+                NormalVector = ReadVector3(),
+                UV = ReadVector2(),
+                BoneNum1 = ReadUInt16(),
+                BoneNum2 = ReadUInt16(),
+                BoneWeight = ReadByte(),
+                IsEdgeEnabled = ReadByte() == 0
+            };
+        }
+
+        private PmdStruct.Material ReadMaterial()
+        {
+            return new PmdStruct.Material
+            {
+                Diffuse = ReadColor(),
+                DiffuseAlpha = ReadFloat(),
+                Specularity = ReadFloat(),
+                Specular = ReadColor(),
+                Ambient = ReadColor(),
+                ToonIndex = ReadByte(),
+                EdgeFlag = ReadByte(),
+                FaceVertexCount = ReadUInt(),
+                TextureFilename = ReadFixedStringTerminationChar(20)
+            };
+        }
+
+        private PmdStruct.Bone ReadBone()
+        {
+            return new PmdStruct.Bone
+            {
+                Name = ReadFixedStringTerminationChar(20),
+                ParentBoneIndex = ParameterCheck<ushort>(ReadUInt16(), 0xffff),
+                TailBoneIndex = ParameterCheck<ushort>(ReadUInt16(), 0),
+                Kind = (PmdStruct.BoneKind) ReadByte(),
+                IKParentBoneIndex = ParameterCheck<ushort>(ReadUInt16(), 0),
+                Position = ReadVector3()
+            };
+        }
+
+        private PmdStruct.IK ReadIK()
+        {
+            var o = new PmdStruct.IK
+            {
+                BoneIndex = ReadUInt16(),
+                TargetBoneIndex = ReadUInt16()
+            };
+            var childSize = ReadByte();
+            o.Iterations = ReadUInt16();
+            o.LimitAngle = ReadUInt16();
+            o.IKChildBoneIndex = ReadList(childSize, ReadUInt16);
+            return o;
+        }
+
+        private PmdStruct.Skin ReadSkin()
+        {
+            var o = new PmdStruct.Skin
+            {
+                Name = ReadFixedStringTerminationChar(20)
+            };
+
+            var skinVertexCount = ReadInt();
+            o.Kind = (PmdStruct.SkinKind) ReadByte();
+
+            o.SkinVertices = ReadList(skinVertexCount, () => new PmdStruct.SkinVertex
+            {
+                VertexIndex = ReadUInt(),
+                VertexPosition = ReadVector3()
+            });
+            return o;
+        }
+
+
+        private PmdStruct.RigidBody ReadRigidBody()
+        {
+            return new PmdStruct.RigidBody
+            {
+                Name = ReadFixedStringTerminationChar(20),
+                RelationBoneIndex = ParameterCheck<ushort>(ReadUInt16(), 0xffff),
+                GroupIndex = ReadByte(),
+                GroupTarget = ReadUInt16(),
+                ShapeKind = (PmdStruct.RigidBodyShapeKind) ReadByte(),
+                HalfWidth = ReadFloat(),
+                HalfHeight = ReadFloat(),
+                HalfDepth = ReadFloat(),
+                RelativePosition = ReadVector3(),
+                Rotation = ReadVector3(),
+                Weight = ReadFloat(),
+                MoveDamping = ReadFloat(),
+                RotateDamping = ReadFloat(),
+                Recoil = ReadFloat(),
+                Friction = ReadFloat(),
+                Kind = (PmdStruct.RigidBodyKind) ReadByte()
+            };
+        }
+
+        private PmdStruct.Joint ReadJoint()
+        {
+            return new PmdStruct.Joint
+            {
+                Name = ReadFixedStringTerminationChar(20),
+                RigidBodyA = ReadUInt(),
+                RigidBodyB = ReadUInt(),
+                Position = ReadVector3(),
+                Rotation = ReadVector3(),
+                ConstrainLowerPosition = ReadVector3(),
+                ConstrainUpperPosition = ReadVector3(),
+                ConstrainLowerRotation = ReadVector3(),
+                ConstrainUpperRotation = ReadVector3(),
+                SpringPosition = ReadVector3(),
+                SpringRotation = ReadVector3()
+            };
+        }
+
+        private T? ParameterCheck<T>(T val, T invalidVal) where T : struct, IComparable<T>
+        {
+            return val.CompareTo(invalidVal) == 0 ? val : (T?) null;
+        }
+
+        private PmdStruct.Color ReadColor()
+        {
+            return new PmdStruct.Color
+            {
+                R = ReadFloat(),
+                G = ReadFloat(),
+                B = ReadFloat()
+            };
         }
     }
 }

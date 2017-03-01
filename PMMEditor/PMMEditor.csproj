@@ -153,6 +153,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="MMDFileParser\MMDFileReaderBase.cs" />
     <Compile Include="MMDFileParser\PmdReader.cs" />
     <Compile Include="Models\CameraLightAccessoryTimelineModel.cs" />
     <Compile Include="Models\KeyFrameList.cs" />
