@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Livet;
 using Livet.Behaviors.ControlBinding.OneWay;
+using PMMEditor.MMDFileParser;
 using Reactive.Bindings.Extensions;
 using Xceed.Wpf.DataGrid.Markup;
 

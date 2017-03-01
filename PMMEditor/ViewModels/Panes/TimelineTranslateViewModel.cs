@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Data;
 using Livet;
 using Livet.Behaviors.ControlBinding.OneWay;
+using PMMEditor.MMDFileParser;
 using PMMEditor.Models;
 using PMMEditor.ViewModels.Panes;
 

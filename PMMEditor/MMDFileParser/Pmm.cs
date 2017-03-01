@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using System.Threading.Tasks;
+using PMMEditor.Models;
 
-namespace PMMEditor.Models
+namespace PMMEditor.MMDFileParser
 {
     public class Pmm
     {

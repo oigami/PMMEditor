@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Livet;
 using Livet.EventListeners;
+using PMMEditor.MMDFileParser;
 using PMMEditor.Models;
 using Reactive.Bindings.Extensions;
 

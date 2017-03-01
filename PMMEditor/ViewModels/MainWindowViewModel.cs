@@ -11,6 +11,7 @@ using Livet.Commands;
 using Livet.EventListeners;
 using Livet.Messaging;
 using Microsoft.Win32;
+using PMMEditor.MMDFileParser;
 using PMMEditor.ViewModels.Documents;
 using PMMEditor.ViewModels.Panes;
 using Reactive.Bindings.Extensions;

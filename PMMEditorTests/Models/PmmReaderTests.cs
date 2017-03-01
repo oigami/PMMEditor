@@ -2,6 +2,7 @@
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using PMMEditor.MMDFileParser;
 using PMMEditor.Models;
 
 namespace PMMEditorTests.Models

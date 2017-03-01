@@ -162,8 +162,8 @@
     <Compile Include="Models\MmdLightModel.cs" />
     <Compile Include="Models\MmdModelList.cs" />
     <Compile Include="Models\MmdModelModel.cs" />
-    <Compile Include="Models\Pmm.cs" />
-    <Compile Include="Models\PmmWriter.cs" />
+    <Compile Include="MMDFileParser\Pmm.cs" />
+    <Compile Include="MMDFileParser\PmmWriter.cs" />
     <Compile Include="SharpDxControl\D3D11Image.cs" />
     <Compile Include="SharpDxControl\D3D9Instance.cs" />
     <Compile Include="SharpDxControl\SharpDxControl.cs" />
@@ -241,7 +241,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Models\Model.cs" />
-    <Compile Include="Models\PmmReader.cs" />
+    <Compile Include="MMDFileParser\PmmReader.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Livet;
+using PMMEditor.MMDFileParser;
 
 namespace PMMEditor.Models
 {

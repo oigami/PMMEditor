@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
 using Livet;
+using PMMEditor.MMDFileParser;
 
 namespace PMMEditor.Models
 {
