@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Reactive.Disposables;
 using System.Windows;
 using System.Windows.Interactivity;
 using System.Windows.Media;
@@ -155,9 +156,12 @@ namespace PMMEditor.SharpDxControl
 
         protected readonly ResourceManager<Brush> BrushManager = new ResourceManager<Brush>();
 
+        protected static bool IsInDesignMode
+            => (bool) DesignerProperties.IsInDesignModeProperty.GetMetadata(typeof(DependencyObject)).DefaultValue;
+
         protected SharpDxControl()
         {
-            if (!(bool) DesignerProperties.IsInDesignModeProperty.GetMetadata(typeof(DependencyObject)).DefaultValue)
+            if (!IsInDesignMode)
             {
                 StartD3D();
                 Loaded += (_, __) =>
@@ -311,10 +315,12 @@ namespace PMMEditor.SharpDxControl
                 _d2DFactory?.Dispose();
             }
         }
+        protected readonly CompositeDisposable CompositeDisposable = new CompositeDisposable();
 
         /// <summary> Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. </summary>
-        public void Dispose()
+        public virtual void Dispose()
         {
+            CompositeDisposable.Dispose();
             Dispose(true);
             GC.SuppressFinalize(this);
         }

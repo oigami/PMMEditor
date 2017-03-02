@@ -1,22 +1,16 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Windows;
-using System.Windows.Resources;
 using Livet;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models;
-using PMMEditor.ViewModels.Documents;
 using Reactive.Bindings.Extensions;
 using SharpDX;
+using SharpDX.D3DCompiler;
 using Direct3D11 = SharpDX.Direct3D11;
 using Direct3D = SharpDX.Direct3D;
 using Format = SharpDX.DXGI.Format;
-using SharpDX.D3DCompiler;
-using SharpDX.Mathematics.Interop;
 
-namespace PMMEditor.ViewModels.MMW
+namespace PMMEditor.Views.Documents
 {
     public interface IInitializable
     {
@@ -25,12 +19,13 @@ namespace PMMEditor.ViewModels.MMW
 
     public interface IRender : IInitializable
     {
-        void Render();
+        void Render(Direct3D11.DeviceContext context);
     }
 
-    public class MmdModelViewModel : DocumentViewModelBase, IRender
+    public class MmdModelRenderer : ViewModel, IRender
     {
-        private readonly MmdModelModel _model;
+        public MmdModelModel Model { get; set; }
+
         private Direct3D11.Device _device;
 
         private Direct3D11.Buffer _verteBuffer;
@@ -43,21 +38,21 @@ namespace PMMEditor.ViewModels.MMW
         private Direct3D11.PixelShader _pixelShader;
         private Direct3D11.Buffer _viewProjConstantBuffer;
 
-        public MmdModelViewModel(MmdModelModel model)
+        public MmdModelRenderer() {}
+
+        public MmdModelRenderer(MmdModelModel model)
         {
-            _model = model;
+            Model = model;
         }
 
-        public void Initialize(Direct3D11.Device device)
+        private void Load()
         {
-            _device = device;
-
             var data = Pmd.ReadFile("C:/tool/MikuMikuDance_v926x64/UserFile/Model/初音ミク.pmd");
 
             // 頂点データ生成
             var typeSize = Utilities.SizeOf<Vector4>();
             _verteBuffer = Direct3D11.Buffer.Create(
-                device,
+                _device,
                 data.Vertices.Select(_ => new Vector4(_.Position.X, _.Position.Y, _.Position.Z, 1.0f)).ToArray(),
                 new Direct3D11.BufferDescription
                 {
@@ -70,14 +65,19 @@ namespace PMMEditor.ViewModels.MMW
 
             // 頂点インデックス生成
             _indexNum = data.VertexIndex.Count;
-            _indexBuffer = Direct3D11.Buffer.Create(device, data.VertexIndex.ToArray(), new Direct3D11.BufferDescription
-            {
-                SizeInBytes = Utilities.SizeOf<ushort>() * _indexNum,
-                Usage = Direct3D11.ResourceUsage.Immutable,
-                BindFlags = Direct3D11.BindFlags.IndexBuffer,
-                StructureByteStride = Utilities.SizeOf<ushort>()
-            }).AddTo(CompositeDisposable);
+            _indexBuffer = Direct3D11.Buffer.Create(_device, data.VertexIndex.ToArray(),
+                                                    new Direct3D11.BufferDescription
+                                                    {
+                                                        SizeInBytes = Utilities.SizeOf<ushort>() * _indexNum,
+                                                        Usage = Direct3D11.ResourceUsage.Immutable,
+                                                        BindFlags = Direct3D11.BindFlags.IndexBuffer,
+                                                        StructureByteStride = Utilities.SizeOf<ushort>()
+                                                    }).AddTo(CompositeDisposable);
+        }
 
+        public void Initialize(Direct3D11.Device device)
+        {
+            _device = device;
             // 頂点シェーダ生成
             var shaderSource = Resource1.TestShader;
             // UTF-8 BOMチェック
@@ -99,7 +99,7 @@ namespace PMMEditor.ViewModels.MMW
 
             // インプットレイアウト生成
             var inputSignature = ShaderSignature.GetInputSignature(vertexShaderByteCode);
-            _inputLayout = new Direct3D11.InputLayout(device, inputSignature, new[]
+            _inputLayout = new Direct3D11.InputLayout(_device, inputSignature, new[]
             {
                 new Direct3D11.InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0)
             });
@@ -117,18 +117,15 @@ namespace PMMEditor.ViewModels.MMW
             m *= Matrix.PerspectiveFovLH((float) Math.PI / 4f, 1.4f, 0.0001f, 1000f);
             m.Transpose();
             _viewProjConstantBuffer =
-                Direct3D11.Buffer.Create(device, Direct3D11.BindFlags.ConstantBuffer, ref m, 0,
+                Direct3D11.Buffer.Create(_device, Direct3D11.BindFlags.ConstantBuffer, ref m, 0,
                                          Direct3D11.ResourceUsage.Immutable).AddTo(CompositeDisposable);
+
+            Load();
         }
 
 
-        public void Render()
+        public void Render(Direct3D11.DeviceContext target)
         {
-            if (_device == null)
-            {
-                return;
-            }
-            var target = _device.ImmediateContext;
             target.InputAssembler.InputLayout = _inputLayout;
 
             target.VertexShader.Set(_vertexShader);
@@ -142,9 +139,6 @@ namespace PMMEditor.ViewModels.MMW
 
             _device.ImmediateContext.DrawIndexed(_indexNum, 0, 0);
         }
-
-        public override string Title { get; } = "test";
-
-        public override string ContentId { get; } = "test";
+        
     }
 }

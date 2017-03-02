@@ -183,10 +183,11 @@
     <Compile Include="SharpDxControl\D3D9Instance.cs" />
     <Compile Include="SharpDxControl\SharpDxControl.cs" />
     <Compile Include="ViewModels\Documents\CameraLightAccessoryViewModel.cs" />
+    <Compile Include="ViewModels\Documents\MainRenderViewModel.cs" />
     <Compile Include="ViewModels\Documents\TimelineViewModelBase.cs" />
     <Compile Include="ViewModels\Documents\DocumentViewModelBase.cs" />
     <Compile Include="ViewModels\ExpressionConverter.cs" />
-    <Compile Include="ViewModels\MMW\MmdModelViewModel.cs" />
+    <Compile Include="Views\Documents\MmdModelRenderer.cs" />
     <Compile Include="ViewModels\Panes\AccessoryViewModel.cs" />
     <Compile Include="ViewModels\Panes\CameraViewModel.cs" />
     <Compile Include="ViewModels\Panes\ModelViewModel.cs" />
@@ -195,7 +196,10 @@
     <Compile Include="ViewModels\Panes\TimelineTranslateViewModel.cs" />
     <Compile Include="ViewModels\ModelRenderTest.cs" />
     <Compile Include="Views\Behaviors\ScrollSyncronizingBehavior.cs" />
-    <Compile Include="Views\Documents\MainCameraView.cs" />
+    <Compile Include="Views\Documents\MainCameraView.xaml.cs">
+      <DependentUpon>MainCameraView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Documents\MainRenderer.cs" />
     <Compile Include="Views\Documents\TimelineView.xaml.cs">
       <DependentUpon>TimelineView.xaml</DependentUpon>
     </Compile>
@@ -224,6 +228,10 @@
       <DependentUpon>TimelineControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TimelinePanel.cs" />
+    <Page Include="Views\Documents\MainCameraView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Documents\TimelineView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
