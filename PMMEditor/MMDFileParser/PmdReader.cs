@@ -180,7 +180,7 @@ namespace PMMEditor.MMDFileParser
 
         #region 表示枠
 
-        [StringLength(20)]
+        [StringLength(50)]
         public List<string> BoneDispNames { get; set; }
 
         public List<ushort> SkinIndices { get; set; }
@@ -354,7 +354,7 @@ namespace PMMEditor.MMDFileParser
 
             o.SkinIndices = ReadList(ReadByte(), ReadUInt16);
 
-            o.BoneDispNames = ReadList(ReadByte(), () => ReadFixedStringTerminationChar(20));
+            o.BoneDispNames = ReadList(ReadByte(), () => ReadFixedStringTerminationChar(50));
 
             o.BoneDisps = ReadVList(() => new PmdStruct.BoneDisp
             {
@@ -362,7 +362,7 @@ namespace PMMEditor.MMDFileParser
                 BoneDispFrameIndex = ReadByte()
             });
 
-            var hasEnglishName = ReadByte() == 0;
+            var hasEnglishName = ReadByte() == 1;
             if (hasEnglishName)
             {
                 o.EnglishName = new PmdStruct.EnglishNames
@@ -371,7 +371,7 @@ namespace PMMEditor.MMDFileParser
                     Comment = ReadFixedStringTerminationChar(256),
                     BoneName = ReadList(o.Bones.Count, () => ReadFixedStringTerminationChar(20)),
                     SkinName = ReadList(Math.Max(0, o.Skins.Count - 1),
-                                        () => ReadFixedStringTerminationChar(50)),
+                                        () => ReadFixedStringTerminationChar(20)),
                     BoneDipsName = ReadList(o.BoneDispNames.Count,
                                             () => ReadFixedStringTerminationChar(50))
                 };
@@ -439,7 +439,7 @@ namespace PMMEditor.MMDFileParser
             };
             var childSize = ReadByte();
             o.Iterations = ReadUInt16();
-            o.LimitAngle = ReadUInt16();
+            o.LimitAngle = ReadFloat();
             o.IKChildBoneIndex = ReadList(childSize, ReadUInt16);
             return o;
         }

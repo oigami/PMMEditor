@@ -10,7 +10,7 @@ namespace PMMEditorTests.Models
     public class PmmReaderTests
     {
         [TestMethod]
-        public void ReadTest()
+        public void PmmReadTest()
         {
             try
             {
@@ -23,7 +23,7 @@ namespace PMMEditorTests.Models
         }
 
         [TestMethod]
-        public void WriteTest()
+        public void PmmWriteTest()
         {
             var data = Pmm.ReadFile("C:/tool/MikuMikuDance_v926x64/UserFile/サンプル（きしめんAllStar).pmm");
 
