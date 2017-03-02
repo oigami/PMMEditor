@@ -8,6 +8,7 @@
   xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
   xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:mmw="clr-namespace:PMMEditor.ViewModels.MMW"
   xmlns:panes="clr-namespace:PMMEditor.Views.Panes"
   xmlns:v="clr-namespace:PMMEditor.Views"
   xmlns:vm="clr-namespace:PMMEditor.ViewModels"
@@ -108,6 +109,9 @@
           </DataTemplate>
           <DataTemplate DataType="{x:Type vmDocuments:CameraLightAccessoryViewModel}">
             <documents:TimelineView />
+          </DataTemplate>
+          <DataTemplate DataType="{x:Type mmw:MmdModelViewModel}">
+            <documents:MainCameraView />
           </DataTemplate>
         </v:LayoutItemTemplateSelector>
       </avalonDock:DockingManager.LayoutItemTemplateSelector>

@@ -59,11 +59,15 @@ namespace PMMEditor.Models
 
         public string NameEnglish { get; private set; }
 
+        public string FilePath { get; private set; }
+
         public async Task Set(PmmStruct.ModelData modelData)
         {
             _modelData = modelData;
             Name = modelData.Name;
             NameEnglish = modelData.NameEn;
+            FilePath = modelData.Path;
+
             var keyFrame = await KeyFrameList<BoneKeyFrame>.CreateKeyFrameArray(modelData.BoneKeyFrames);
             _boneKeyList.Clear();
             _boneKeyList.AddRange(await Task.WhenAll(modelData.BoneInitFrames.Zip(modelData.BoneName, async (x, y) =>

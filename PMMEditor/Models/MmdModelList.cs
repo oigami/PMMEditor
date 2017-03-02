@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Livet;
@@ -8,14 +9,14 @@ namespace PMMEditor.Models
 {
     public class MmdModelList : NotificationObject
     {
-        private readonly List<MmdModelModel> _modelList = new List<MmdModelModel>();
         private readonly List<int> _drawOrder = new List<int>();
+        public ObservableCollection<MmdModelModel> List { get; }= new ObservableCollection<MmdModelModel>();
 
         #region NameList変更通知プロパティ
 
-        public IEnumerable<string> NameList => _modelList.Select(i => i.Name);
+        public IEnumerable<string> NameList => List.Select(i => i.Name);
 
-        public IEnumerable<string> NameEnglishList => _modelList.Select(i => i.NameEnglish);
+        public IEnumerable<string> NameEnglishList => List.Select(i => i.NameEnglish);
 
         #endregion
 
@@ -26,7 +27,7 @@ namespace PMMEditor.Models
             {
                 var model = new MmdModelModel();
                 await model.Set(item.data);
-                _modelList.Add(model);
+                List.Add(model);
                 order.Add(item.data.DrawOrder, item.i);
             }
             foreach (var i in order)

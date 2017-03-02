@@ -11,6 +11,7 @@ using Livet.EventListeners;
 using Microsoft.Win32;
 using PMMEditor.MMDFileParser;
 using PMMEditor.ViewModels.Documents;
+using PMMEditor.ViewModels.MMW;
 using PMMEditor.ViewModels.Panes;
 using Reactive.Bindings.Extensions;
 
@@ -85,6 +86,8 @@ namespace PMMEditor.ViewModels
             AddPane(() => new ModelViewModel(_model).AddTo(CompositeDisposable));
             AddPane(() => new CameraViewModel(_model).AddTo(CompositeDisposable));
             AddPane(() => new AccessoryViewModel(_model).AddTo(CompositeDisposable));
+
+            await AddDocument<MmdModelViewModel>(async() => new MmdModelViewModel(null), "test");
         }
 
         #region PmmStruct変更通知プロパティ

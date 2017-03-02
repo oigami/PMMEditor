@@ -255,7 +255,7 @@ namespace PMMEditor.SharpDxControl
             BrushManager.UpdateRenderTarget(D2DRenderTarget);
 
             _d3DSurface.SetRenderTarget(_renderTarget);
-
+            Device.ImmediateContext.OutputMerger.SetRenderTargets(new RenderTargetView(Device, _renderTarget));
             Device.ImmediateContext.Rasterizer.SetViewport(0, 0, width, height);
 
             ResetRenderTarget();

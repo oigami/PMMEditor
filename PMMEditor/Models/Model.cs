@@ -26,6 +26,7 @@ namespace PMMEditor.Models
             await Camera.Set(PmmStruct.CameraKeyFrames, PmmStruct.CameraInitFrame);
             await Light.Set(PmmStruct.LightKeyFrames, PmmStruct.LightInitFrame);
             await MmdAccessoryList.Set(PmmStruct.AccessoryDatas);
+            await _MmdModelList.Set(PmmStruct.ModelDatas);
         }
 
         public async Task SavePmm(string filename)
@@ -215,6 +216,28 @@ namespace PMMEditor.Models
         }
 
         #endregion
+
+        #region MmdModelList変更通知プロパティ
+
+        private MmdModelList _MmdModelList = new MmdModelList();
+
+        public MmdModelList MmdModelList
+        {
+            get { return _MmdModelList; }
+            set
+            {
+                if (_MmdModelList == value)
+                {
+                    return;
+                }
+                _MmdModelList = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion
+
+
 
         #region Camera変更通知プロパティ
 
