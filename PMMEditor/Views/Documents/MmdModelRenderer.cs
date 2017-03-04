@@ -183,9 +183,6 @@ namespace PMMEditor.Views.Documents
 
         private MmdModelRendererSource _model;
 
-        // TODO: test実装
-        public MmdModelRenderer() : this(new MmdModelRendererSource(null)) {}
-
         public MmdModelRenderer(MmdModelRendererSource model)
         {
             Model = model;

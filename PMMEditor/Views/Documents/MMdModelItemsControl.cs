@@ -11,15 +11,15 @@ namespace PMMEditor.Views.Documents
 {
     internal class MmdModelItemsControl : ContentControl
     {
-        public IEnumerable ItemsSource
+        public IEnumerable<IRenderer> ItemsSource
         {
-            get { return (IEnumerable) GetValue(ItemsSourceProperty); }
+            get { return (IEnumerable<IRenderer>) GetValue(ItemsSourceProperty); }
             set { SetValue(ItemsSourceProperty, value); }
         }
 
         public static readonly DependencyProperty ItemsSourceProperty =
             DependencyProperty.Register(
-                nameof(ItemsSource), typeof(IEnumerable),
+                nameof(ItemsSource), typeof(IEnumerable<IRenderer>),
                 typeof(MmdModelItemsControl),
                 new PropertyMetadata(null, (_, __) => ((MmdModelItemsControl) _).OnItemsSourceChanged(__)));
 
@@ -41,7 +41,7 @@ namespace PMMEditor.Views.Documents
             {
                 changed.CollectionChanged += ChangedOnCollectionChanged;
             }
-            foreach (IRenderer item in (IEnumerable) args.NewValue)
+            foreach (var item in (IEnumerable<IRenderer>) args.NewValue)
             {
                 _renderer.Children.Add(item);
             }
