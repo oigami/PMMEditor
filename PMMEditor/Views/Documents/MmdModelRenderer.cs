@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 using Livet;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models;
@@ -45,7 +44,7 @@ namespace PMMEditor.Views.Documents
         }
 
         private LivetCompositeDisposable D3DObjectCompositeDisposable = new LivetCompositeDisposable();
-        private MmdModelModel _model;
+        private readonly MmdModelModel _model;
 
         private Direct3D11.Buffer _verteBuffer;
 
@@ -80,7 +79,7 @@ namespace PMMEditor.Views.Documents
             {
                 return;
             }
-            var data = Pmd.ReadFile("C:/tool/MikuMikuDance_v926x64/UserFile/Model/初音ミク.pmd");
+            var data = Pmd.ReadFile(_model.FilePath);
 
             Materials = new List<Material>(data.Materials.Count);
             int preIndex = 0;
@@ -100,35 +99,39 @@ namespace PMMEditor.Views.Documents
             }
 
             // 頂点データ生成
-            var typeSize = Utilities.SizeOf<Vertex>();
-            _verteBuffer = Direct3D11.Buffer.Create(
-                _device,
-                data.Vertices.Select(_ => new Vertex
-                {
-                    Position = new Vector4(_.Position.X, _.Position.Y, _.Position.Z, 1.0f)
-                }).ToArray(),
-                new Direct3D11.BufferDescription
-                {
-                    SizeInBytes = typeSize * data.Vertices.Count,
-                    Usage = Direct3D11.ResourceUsage.Immutable,
-                    BindFlags = Direct3D11.BindFlags.VertexBuffer,
-                    StructureByteStride = typeSize
-                }).AddTo(D3DObjectCompositeDisposable);
-            _vertexBufferBinding = new Direct3D11.VertexBufferBinding(_verteBuffer, typeSize, 0);
+            if (data.Vertices.Count > 0)
+            {
+                var typeSize = Utilities.SizeOf<Vertex>();
+                _verteBuffer = Direct3D11.Buffer.Create(
+                    _device,
+                    data.Vertices.Select(_ => new Vertex
+                    {
+                        Position = new Vector4(_.Position.X, _.Position.Y, _.Position.Z, 1.0f)
+                    }).ToArray(),
+                    new Direct3D11.BufferDescription
+                    {
+                        SizeInBytes = typeSize * data.Vertices.Count,
+                        Usage = Direct3D11.ResourceUsage.Immutable,
+                        BindFlags = Direct3D11.BindFlags.VertexBuffer,
+                        StructureByteStride = typeSize
+                    }).AddTo(D3DObjectCompositeDisposable);
+                _vertexBufferBinding = new Direct3D11.VertexBufferBinding(_verteBuffer, typeSize, 0);
 
-            // 頂点インデックス生成
-            var indexNum = data.VertexIndex.Count;
-            _indexBuffer = Direct3D11.Buffer.Create(_device, data.VertexIndex.ToArray(),
-                                                    new Direct3D11.BufferDescription
-                                                    {
-                                                        SizeInBytes = Utilities.SizeOf<ushort>() * indexNum,
-                                                        Usage = Direct3D11.ResourceUsage.Immutable,
-                                                        BindFlags = Direct3D11.BindFlags.IndexBuffer,
-                                                        StructureByteStride = Utilities.SizeOf<ushort>()
-                                                    }).AddTo(D3DObjectCompositeDisposable);
+                // 頂点インデックス生成
+                var indexNum = data.VertexIndex.Count;
+                _indexBuffer = Direct3D11.Buffer.Create(_device, data.VertexIndex.ToArray(),
+                                                        new Direct3D11.BufferDescription
+                                                        {
+                                                            SizeInBytes = Utilities.SizeOf<ushort>() * indexNum,
+                                                            Usage = Direct3D11.ResourceUsage.Immutable,
+                                                            BindFlags = Direct3D11.BindFlags.IndexBuffer,
+                                                            StructureByteStride = Utilities.SizeOf<ushort>()
+                                                        }).AddTo(D3DObjectCompositeDisposable);
+            }
         }
 
         #region IDisposable Support
+
         private bool disposedValue = false; // 重複する呼び出しを検出するには
 
         protected virtual void Dispose(bool disposing)
@@ -148,9 +151,8 @@ namespace PMMEditor.Views.Documents
         {
             Dispose(true);
         }
+
         #endregion
-
-
     }
 
     public class MmdModelRenderer : ViewModel, IRenderer

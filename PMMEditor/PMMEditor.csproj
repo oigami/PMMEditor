@@ -187,6 +187,7 @@
     <Compile Include="ViewModels\Documents\TimelineViewModelBase.cs" />
     <Compile Include="ViewModels\Documents\DocumentViewModelBase.cs" />
     <Compile Include="ViewModels\ExpressionConverter.cs" />
+    <Compile Include="Views\Documents\MmdModelItemsControl.cs" />
     <Compile Include="Views\Documents\MmdModelRenderer.cs" />
     <Compile Include="ViewModels\Panes\AccessoryViewModel.cs" />
     <Compile Include="ViewModels\Panes\CameraViewModel.cs" />
