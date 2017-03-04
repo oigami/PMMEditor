@@ -478,6 +478,7 @@
 
           <!--  現在のフレーム  -->
           <views:TimelinePanel
+            HorizontalAlignment="Left"
             Alignment="Center"
             Background="{x:Null}"
             IndexWidth="14"
