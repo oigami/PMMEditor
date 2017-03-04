@@ -700,7 +700,7 @@ namespace PMMEditor.MMDFileParser
             data.SelectorChoiceSelectionFollowing = ReadByte();
             data.SelectorChoiceDatas = ReadList(data.ModelDatas.Count, ReadSelectorChoice);
 
-            if (_stream.ReadByte() != -1)
+            if (IsRemaining())
             {
                 throw new Exception("Tail Error.");
             }

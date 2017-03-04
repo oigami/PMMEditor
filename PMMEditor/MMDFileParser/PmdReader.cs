@@ -376,12 +376,19 @@ namespace PMMEditor.MMDFileParser
                                             () => ReadFixedStringTerminationChar(50))
                 };
             }
+            if (IsRemaining())
+            {
+                o.ToonFilenames = ReadList(10, () => ReadFixedStringTerminationChar(100));
+            }
+            if (IsRemaining())
+            {
+                o.RigidBodies = ReadVList(ReadRigidBody);
+            }
+            if (IsRemaining())
 
-            o.ToonFilenames = ReadList(10, () => ReadFixedStringTerminationChar(100));
-
-            o.RigidBodies = ReadVList(ReadRigidBody);
-
-            o.Joints = ReadVList(ReadJoint);
+            {
+                o.Joints = ReadVList(ReadJoint);
+            }
 
             return o;
         }

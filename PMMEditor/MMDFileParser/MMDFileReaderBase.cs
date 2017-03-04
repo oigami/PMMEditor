@@ -130,5 +130,15 @@ namespace PMMEditor.MMDFileParser
         {
             return new Vector3(ReadFloat(), ReadFloat(), ReadFloat());
         }
+
+        protected long RemainingLength()
+        {
+            return _stream.Length - _stream.Position;
+        }
+
+        protected bool IsRemaining()
+        {
+            return RemainingLength() > 0;
+        }
     }
 }
