@@ -14,12 +14,13 @@ struct PS_OUTPUT
   float4 color : SV_Target0;
 };
 
+// 頂点シェーダ
+
 cbuffer vscbMesh0 : register(b0)
 {
   float4x4 g_viewProjectionMatrix;
 }
 
-// 頂点シェーダ
 VS_OUTPUT VS(VS_INPUT input)
 {
 
@@ -30,10 +31,16 @@ VS_OUTPUT VS(VS_INPUT input)
   return Out;
 }
 
-// 頂点シェーダ
+// ピクセルシェーダ
+
+cbuffer vscbMesh0 : register(b0)
+{
+  float4 g_diffuseColor;
+}
+
 PS_OUTPUT PS(VS_OUTPUT input)
 {
   PS_OUTPUT res;
-  res.color = float4(1, 0, 0, 1);
+  res.color = g_diffuseColor;
   return res;
 }

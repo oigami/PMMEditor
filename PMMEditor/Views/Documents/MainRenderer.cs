@@ -8,7 +8,7 @@ namespace PMMEditor.Views.Documents
     [ContentProperty("Children")]
     public class MainRenderer : SharpDxControl.SharpDxControl
     {
-        public class ItemCollection : ObservableCollection<IRender> {}
+        public class ItemCollection : ObservableCollection<IRenderer> {}
 
         public ItemCollection Children { get; } = new ItemCollection();
 

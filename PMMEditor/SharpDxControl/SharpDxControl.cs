@@ -10,7 +10,9 @@ using System.Reactive.Disposables;
 using System.Windows;
 using System.Windows.Interactivity;
 using System.Windows.Media;
+using Reactive.Bindings.Extensions;
 using SharpDX;
+using SharpDX.Mathematics.Interop;
 using AlphaMode = SharpDX.Direct2D1.AlphaMode;
 using Brush = SharpDX.Direct2D1.Brush;
 using Device = SharpDX.Direct3D11.Device;
@@ -145,12 +147,14 @@ namespace PMMEditor.SharpDxControl
 
     public abstract class SharpDxControl : Image, IDisposable
     {
+        private CompositeDisposable D3DCompositeDisposable = new CompositeDisposable();
         public Device Device;
         public RenderTarget D2DRenderTarget;
 
-        private Texture2D _renderTarget;
+        private Texture2D _renderTarget2D;
         private D3D11Image _d3DSurface;
         private Factory _d2DFactory;
+        DepthStencilView _depthStencilView;
 
         private readonly Stopwatch _renderTimer = new Stopwatch();
 
@@ -229,9 +233,10 @@ namespace PMMEditor.SharpDxControl
         private void CreateAndBindTarget()
         {
             _d3DSurface.ClearRenderTarget();
-
+            D3DCompositeDisposable.Dispose();
+            D3DCompositeDisposable = new CompositeDisposable();
             Utilities.Dispose(ref D2DRenderTarget);
-            Utilities.Dispose(ref _renderTarget);
+            Utilities.Dispose(ref _renderTarget2D);
 
             var width = Math.Max((int) ActualWidth, 100);
             var height = Math.Max((int) ActualHeight, 100);
@@ -250,16 +255,47 @@ namespace PMMEditor.SharpDxControl
                 ArraySize = 1
             };
 
-            _renderTarget = new Texture2D(Device, renderDesc);
+            _renderTarget2D = new Texture2D(Device, renderDesc);
 
-            var surface = _renderTarget.QueryInterface<Surface>();
+            var surface = _renderTarget2D.QueryInterface<Surface>();
 
             var rtp = new RenderTargetProperties(new PixelFormat(Format.Unknown, AlphaMode.Premultiplied));
             D2DRenderTarget = new RenderTarget(_d2DFactory, surface, rtp);
             BrushManager.UpdateRenderTarget(D2DRenderTarget);
 
-            _d3DSurface.SetRenderTarget(_renderTarget);
-            Device.ImmediateContext.OutputMerger.SetRenderTargets(new RenderTargetView(Device, _renderTarget));
+            _d3DSurface.SetRenderTarget(_renderTarget2D);
+
+
+            // 深度バッファ
+            var zBufferTextureDescription = new Texture2DDescription
+            {
+                Format = Format.D16_UNorm,
+                ArraySize = 1,
+                MipLevels = 1,
+                Width = width,
+                Height = height,
+                SampleDescription = new SampleDescription(1, 0),
+                Usage = ResourceUsage.Default,
+                BindFlags = BindFlags.DepthStencil,
+                CpuAccessFlags = CpuAccessFlags.None,
+                OptionFlags = ResourceOptionFlags.None
+            };
+
+            using (var zBufferTexture = new Texture2D(Device, zBufferTextureDescription))
+            {
+                _depthStencilView = new DepthStencilView(Device, zBufferTexture).AddTo(D3DCompositeDisposable);
+            }
+
+            _depthStencilState
+                = new DepthStencilState(Device, new DepthStencilStateDescription
+                {
+                    IsDepthEnabled = true,
+                    DepthComparison = Comparison.Less,
+                    IsStencilEnabled = false,
+                    DepthWriteMask = DepthWriteMask.All
+                }).AddTo(D3DCompositeDisposable);
+            _renderTarget = new RenderTargetView(Device, _renderTarget2D).AddTo(D3DCompositeDisposable);
+
             Device.ImmediateContext.Rasterizer.SetViewport(0, 0, width, height);
 
             ResetRenderTarget();
@@ -295,11 +331,17 @@ namespace PMMEditor.SharpDxControl
                 return;
             }
 
-            D2DRenderTarget.BeginDraw();
+            var context = Device.ImmediateContext;
+            context.ClearDepthStencilView(_depthStencilView, DepthStencilClearFlags.Depth, 1.0f, 0);
+            context.ClearRenderTargetView(_renderTarget, new RawColor4(0, 0, 0, 0));
+            context.OutputMerger.SetDepthStencilState(_depthStencilState);
+            context.OutputMerger.SetRenderTargets(_depthStencilView, _renderTarget);
+
             Render();
+            D2DRenderTarget.BeginDraw();
             D2DRenderTarget.EndDraw();
 
-            Device.ImmediateContext.Flush();
+            context.Flush();
         }
 
         private void Dispose(bool disposing)
@@ -310,12 +352,16 @@ namespace PMMEditor.SharpDxControl
                 Source = null;
                 Device?.Dispose();
                 D2DRenderTarget?.Dispose();
-                _renderTarget?.Dispose();
+                _renderTarget2D?.Dispose();
                 _d3DSurface?.Dispose();
                 _d2DFactory?.Dispose();
+                D3DCompositeDisposable.Dispose();
             }
         }
+
         protected readonly CompositeDisposable CompositeDisposable = new CompositeDisposable();
+        private DepthStencilState _depthStencilState;
+        private RenderTargetView _renderTarget;
 
         /// <summary> Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. </summary>
         public virtual void Dispose()
