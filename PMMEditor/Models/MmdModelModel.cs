@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Media.Media3D;
 using Livet;
 using PMMEditor.MMDFileParser;
+using System.Numerics;
 
 namespace PMMEditor.Models
 {
@@ -18,7 +18,7 @@ namespace PMMEditor.Models
 
         public class BoneKeyFrame : KeyFrameBase
         {
-            public Point3D Position { get; set; }
+            public Vector3 Position { get; set; }
 
             public Quaternion Quaternion { get; set; }
 
@@ -79,7 +79,7 @@ namespace PMMEditor.Models
                 {
                     var res = new BoneKeyFrame
                     {
-                        Position = new Point3D(i.Translation[0], i.Translation[1], i.Translation[2]),
+                        Position = new Vector3(i.Translation[0], i.Translation[1], i.Translation[2]),
                         Quaternion = new Quaternion(i.Quaternion[0], i.Quaternion[1], i.Quaternion[2], i.Quaternion[3]),
                         InterpolationX = createArray4(i.InterpolationX),
                         InterpolationY = createArray4(i.InterpolationY),

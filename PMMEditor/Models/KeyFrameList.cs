@@ -392,6 +392,11 @@ namespace PMMEditor.Models
             set { _item[key] = value; }
         }
 
+        public T this[int key]
+        {
+            get { return _item[key]; }
+            set { _item[key] = value; }
+        }
         /// <summary>
         /// <see cref = "T:System.Collections.Generic.ICollection`1" /> のキーを保持している
         /// <see cref = "T:System.Collections.Generic.IDictionary`2" /> を取得します。
