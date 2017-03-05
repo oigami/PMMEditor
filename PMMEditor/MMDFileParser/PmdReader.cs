@@ -513,7 +513,7 @@ namespace PMMEditor.MMDFileParser
 
         private T? ParameterCheck<T>(T val, T invalidVal) where T : struct, IComparable<T>
         {
-            return val.CompareTo(invalidVal) == 0 ? val : (T?) null;
+            return val.CompareTo(invalidVal) != 0 ? val : (T?) null;
         }
 
         private PmdStruct.Color ReadColor()
