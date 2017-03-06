@@ -7,6 +7,7 @@ using Livet;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models;
 using PMMEditor.MVVM;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using SharpDX;
 using SharpDX.D3DCompiler;
@@ -44,15 +45,20 @@ namespace PMMEditor.Views.Documents
             MmdModelRendererSource.Bone me, List<MmdModelRendererSource.Bone> bones, Matrix parent,
             ref Matrix[] resultWorlds)
         {
-            var m = me.boneMat * parent;
-            resultWorlds[me.id] = me.offsetMat * m;
-            if (me.firstChild != -1)
+            while (true)
             {
-                CalcBoneWorld(bones[me.firstChild], bones, m, ref resultWorlds);
-            }
-            if (me.sibling != -1)
-            {
-                CalcBoneWorld(bones[me.sibling], bones, parent, ref resultWorlds);
+                var m = me.boneMat * parent;
+                resultWorlds[me.id] = me.offsetMat * m;
+                if (me.firstChild != -1)
+                {
+                    CalcBoneWorld(bones[me.firstChild], bones, m, ref resultWorlds);
+                }
+                if (me.sibling != -1)
+                {
+                    me = bones[me.sibling];
+                    continue;
+                }
+                break;
             }
         }
 
@@ -99,6 +105,11 @@ namespace PMMEditor.Views.Documents
 
     public class MmdModelRendererSource : BindableBase
     {
+        public MmdModelRendererSource(MmdModelModel model)
+        {
+            _model = model;
+        }
+
         private CompositeDisposable D3DObjectCompositeDisposable = new CompositeDisposable();
         private bool disposedValue;
         private Direct3D11.Device _device;
@@ -200,10 +211,6 @@ namespace PMMEditor.Views.Documents
             public float Weight { get; set; }
         }
 
-        public MmdModelRendererSource(MmdModelModel model)
-        {
-            _model = model;
-        }
 
         private void OnUnload()
         {
@@ -218,7 +225,7 @@ namespace PMMEditor.Views.Documents
 
         private void OnLoad()
         {
-            DispatcherHelper.UIDispatcher.Invoke(() => { IsInitialized = true; });
+            IsInitialized = true;
         }
 
         private void CreateData()
@@ -256,7 +263,7 @@ namespace PMMEditor.Views.Documents
                     data.Vertices.Select(_ => new Vertex
                     {
                         Position = new Vector4(_.Position.X, _.Position.Y, _.Position.Z, 1.0f),
-                        Weight = 1,
+                        Weight = _.BoneWeight / 100.0f,
                         Idx = new Int4
                         {
                             X = _.BoneNum1,
@@ -274,14 +281,15 @@ namespace PMMEditor.Views.Documents
 
                 // 頂点インデックス生成
                 var indexNum = data.VertexIndex.Count;
-                IndexBuffer = Direct3D11.Buffer.Create(_device, data.VertexIndex.ToArray(),
-                                                       new Direct3D11.BufferDescription
-                                                       {
-                                                           SizeInBytes = Utilities.SizeOf<ushort>() * indexNum,
-                                                           Usage = Direct3D11.ResourceUsage.Immutable,
-                                                           BindFlags = Direct3D11.BindFlags.IndexBuffer,
-                                                           StructureByteStride = Utilities.SizeOf<ushort>()
-                                                       }).AddTo(D3DObjectCompositeDisposable);
+                IndexBuffer = Direct3D11.Buffer.Create(
+                    _device, data.VertexIndex.ToArray(),
+                    new Direct3D11.BufferDescription
+                    {
+                        SizeInBytes = Utilities.SizeOf<ushort>() * indexNum,
+                        Usage = Direct3D11.ResourceUsage.Immutable,
+                        BindFlags = Direct3D11.BindFlags.IndexBuffer,
+                        StructureByteStride = Utilities.SizeOf<ushort>()
+                    }).AddTo(D3DObjectCompositeDisposable);
             }
 
             CreateBone(data);
@@ -333,7 +341,6 @@ namespace PMMEditor.Views.Documents
                 {
                     ushort parentBoneIndex = (ushort) item.ParentBoneIndex;
 
-
                     //自分と同じ親で自分よりあとのボーンが兄弟になる
                     for (int j = i + 1; j < size; ++j)
                     {
@@ -343,7 +350,6 @@ namespace PMMEditor.Views.Documents
                             break;
                         }
                     }
-
                     outputBone.parent = parentBoneIndex;
                 }
 
@@ -401,22 +407,7 @@ namespace PMMEditor.Views.Documents
 
     public class MmdModelRenderer : ViewModel, IRenderer
     {
-        public MmdModelRendererSource Model
-        {
-            get { return _model; }
-            set
-            {
-                if (_model == value)
-                {
-                    return;
-                }
-                _model = value;
-                if (_model != null)
-                {
-                    _model.Device = _device;
-                }
-            }
-        }
+        public MmdModelRendererSource Model { get; }
 
         private Direct3D11.Device _device;
 
@@ -425,16 +416,15 @@ namespace PMMEditor.Views.Documents
         private Direct3D11.PixelShader _pixelShader;
         private Direct3D11.Buffer _viewProjConstantBuffer;
 
-        private MmdModelRendererSource _model;
-
         public MmdModelRenderer(MmdModelRendererSource model)
         {
             Model = model;
+            IsInitialized = Model.ObserveProperty(_ => _.IsInitialized).ToReactiveProperty().AddTo(CompositeDisposable);
         }
 
         public MmdModelRenderer(MmdModelModel model) : this(new MmdModelRendererSource(model)) {}
 
-        private bool IsInitialized;
+        private readonly ReactiveProperty<bool> IsInitialized;
 
         private void InitializeInternal()
         {
@@ -482,11 +472,7 @@ namespace PMMEditor.Views.Documents
                 Direct3D11.Buffer.Create(_device, Direct3D11.BindFlags.ConstantBuffer, ref m, 0,
                                          Direct3D11.ResourceUsage.Immutable).AddTo(CompositeDisposable);
 
-            if (Model != null)
-            {
-                Model.Device = _device;
-            }
-            IsInitialized = true;
+            Model.Device = _device;
         }
 
         public void Initialize(Direct3D11.Device device)
@@ -497,7 +483,7 @@ namespace PMMEditor.Views.Documents
 
         public void Render(Direct3D11.DeviceContext target)
         {
-            if (IsInitialized == false || Model == null || Model.IsInitialized == false)
+            if (IsInitialized.Value == false)
             {
                 return;
             }
@@ -511,8 +497,8 @@ namespace PMMEditor.Views.Documents
             target.PixelShader.Set(_pixelShader);
 
             target.InputAssembler.PrimitiveTopology = Direct3D.PrimitiveTopology.TriangleList;
-            _model.BoneCalculator.Update(target);
-            target.VertexShader.SetShaderResource(0, _model.BoneCalculator.BoneSrv);
+            Model.BoneCalculator.Update(target);
+            target.VertexShader.SetShaderResource(0, Model.BoneCalculator.BoneSrv);
             foreach (var material in Model.Materials)
             {
                 target.PixelShader.SetConstantBuffer(0, material.PixelConstantBuffer0);
