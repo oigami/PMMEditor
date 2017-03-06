@@ -48,7 +48,20 @@ namespace PMMEditor.Views.Documents
         }
 
         private void ChangedOnCollectionChanged(
-            object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs) {}
+            object sender, NotifyCollectionChangedEventArgs args)
+        {
+            switch (args.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    int index = args.NewStartingIndex;
+                    foreach (IRenderer argsNewItem in args.NewItems)
+                    {
+                        _renderer.Children.Insert(index++, argsNewItem);
+                    }
+                    break;
+                // TODO: 削除時などの処理
+            }
+        }
 
         private readonly MainRenderer _renderer = new MainRenderer();
 

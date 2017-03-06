@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Livet;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models;
+using PMMEditor.MVVM;
 using Reactive.Bindings.Extensions;
 using SharpDX;
 using SharpDX.D3DCompiler;
@@ -27,6 +29,8 @@ namespace PMMEditor.Views.Documents
     {
         private MmdModelModel _model;
         private readonly Direct3D11.Device _device;
+        private List<MmdModelRendererSource.Bone> _bones;
+        private Direct3D11.Texture2D _boneTexture2D;
 
         public Direct3D11.ShaderResourceView BoneSrv { get; private set; }
 
@@ -54,9 +58,10 @@ namespace PMMEditor.Views.Documents
         public void CreateData(MmdModelModel model, List<MmdModelRendererSource.Bone> bones)
         {
             _model = model;
+            _bones = bones;
             int boneNum = bones.Count;
 
-            Direct3D11.Texture2D boneTexture2D = new Direct3D11.Texture2D(
+            _boneTexture2D = new Direct3D11.Texture2D(
                 _device,
                 new Direct3D11.Texture2DDescription
                 {
@@ -71,26 +76,43 @@ namespace PMMEditor.Views.Documents
                     SampleDescription = new SampleDescription(1, 0),
                     Format = Format.R32G32B32A32_Float
                 });
-            BoneSrv = new Direct3D11.ShaderResourceView(_device, boneTexture2D);
+            BoneSrv = new Direct3D11.ShaderResourceView(_device, _boneTexture2D);
+        }
 
-            foreach (var i in Enumerable.Range(0, bones.Count))
+        public void Update(Direct3D11.DeviceContext context)
+        {
+            foreach (var i in Enumerable.Range(0, _bones.Count))
             {
-                var boneKeyFrames = _model.BoneKeyList.First(_ => _.Name == bones[i].name);
+                var boneKeyFrames = _model.BoneKeyList.First(_ => _.Name == _bones[i].name);
 
                 var pos = boneKeyFrames[0].Position;
                 var q = boneKeyFrames[0].Quaternion;
-                bones[i].boneMat = Matrix.RotationQuaternion(new Quaternion(q.X, q.Y, q.Z, q.W))
-                                   * Matrix.Translation(pos.X, pos.Y, pos.Z) * bones[i].initMat;
+                _bones[i].boneMat = Matrix.RotationQuaternion(new Quaternion(q.X, q.Y, q.Z, q.W))
+                                    * Matrix.Translation(pos.X, pos.Y, pos.Z) * _bones[i].initMat;
             }
-            Matrix[] worldBones = Enumerable.Range(0, bones.Count).Select(_ => Matrix.Identity).ToArray();
-            CalcBoneWorld(bones[0], bones, Matrix.Identity, ref worldBones);
-            _device.ImmediateContext.UpdateSubresource(worldBones, boneTexture2D);
+            Matrix[] worldBones = Enumerable.Range(0, _bones.Count).Select(_ => Matrix.Identity).ToArray();
+            CalcBoneWorld(_bones[0], _bones, Matrix.Identity, ref worldBones);
+            context.UpdateSubresource(worldBones, _boneTexture2D);
         }
     }
 
-    public class MmdModelRendererSource : IDisposable
+    public class MmdModelRendererSource : BindableBase
     {
+        private LivetCompositeDisposable D3DObjectCompositeDisposable = new LivetCompositeDisposable();
+        private bool disposedValue;
         private Direct3D11.Device _device;
+
+        #region IsInitialized変更通知プロパティ
+
+        private bool _isInitialized;
+
+        public bool IsInitialized
+        {
+            get { return _isInitialized; }
+            private set { SetProperty(ref _isInitialized, value); }
+        }
+
+        #endregion
 
         public Direct3D11.Device Device
         {
@@ -102,25 +124,62 @@ namespace PMMEditor.Views.Documents
                     return;
                 }
                 _device = value;
-                D3DObjectCompositeDisposable.Dispose();
-                D3DObjectCompositeDisposable = new LivetCompositeDisposable();
-                CreateData();
+
+                Task.Run(() => CreateData());
             }
         }
 
-        private LivetCompositeDisposable D3DObjectCompositeDisposable = new LivetCompositeDisposable();
         private readonly MmdModelModel _model;
         private List<Bone> _bones;
 
+        #region BoneCalculator変更通知プロパティ
+
+        private MmdModelBoneCalculator _boneCalculator;
+
+        public MmdModelBoneCalculator BoneCalculator
+        {
+            get { return _boneCalculator; }
+            private set { SetProperty(ref _boneCalculator, value); }
+        }
+
+        #endregion
+
+        #region VertexBufferBinding変更通知プロパティ
+
         private Direct3D11.Buffer _verteBuffer;
+        private Direct3D11.VertexBufferBinding _vertexBufferBinding;
 
-        public MmdModelBoneCalculator BoneCalculator { get; private set; }
+        public Direct3D11.VertexBufferBinding VertexBufferBinding
+        {
+            get { return _vertexBufferBinding; }
+            private set { SetProperty(ref _vertexBufferBinding, value); }
+        }
 
-        public Direct3D11.VertexBufferBinding _vertexBufferBinding { get; private set; }
+        #endregion
 
-        public Direct3D11.Buffer _indexBuffer { get; private set; }
+        #region IndexBuffer変更通知プロパティ
 
-        public List<Material> Materials { get; private set; }
+        private Direct3D11.Buffer _indexBuffer;
+
+        public Direct3D11.Buffer IndexBuffer
+        {
+            get { return _indexBuffer; }
+            private set { SetProperty(ref _indexBuffer, value); }
+        }
+
+        #endregion
+
+        #region Materials変更通知プロパティ
+
+        private List<Material> _materials;
+
+        public List<Material> Materials
+        {
+            get { return _materials; }
+            private set { SetProperty(ref _materials, value); }
+        }
+
+        #endregion
 
         public class Material
         {
@@ -129,11 +188,6 @@ namespace PMMEditor.Views.Documents
             public int IndexNum { get; set; }
 
             public Direct3D11.Buffer PixelConstantBuffer0 { get; set; }
-        }
-
-        private struct Int2
-        {
-            public int x, y;
         }
 
         private struct Vertex
@@ -150,8 +204,25 @@ namespace PMMEditor.Views.Documents
             _model = model;
         }
 
+        private void OnUnload()
+        {
+            D3DObjectCompositeDisposable.Dispose();
+            D3DObjectCompositeDisposable = new LivetCompositeDisposable();
+            IsInitialized = false;
+            BoneCalculator = null;
+            VertexBufferBinding = new Direct3D11.VertexBufferBinding();
+            IndexBuffer = null;
+            Materials = null;
+        }
+
+        private void OnLoad()
+        {
+            DispatcherHelper.UIDispatcher.Invoke(() => { IsInitialized = true; });
+        }
+
         private void CreateData()
         {
+            OnUnload();
             if (_device == null)
             {
                 return;
@@ -198,23 +269,24 @@ namespace PMMEditor.Views.Documents
                         BindFlags = Direct3D11.BindFlags.VertexBuffer,
                         StructureByteStride = typeSize
                     }).AddTo(D3DObjectCompositeDisposable);
-                _vertexBufferBinding = new Direct3D11.VertexBufferBinding(_verteBuffer, typeSize, 0);
+                VertexBufferBinding = new Direct3D11.VertexBufferBinding(_verteBuffer, typeSize, 0);
 
                 // 頂点インデックス生成
                 var indexNum = data.VertexIndex.Count;
-                _indexBuffer = Direct3D11.Buffer.Create(_device, data.VertexIndex.ToArray(),
-                                                        new Direct3D11.BufferDescription
-                                                        {
-                                                            SizeInBytes = Utilities.SizeOf<ushort>() * indexNum,
-                                                            Usage = Direct3D11.ResourceUsage.Immutable,
-                                                            BindFlags = Direct3D11.BindFlags.IndexBuffer,
-                                                            StructureByteStride = Utilities.SizeOf<ushort>()
-                                                        }).AddTo(D3DObjectCompositeDisposable);
+                IndexBuffer = Direct3D11.Buffer.Create(_device, data.VertexIndex.ToArray(),
+                                                       new Direct3D11.BufferDescription
+                                                       {
+                                                           SizeInBytes = Utilities.SizeOf<ushort>() * indexNum,
+                                                           Usage = Direct3D11.ResourceUsage.Immutable,
+                                                           BindFlags = Direct3D11.BindFlags.IndexBuffer,
+                                                           StructureByteStride = Utilities.SizeOf<ushort>()
+                                                       }).AddTo(D3DObjectCompositeDisposable);
             }
 
             CreateBone(data);
             BoneCalculator = new MmdModelBoneCalculator(_device);
             BoneCalculator.CreateData(_model, _bones);
+            OnLoad();
         }
 
         public class Bone
@@ -305,8 +377,6 @@ namespace PMMEditor.Views.Documents
 
         #region IDisposable Support
 
-        private bool disposedValue; // 重複する呼び出しを検出するには
-
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -363,72 +433,82 @@ namespace PMMEditor.Views.Documents
 
         public MmdModelRenderer(MmdModelModel model) : this(new MmdModelRendererSource(model)) {}
 
+        private bool IsInitialized;
+
         public void Initialize(Direct3D11.Device device)
         {
-            _device = device;
-            // 頂点シェーダ生成
-            var shaderSource = Resource1.TestShader;
-            // UTF-8 BOMチェック
-            if (3 <= shaderSource.Length
-                && shaderSource[0] == 0xEF && shaderSource[1] == 0xBB && shaderSource[2] == 0xBF)
+            Task.Run(() =>
             {
-                for (int i = 0; i < 3; i++)
+                _device = device;
+                // 頂点シェーダ生成
+                var shaderSource = Resource1.TestShader;
+                // UTF-8 BOMチェック
+                if (3 <= shaderSource.Length
+                    && shaderSource[0] == 0xEF && shaderSource[1] == 0xBB && shaderSource[2] == 0xBF)
                 {
-                    shaderSource[i] = (byte) ' ';
+                    for (int i = 0; i < 3; i++)
+                    {
+                        shaderSource[i] = (byte) ' ';
+                    }
                 }
-            }
-            var vertexShaderByteCode = ShaderBytecode.Compile(shaderSource, "VS", "vs_4_0", ShaderFlags.Debug);
-            if (vertexShaderByteCode.HasErrors)
-            {
-                Console.WriteLine(vertexShaderByteCode.Message);
-                return;
-            }
-            _vertexShader = new Direct3D11.VertexShader(_device, vertexShaderByteCode);
+                var vertexShaderByteCode = ShaderBytecode.Compile(shaderSource, "VS", "vs_4_0", ShaderFlags.Debug);
+                if (vertexShaderByteCode.HasErrors)
+                {
+                    Console.WriteLine(vertexShaderByteCode.Message);
+                    return;
+                }
+                _vertexShader = new Direct3D11.VertexShader(_device, vertexShaderByteCode);
 
-            // インプットレイアウト生成
-            var inputSignature = ShaderSignature.GetInputSignature(vertexShaderByteCode);
-            _inputLayout = new Direct3D11.InputLayout(_device, inputSignature, new[]
-            {
-                new Direct3D11.InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
-                new Direct3D11.InputElement("BONE_INDEX", 0, Format.R32G32B32A32_SInt, 16, 0),
-                new Direct3D11.InputElement("BONE_WEIGHT", 0, Format.R32_Float, 32, 0)
+                // インプットレイアウト生成
+                var inputSignature = ShaderSignature.GetInputSignature(vertexShaderByteCode);
+                _inputLayout = new Direct3D11.InputLayout(_device, inputSignature, new[]
+                {
+                    new Direct3D11.InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
+                    new Direct3D11.InputElement("BONE_INDEX", 0, Format.R32G32B32A32_SInt, 16, 0),
+                    new Direct3D11.InputElement("BONE_WEIGHT", 0, Format.R32_Float, 32, 0)
+                });
+
+                // ピクセルシェーダ生成
+                var pixelShaderByteCode = ShaderBytecode.Compile(shaderSource, "PS", "ps_4_0", ShaderFlags.Debug);
+                if (pixelShaderByteCode.HasErrors)
+                {
+                    Console.WriteLine(pixelShaderByteCode.Message);
+                    return;
+                }
+                _pixelShader = new Direct3D11.PixelShader(_device, pixelShaderByteCode);
+
+                var m = Matrix.LookAtLH(new Vector3(0, 0, -50), new Vector3(0, 0, 0), Vector3.Up);
+                m *= Matrix.PerspectiveFovLH((float) Math.PI / 3, 1.4f, 0.1f, 10000000f);
+                m.Transpose();
+                _viewProjConstantBuffer =
+                    Direct3D11.Buffer.Create(_device, Direct3D11.BindFlags.ConstantBuffer, ref m, 0,
+                                             Direct3D11.ResourceUsage.Immutable).AddTo(CompositeDisposable);
+
+                if (Model != null)
+                {
+                    Model.Device = _device;
+                }
+                IsInitialized = true;
             });
-
-            // ピクセルシェーダ生成
-            var pixelShaderByteCode = ShaderBytecode.Compile(shaderSource, "PS", "ps_4_0", ShaderFlags.Debug);
-            if (pixelShaderByteCode.HasErrors)
-            {
-                Console.WriteLine(pixelShaderByteCode.Message);
-                return;
-            }
-            _pixelShader = new Direct3D11.PixelShader(_device, pixelShaderByteCode);
-
-            var m = Matrix.LookAtLH(new Vector3(0, 0, -50), new Vector3(0, 0, 0), Vector3.Up);
-            m *= Matrix.PerspectiveFovLH((float) Math.PI / 3, 1.4f, 0.1f, 10000000f);
-            m.Transpose();
-            _viewProjConstantBuffer =
-                Direct3D11.Buffer.Create(_device, Direct3D11.BindFlags.ConstantBuffer, ref m, 0,
-                                         Direct3D11.ResourceUsage.Immutable).AddTo(CompositeDisposable);
-
-            if (Model != null)
-            {
-                Model.Device = _device;
-            }
         }
 
         public void Render(Direct3D11.DeviceContext target)
         {
+            if (IsInitialized == false || Model == null || Model.IsInitialized == false)
+            {
+                return;
+            }
             target.InputAssembler.InputLayout = _inputLayout;
 
             target.VertexShader.Set(_vertexShader);
             target.VertexShader.SetConstantBuffer(0, _viewProjConstantBuffer);
-            target.InputAssembler.SetVertexBuffers(0, Model._vertexBufferBinding);
-            target.InputAssembler.SetIndexBuffer(Model._indexBuffer, Format.R16_UInt, 0);
+            target.InputAssembler.SetVertexBuffers(0, Model.VertexBufferBinding);
+            target.InputAssembler.SetIndexBuffer(Model.IndexBuffer, Format.R16_UInt, 0);
 
             target.PixelShader.Set(_pixelShader);
 
             target.InputAssembler.PrimitiveTopology = Direct3D.PrimitiveTopology.TriangleList;
-
+            _model.BoneCalculator.Update(target);
             target.VertexShader.SetShaderResource(0, _model.BoneCalculator.BoneSrv);
             foreach (var material in Model.Materials)
             {
