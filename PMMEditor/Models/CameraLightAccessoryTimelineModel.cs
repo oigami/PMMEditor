@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Linq;
-using System.Reactive.Disposables;
-using Livet;
+using PMMEditor.MVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 
 namespace PMMEditor.Models
 {
-    internal class CameraLightAccessoryTimelineModel : NotificationObject, IDisposable
+    internal class CameraLightAccessoryTimelineModel : BindableDisposableBase
     {
-        private CompositeDisposable Disposable { get; } = new CompositeDisposable();
-
         public ReadOnlyReactiveCollection<KeyFrameList<MmdAccessoryModel.BoneKeyFrame>> AccessoryKeyFrameLists { get; }
 
         public ReadOnlyReactiveCollection<KeyFrameList<MmdCameraModel.BoneKeyFrame>> CamerakeyFrameLists { get; }
@@ -20,7 +17,7 @@ namespace PMMEditor.Models
         private void MaxFrameEventSubscribe<T>(ReadOnlyReactiveCollection<KeyFrameList<T>> list) where T : KeyFrameBase
         {
             list.ObserveElementProperty(i => i.MaxFrame)
-                .Subscribe(i => MaxFrameIndex = Math.Max(MaxFrameIndex, i.Value)).AddTo(Disposable);
+                .Subscribe(i => MaxFrameIndex = Math.Max(MaxFrameIndex, i.Value)).AddTo(CompositeDisposable);
             foreach (var item in list)
             {
                 MaxFrameIndex = Math.Max(MaxFrameIndex, item.MaxFrame);
@@ -30,18 +27,19 @@ namespace PMMEditor.Models
                 .Subscribe(item =>
                 {
                     item.ObserveProperty(i => i.MaxFrame).Subscribe(i => MaxFrameIndex = Math.Max(MaxFrameIndex, i))
-                        .AddTo(Disposable);
+                        .AddTo(CompositeDisposable);
                     foreach (var boneKeyFrame in item)
                     {
                         MaxFrameIndex = Math.Max(boneKeyFrame.Key, MaxFrameIndex);
                     }
-                }).AddTo(Disposable);
+                }).AddTo(CompositeDisposable);
         }
 
         public CameraLightAccessoryTimelineModel(Model model)
         {
             AccessoryKeyFrameLists =
-                model.MmdAccessoryList.List.ToReadOnlyReactiveCollection(i => i.BoneKeyList[0]).AddTo(Disposable);
+                model.MmdAccessoryList.List.ToReadOnlyReactiveCollection(i => i.BoneKeyList[0])
+                     .AddTo(CompositeDisposable);
             MaxFrameEventSubscribe(AccessoryKeyFrameLists);
 
             CamerakeyFrameLists = model.Camera.BoneKeyList.ToReadOnlyReactiveCollection();
@@ -87,21 +85,7 @@ namespace PMMEditor.Models
         public int MaxFrameIndex
         {
             get { return _MaxFrameIndex; }
-            set
-            {
-                if (_MaxFrameIndex == value)
-                {
-                    return;
-                }
-                _MaxFrameIndex = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        /// <summary> アンマネージ リソースの解放またはリセットに関連付けられているアプリケーション定義のタスクを実行します。 </summary>
-        public void Dispose()
-        {
-            Disposable.Dispose();
+            set { SetProperty(ref _MaxFrameIndex, value); }
         }
 
         #endregion

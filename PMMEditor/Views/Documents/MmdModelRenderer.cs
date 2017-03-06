@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Livet;
 using PMMEditor.MMDFileParser;
@@ -98,7 +99,7 @@ namespace PMMEditor.Views.Documents
 
     public class MmdModelRendererSource : BindableBase
     {
-        private LivetCompositeDisposable D3DObjectCompositeDisposable = new LivetCompositeDisposable();
+        private CompositeDisposable D3DObjectCompositeDisposable = new CompositeDisposable();
         private bool disposedValue;
         private Direct3D11.Device _device;
 
@@ -207,7 +208,7 @@ namespace PMMEditor.Views.Documents
         private void OnUnload()
         {
             D3DObjectCompositeDisposable.Dispose();
-            D3DObjectCompositeDisposable = new LivetCompositeDisposable();
+            D3DObjectCompositeDisposable = new CompositeDisposable();
             IsInitialized = false;
             BoneCalculator = null;
             VertexBufferBinding = new Direct3D11.VertexBufferBinding();
@@ -435,61 +436,63 @@ namespace PMMEditor.Views.Documents
 
         private bool IsInitialized;
 
+        private void InitializeInternal()
+        {
+            // 頂点シェーダ生成
+            var shaderSource = Resource1.TestShader;
+            // UTF-8 BOMチェック
+            if (3 <= shaderSource.Length
+                && shaderSource[0] == 0xEF && shaderSource[1] == 0xBB && shaderSource[2] == 0xBF)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    shaderSource[i] = (byte) ' ';
+                }
+            }
+            var vertexShaderByteCode = ShaderBytecode.Compile(shaderSource, "VS", "vs_4_0", ShaderFlags.Debug);
+            if (vertexShaderByteCode.HasErrors)
+            {
+                Console.WriteLine(vertexShaderByteCode.Message);
+                return;
+            }
+            _vertexShader = new Direct3D11.VertexShader(_device, vertexShaderByteCode);
+
+            // インプットレイアウト生成
+            var inputSignature = ShaderSignature.GetInputSignature(vertexShaderByteCode);
+            _inputLayout = new Direct3D11.InputLayout(_device, inputSignature, new[]
+            {
+                new Direct3D11.InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
+                new Direct3D11.InputElement("BONE_INDEX", 0, Format.R32G32B32A32_SInt, 16, 0),
+                new Direct3D11.InputElement("BONE_WEIGHT", 0, Format.R32_Float, 32, 0)
+            });
+
+            // ピクセルシェーダ生成
+            var pixelShaderByteCode = ShaderBytecode.Compile(shaderSource, "PS", "ps_4_0", ShaderFlags.Debug);
+            if (pixelShaderByteCode.HasErrors)
+            {
+                Console.WriteLine(pixelShaderByteCode.Message);
+                return;
+            }
+            _pixelShader = new Direct3D11.PixelShader(_device, pixelShaderByteCode);
+
+            var m = Matrix.LookAtLH(new Vector3(0, 0, -50), new Vector3(0, 0, 0), Vector3.Up);
+            m *= Matrix.PerspectiveFovLH((float) Math.PI / 3, 1.4f, 0.1f, 10000000f);
+            m.Transpose();
+            _viewProjConstantBuffer =
+                Direct3D11.Buffer.Create(_device, Direct3D11.BindFlags.ConstantBuffer, ref m, 0,
+                                         Direct3D11.ResourceUsage.Immutable).AddTo(CompositeDisposable);
+
+            if (Model != null)
+            {
+                Model.Device = _device;
+            }
+            IsInitialized = true;
+        }
+
         public void Initialize(Direct3D11.Device device)
         {
-            Task.Run(() =>
-            {
-                _device = device;
-                // 頂点シェーダ生成
-                var shaderSource = Resource1.TestShader;
-                // UTF-8 BOMチェック
-                if (3 <= shaderSource.Length
-                    && shaderSource[0] == 0xEF && shaderSource[1] == 0xBB && shaderSource[2] == 0xBF)
-                {
-                    for (int i = 0; i < 3; i++)
-                    {
-                        shaderSource[i] = (byte) ' ';
-                    }
-                }
-                var vertexShaderByteCode = ShaderBytecode.Compile(shaderSource, "VS", "vs_4_0", ShaderFlags.Debug);
-                if (vertexShaderByteCode.HasErrors)
-                {
-                    Console.WriteLine(vertexShaderByteCode.Message);
-                    return;
-                }
-                _vertexShader = new Direct3D11.VertexShader(_device, vertexShaderByteCode);
-
-                // インプットレイアウト生成
-                var inputSignature = ShaderSignature.GetInputSignature(vertexShaderByteCode);
-                _inputLayout = new Direct3D11.InputLayout(_device, inputSignature, new[]
-                {
-                    new Direct3D11.InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
-                    new Direct3D11.InputElement("BONE_INDEX", 0, Format.R32G32B32A32_SInt, 16, 0),
-                    new Direct3D11.InputElement("BONE_WEIGHT", 0, Format.R32_Float, 32, 0)
-                });
-
-                // ピクセルシェーダ生成
-                var pixelShaderByteCode = ShaderBytecode.Compile(shaderSource, "PS", "ps_4_0", ShaderFlags.Debug);
-                if (pixelShaderByteCode.HasErrors)
-                {
-                    Console.WriteLine(pixelShaderByteCode.Message);
-                    return;
-                }
-                _pixelShader = new Direct3D11.PixelShader(_device, pixelShaderByteCode);
-
-                var m = Matrix.LookAtLH(new Vector3(0, 0, -50), new Vector3(0, 0, 0), Vector3.Up);
-                m *= Matrix.PerspectiveFovLH((float) Math.PI / 3, 1.4f, 0.1f, 10000000f);
-                m.Transpose();
-                _viewProjConstantBuffer =
-                    Direct3D11.Buffer.Create(_device, Direct3D11.BindFlags.ConstantBuffer, ref m, 0,
-                                             Direct3D11.ResourceUsage.Immutable).AddTo(CompositeDisposable);
-
-                if (Model != null)
-                {
-                    Model.Device = _device;
-                }
-                IsInitialized = true;
-            });
+            _device = device;
+            Task.Run(() => InitializeInternal());
         }
 
         public void Render(Direct3D11.DeviceContext target)

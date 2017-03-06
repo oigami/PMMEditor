@@ -44,16 +44,7 @@ namespace PMMEditor.ViewModels.Panes
         public PmmStruct.ModelData SelectedModel
         {
             get { return _SelectedModel; }
-
-            set
-            {
-                if (_SelectedModel == value)
-                {
-                    return;
-                }
-                _SelectedModel = value;
-                RaisePropertyChanged();
-            }
+            set { SetProperty(ref _SelectedModel, value); }
         }
 
         #endregion SelectedModel変更通知プロパティ

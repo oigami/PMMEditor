@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Reactive.Disposables;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Livet;
 
 namespace PMMEditor.MVVM
@@ -20,5 +17,34 @@ namespace PMMEditor.MVVM
             RaisePropertyChanged(propertyName);
             return true;
         }
+    }
+
+    public class BindableDisposableBase : BindableBase, IDisposable
+    {
+        protected CompositeDisposable CompositeDisposable = new CompositeDisposable();
+
+        #region IDisposable Support
+
+        private bool disposedValue; // 重複する呼び出しを検出するには
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    CompositeDisposable.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public virtual void Dispose()
+        {
+            Dispose(true);
+        }
+
+        #endregion
     }
 }

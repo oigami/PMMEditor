@@ -5,14 +5,14 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
-using Livet;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using PMMEditor.MMDFileParser;
+using PMMEditor.MVVM;
 
 namespace PMMEditor.Models
 {
-    public class Model : NotificationObject
+    public class Model : BindableBase
     {
         /*
          * NotificationObjectはプロパティ変更通知の仕組みを実装したオブジェクトです。
@@ -26,7 +26,7 @@ namespace PMMEditor.Models
             await Camera.Set(PmmStruct.CameraKeyFrames, PmmStruct.CameraInitFrame);
             await Light.Set(PmmStruct.LightKeyFrames, PmmStruct.LightInitFrame);
             await MmdAccessoryList.Set(PmmStruct.AccessoryDatas);
-            await _MmdModelList.Set(PmmStruct.ModelDatas);
+            await MmdModelList.Set(PmmStruct.ModelDatas);
         }
 
         public async Task SavePmm(string filename)
@@ -184,98 +184,32 @@ namespace PMMEditor.Models
         public PmmStruct PmmStruct
         {
             get { return _PmmStruct; }
-            set
-            {
-                if (_PmmStruct == value)
-                {
-                    return;
-                }
-                _PmmStruct = value;
-                RaisePropertyChanged();
-            }
+            private set { SetProperty(ref _PmmStruct, value); }
         }
 
         #endregion
 
         #region MmdAccessoryList変更通知プロパティ
 
-        private MmdAccessoryList _mmdAccessoryList = new MmdAccessoryList();
-
-        public MmdAccessoryList MmdAccessoryList
-        {
-            get { return _mmdAccessoryList; }
-            set
-            {
-                if (_mmdAccessoryList == value)
-                {
-                    return;
-                }
-                _mmdAccessoryList = value;
-                RaisePropertyChanged();
-            }
-        }
+        public MmdAccessoryList MmdAccessoryList { get; } = new MmdAccessoryList();
 
         #endregion
 
         #region MmdModelList変更通知プロパティ
 
-        private MmdModelList _MmdModelList = new MmdModelList();
-
-        public MmdModelList MmdModelList
-        {
-            get { return _MmdModelList; }
-            set
-            {
-                if (_MmdModelList == value)
-                {
-                    return;
-                }
-                _MmdModelList = value;
-                RaisePropertyChanged();
-            }
-        }
+        public MmdModelList MmdModelList { get; } = new MmdModelList();
 
         #endregion
 
-
-
         #region Camera変更通知プロパティ
 
-        private MmdCameraModel _Camera = new MmdCameraModel();
-
-        public MmdCameraModel Camera
-        {
-            get { return _Camera; }
-            set
-            {
-                if (_Camera == value)
-                {
-                    return;
-                }
-                _Camera = value;
-                RaisePropertyChanged();
-            }
-        }
+        public MmdCameraModel Camera { get; } = new MmdCameraModel();
 
         #endregion
 
         #region Light変更通知プロパティ
 
-        private MmdLightModel _Light = new MmdLightModel();
-
-        public MmdLightModel Light
-        {
-            get { return _Light; }
-            set
-            {
-                if (_Light == value)
-                {
-                    return;
-                }
-                _Light = value;
-                RaisePropertyChanged();
-            }
-        }
+        public MmdLightModel Light { get; } = new MmdLightModel();
 
         #endregion
     }

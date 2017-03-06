@@ -1,8 +1,8 @@
-﻿using Livet;
+﻿using PMMEditor.MVVM;
 
 namespace PMMEditor.ViewModels.Documents
 {
-    public abstract class DocumentViewModelBase : ViewModel
+    public abstract class DocumentViewModelBase : BindableDisposableBase
     {
         #region Title変更通知プロパティ
 
@@ -23,15 +23,7 @@ namespace PMMEditor.ViewModels.Documents
         public bool IsSelected
         {
             get { return _IsSelected; }
-            set
-            {
-                if (_IsSelected == value)
-                {
-                    return;
-                }
-                _IsSelected = value;
-                RaisePropertyChanged();
-            }
+            set { SetProperty(ref _IsSelected, value); }
         }
 
         #endregion
@@ -43,15 +35,7 @@ namespace PMMEditor.ViewModels.Documents
         public bool IsAcitive
         {
             get { return _IsAcitive; }
-            set
-            {
-                if (_IsAcitive == value)
-                {
-                    return;
-                }
-                _IsAcitive = value;
-                RaisePropertyChanged();
-            }
+            set { SetProperty(ref _IsAcitive, value); }
         }
 
         #endregion

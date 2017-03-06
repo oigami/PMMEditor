@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Livet;
 using PMMEditor.Models;
 using Livet.Commands;
+using PMMEditor.MVVM;
 using PMMEditor.Views.Documents;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 
 namespace PMMEditor.ViewModels.Documents
 {
-    public class TimelineFrameData : ViewModel
+    public class TimelineFrameData : BindableDisposableBase
     {
         private readonly KeyFrameBase _keyFrameBase;
 
@@ -48,7 +48,7 @@ namespace PMMEditor.ViewModels.Documents
         }
     }
 
-    public class TimelineKeyFrameList : ViewModel
+    public class TimelineKeyFrameList : BindableDisposableBase
     {
         #region IsExpanded変更通知プロパティ
 
@@ -57,15 +57,7 @@ namespace PMMEditor.ViewModels.Documents
         public bool IsExpanded
         {
             get { return _IsExpanded; }
-            set
-            {
-                if (_IsExpanded == value)
-                {
-                    return;
-                }
-                _IsExpanded = value;
-                RaisePropertyChanged();
-            }
+            set { SetProperty(ref _IsExpanded, value); }
         }
 
         #endregion
@@ -152,16 +144,10 @@ namespace PMMEditor.ViewModels.Documents
         public GridNumberList GridFrameNumberList
         {
             get { return _GridFrameNumberList; }
-            set
-            {
-                if (_GridFrameNumberList == value)
-                {
-                    return;
-                }
-                _GridFrameNumberList = value;
-                RaisePropertyChanged();
-            }
+            set { SetProperty(ref _GridFrameNumberList, value); }
         }
+
+        #endregion
 
         #region KeyFrameMoveCommand
 
@@ -170,8 +156,6 @@ namespace PMMEditor.ViewModels.Documents
         public abstract ListenerCommand<KeyFrameMoveEventArgs> KeyFrameMoveDeltaCommand { get; protected set; }
 
         public abstract ListenerCommand<KeyFrameMoveEventArgs> KeyFrameMoveCompletedCommand { get; protected set; }
-
-        #endregion
 
         #endregion
     }

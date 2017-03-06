@@ -1,6 +1,4 @@
-﻿using System.Windows.Controls;
-
-namespace PMMEditor.Views.Documents
+﻿namespace PMMEditor.Views.Documents
 {
     /// <summary>
     /// MainCameraView.xaml の相互作用ロジック

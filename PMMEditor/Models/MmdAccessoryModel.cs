@@ -2,12 +2,12 @@
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
-using Livet;
 using PMMEditor.MMDFileParser;
+using PMMEditor.MVVM;
 
 namespace PMMEditor.Models
 {
-    public class MmdAccessoryModel : NotificationObject
+    public class MmdAccessoryModel : BindableBase
     {
         public class BoneKeyFrame : KeyFrameBase
         {
@@ -35,15 +35,7 @@ namespace PMMEditor.Models
         public ReadOnlyCollection<KeyFrameList<BoneKeyFrame>> BoneKeyList
         {
             get { return _BoneKeyList; }
-            set
-            {
-                if (_BoneKeyList == value)
-                {
-                    return;
-                }
-                _BoneKeyList = value;
-                RaisePropertyChanged();
-            }
+            private set { SetProperty(ref _BoneKeyList, value); }
         }
 
         #endregion

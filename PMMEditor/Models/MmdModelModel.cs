@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Livet;
 using PMMEditor.MMDFileParser;
 using System.Numerics;
+using PMMEditor.MVVM;
 
 namespace PMMEditor.Models
 {
-    public class MmdModelModel : NotificationObject
+    public class MmdModelModel : BindableBase
     {
         private PmmStruct.ModelData _modelData;
         /*
@@ -42,15 +42,7 @@ namespace PMMEditor.Models
         public ReadOnlyCollection<KeyFrameList<BoneKeyFrame>> BoneKeyList
         {
             get { return _BoneKeyList; }
-            set
-            {
-                if (_BoneKeyList == value)
-                {
-                    return;
-                }
-                _BoneKeyList = value;
-                RaisePropertyChanged();
-            }
+            set { SetProperty(ref _BoneKeyList, value); }
         }
 
         #endregion

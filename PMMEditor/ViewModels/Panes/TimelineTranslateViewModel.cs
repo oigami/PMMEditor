@@ -26,15 +26,7 @@ namespace PMMEditor.ViewModels.Panes
         public double Width
         {
             get { return _Width; }
-            set
-            {
-                if (_Width == value)
-                {
-                    return;
-                }
-                _Width = value;
-                RaisePropertyChanged();
-            }
+            set { SetProperty(ref _Width, value); }
         }
 
         #endregion

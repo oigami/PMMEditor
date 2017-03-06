@@ -33,15 +33,7 @@ namespace PMMEditor.ViewModels.Panes
         public PmmStruct.AccessoryData SelectedAccessory
         {
             get { return _SelectedAccessory; }
-            set
-            {
-                if (_SelectedAccessory == value)
-                {
-                    return;
-                }
-                _SelectedAccessory = value;
-                RaisePropertyChanged();
-            }
+            set { SetProperty(ref _SelectedAccessory, value); }
         }
 
         #endregion

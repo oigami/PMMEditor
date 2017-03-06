@@ -196,7 +196,6 @@
     <Compile Include="ViewModels\Panes\HeaderViewModel.cs" />
     <Compile Include="ViewModels\Panes\PaneViewModelBase.cs" />
     <Compile Include="ViewModels\Panes\TimelineTranslateViewModel.cs" />
-    <Compile Include="ViewModels\ModelRenderTest.cs" />
     <Compile Include="Views\Behaviors\ScrollSyncronizingBehavior.cs" />
     <Compile Include="Views\Documents\MainCameraView.xaml.cs">
       <DependentUpon>MainCameraView.xaml</DependentUpon>

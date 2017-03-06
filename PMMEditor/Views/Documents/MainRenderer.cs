@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Windows.Controls;
 using System.Windows.Markup;
 using Reactive.Bindings.Extensions;
 

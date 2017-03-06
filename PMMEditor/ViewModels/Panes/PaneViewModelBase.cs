@@ -1,9 +1,9 @@
 ﻿using System.Windows;
-using Livet;
+using PMMEditor.MVVM;
 
 namespace PMMEditor.ViewModels.Panes
 {
-    public abstract class PaneViewModelBase : ViewModel
+    public abstract class PaneViewModelBase : BindableDisposableBase
     {
         #region Title変更通知プロパティ
 
@@ -24,15 +24,7 @@ namespace PMMEditor.ViewModels.Panes
         public bool IsSelected
         {
             get { return _IsSelected; }
-            set
-            {
-                if (_IsSelected == value)
-                {
-                    return;
-                }
-                _IsSelected = value;
-                RaisePropertyChanged();
-            }
+            set { SetProperty(ref _IsSelected, value); }
         }
 
         #endregion
@@ -44,15 +36,7 @@ namespace PMMEditor.ViewModels.Panes
         public bool IsActive
         {
             get { return _IsActive; }
-            set
-            {
-                if (_IsActive == value)
-                {
-                    return;
-                }
-                _IsActive = value;
-                RaisePropertyChanged();
-            }
+            set { SetProperty(ref _IsActive, value); }
         }
 
         #endregion
@@ -64,35 +48,19 @@ namespace PMMEditor.ViewModels.Panes
         public bool CanHide
         {
             get { return _CanHide; }
-            set
-            {
-                if (_CanHide == value)
-                {
-                    return;
-                }
-                _CanHide = value;
-                RaisePropertyChanged();
-            }
+            set { SetProperty(ref _CanHide, value); }
         }
 
         #endregion
 
         #region CanClose変更通知プロパティ
 
-        private bool _CanClose = false;
+        private bool _CanClose;
 
         public bool CanClose
         {
             get { return _CanClose; }
-            set
-            {
-                if (_CanClose == value)
-                {
-                    return;
-                }
-                _CanClose = value;
-                RaisePropertyChanged();
-            }
+            set { SetProperty(ref _CanClose, value); }
         }
 
         #endregion
@@ -104,15 +72,7 @@ namespace PMMEditor.ViewModels.Panes
         public Visibility Visibility
         {
             get { return _Visibility; }
-            set
-            {
-                if (_Visibility == value)
-                {
-                    return;
-                }
-                _Visibility = value;
-                RaisePropertyChanged();
-            }
+            set { SetProperty(ref _Visibility, value); }
         }
 
         #endregion
