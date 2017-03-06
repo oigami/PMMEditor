@@ -269,7 +269,7 @@ namespace PMMEditor.SharpDxControl
             // 深度バッファ
             var zBufferTextureDescription = new Texture2DDescription
             {
-                Format = Format.D16_UNorm,
+                Format = Format.D32_Float,
                 ArraySize = 1,
                 MipLevels = 1,
                 Width = width,
