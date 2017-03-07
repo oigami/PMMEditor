@@ -147,16 +147,78 @@ namespace PMMEditor.SharpDxControl
 
     public abstract class SharpDxControl : Image, IDisposable
     {
-        private CompositeDisposable D3DCompositeDisposable = new CompositeDisposable();
-        public Device Device;
+        private CompositeDisposable D3DRenderTargetCompositeDisposable = new CompositeDisposable();
+        protected readonly CompositeDisposable AllCompositeDisposable = new CompositeDisposable();
+
+        #region Device
+
+        public static readonly DependencyProperty DeviceProperty = DependencyProperty.Register(
+            nameof(Device), typeof(Device), typeof(SharpDxControl),
+            new PropertyMetadata(default(Device), (_, __) => ((SharpDxControl) _).DevicePropertyChangedCallback(__)));
+
+        private void DevicePropertyChangedCallback(DependencyPropertyChangedEventArgs args)
+        {
+            CreateAndBindTarget();
+        }
+
+        public Device Device
+        {
+            get { return (Device) GetValue(DeviceProperty); }
+            set { SetValue(DeviceProperty, value); }
+        }
+
+        #endregion
+
+        #region D3DSize
+
+        private static void D3DSizePropertyChangedCallback(DependencyObject _, DependencyPropertyChangedEventArgs args)
+        {
+            ((SharpDxControl) _).CreateAndBindTarget();
+        }
+
+        #region D3DWidth
+
+        public static readonly DependencyProperty D3DWidthProperty = DependencyProperty.Register(
+            nameof(D3DWidth), typeof(double), typeof(SharpDxControl),
+            new PropertyMetadata(double.NaN, D3DSizePropertyChangedCallback));
+
+
+        public double D3DWidth
+        {
+            get { return (double) GetValue(D3DWidthProperty); }
+            set { SetValue(D3DWidthProperty, value); }
+        }
+
+        #endregion
+
+        #region D3DHeight
+
+        public static readonly DependencyProperty D3DHeightProperty = DependencyProperty.Register(
+            nameof(D3DHeight), typeof(double), typeof(SharpDxControl),
+            new PropertyMetadata(double.NaN, D3DSizePropertyChangedCallback));
+
+        public double D3DHeight
+        {
+            get { return (double) GetValue(D3DHeightProperty); }
+            set { SetValue(D3DHeightProperty, value); }
+        }
+
+        #endregion
+
+        #endregion
+
         public RenderTarget D2DRenderTarget;
 
         private Texture2D _renderTarget2D;
         private D3D11Image _d3DSurface;
         private Factory _d2DFactory;
-        DepthStencilView _depthStencilView;
+        private DepthStencilView _depthStencilView;
+        private DepthStencilState _depthStencilState;
+        private RenderTargetView _renderTarget;
 
         private readonly Stopwatch _renderTimer = new Stopwatch();
+
+        private bool _isInitialized;
 
         protected readonly ResourceManager<Brush> BrushManager = new ResourceManager<Brush>();
 
@@ -167,20 +229,24 @@ namespace PMMEditor.SharpDxControl
         {
             if (!IsInDesignMode)
             {
+                Loaded += OnLoadedEventHandler;
+                AllCompositeDisposable.Add(Disposable.Create(() => Loaded -= OnLoadedEventHandler));
+                Unloaded += OnUnloadedEventHandler;
+                AllCompositeDisposable.Add(Disposable.Create(() => Unloaded -= OnUnloadedEventHandler));
                 StartD3D();
-                Loaded += (_, __) =>
-                {
-                    CreateAndBindTarget();
-                    StartRendering();
-                };
-                Unloaded += (_, __) => StopRendering();
             }
             Stretch = Stretch.Fill;
         }
 
-        ~SharpDxControl()
+        private void OnUnloadedEventHandler(object _, RoutedEventArgs __)
         {
-            Dispose(false);
+            StopRendering();
+        }
+
+        private void OnLoadedEventHandler(object _, RoutedEventArgs __)
+        {
+            CreateAndBindTarget();
+            StartRendering();
         }
 
         protected abstract void Render();
@@ -188,7 +254,7 @@ namespace PMMEditor.SharpDxControl
 
         private void OnRendering(object sender, EventArgs e)
         {
-            if (!_renderTimer.IsRunning || !IsLoaded)
+            if (!_renderTimer.IsRunning || !IsLoaded || !_isInitialized)
             {
                 return;
             }
@@ -199,7 +265,7 @@ namespace PMMEditor.SharpDxControl
 
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
         {
-            if (IsLoaded)
+            if (IsLoaded && !double.IsNaN(D3DWidth) && !double.IsNaN(D3DHeight))
             {
                 CreateAndBindTarget();
             }
@@ -220,26 +286,48 @@ namespace PMMEditor.SharpDxControl
 
         private void StartD3D()
         {
-            Device = new Device(DriverType.Hardware, DeviceCreationFlags.BgraSupport);
+            _d3DSurface = new D3D11Image().AddTo(AllCompositeDisposable);
 
-            _d3DSurface = new D3D11Image();
             _d3DSurface.IsFrontBufferAvailableChanged += OnIsFrontBufferAvailableChanged;
+            AllCompositeDisposable.Add(
+                Disposable.Create(
+                    () => _d3DSurface.IsFrontBufferAvailableChanged -= OnIsFrontBufferAvailableChanged));
 
-            _d2DFactory = new Factory();
 
+            _d2DFactory = new Factory().AddTo(AllCompositeDisposable);
             Source = _d3DSurface;
+
+            CreateAndBindTarget();
+            _isInitialized = true;
         }
 
         private void CreateAndBindTarget()
         {
-            _d3DSurface.ClearRenderTarget();
-            D3DCompositeDisposable.Dispose();
-            D3DCompositeDisposable = new CompositeDisposable();
-            Utilities.Dispose(ref D2DRenderTarget);
-            Utilities.Dispose(ref _renderTarget2D);
+            if (Device == null)
+            {
+                return;
+            }
 
             var width = Math.Max((int) ActualWidth, 100);
             var height = Math.Max((int) ActualHeight, 100);
+            if (!double.IsNaN(D3DWidth))
+            {
+                width = (int) D3DWidth;
+            }
+            if (!double.IsNaN(D3DHeight))
+            {
+                height = (int) D3DHeight;
+            }
+            if (_renderTarget2D != null &&
+                _renderTarget2D.Description.Width == width &&
+                _renderTarget2D.Description.Height == height)
+            {
+                return;
+            }
+
+            _d3DSurface.ClearRenderTarget();
+            D3DRenderTargetCompositeDisposable.Dispose();
+            D3DRenderTargetCompositeDisposable = new CompositeDisposable();
 
             var renderDesc = new Texture2DDescription
             {
@@ -255,16 +343,15 @@ namespace PMMEditor.SharpDxControl
                 ArraySize = 1
             };
 
-            _renderTarget2D = new Texture2D(Device, renderDesc);
+            _renderTarget2D = new Texture2D(Device, renderDesc).AddTo(D3DRenderTargetCompositeDisposable);
 
             var surface = _renderTarget2D.QueryInterface<Surface>();
 
             var rtp = new RenderTargetProperties(new PixelFormat(Format.Unknown, AlphaMode.Premultiplied));
-            D2DRenderTarget = new RenderTarget(_d2DFactory, surface, rtp);
+            D2DRenderTarget = new RenderTarget(_d2DFactory, surface, rtp).AddTo(D3DRenderTargetCompositeDisposable);
             BrushManager.UpdateRenderTarget(D2DRenderTarget);
 
             _d3DSurface.SetRenderTarget(_renderTarget2D);
-
 
             // 深度バッファ
             var zBufferTextureDescription = new Texture2DDescription
@@ -283,7 +370,8 @@ namespace PMMEditor.SharpDxControl
 
             using (var zBufferTexture = new Texture2D(Device, zBufferTextureDescription))
             {
-                _depthStencilView = new DepthStencilView(Device, zBufferTexture).AddTo(D3DCompositeDisposable);
+                _depthStencilView =
+                    new DepthStencilView(Device, zBufferTexture).AddTo(D3DRenderTargetCompositeDisposable);
             }
 
             _depthStencilState
@@ -293,8 +381,8 @@ namespace PMMEditor.SharpDxControl
                     DepthComparison = Comparison.Less,
                     IsStencilEnabled = false,
                     DepthWriteMask = DepthWriteMask.All
-                }).AddTo(D3DCompositeDisposable);
-            _renderTarget = new RenderTargetView(Device, _renderTarget2D).AddTo(D3DCompositeDisposable);
+                }).AddTo(D3DRenderTargetCompositeDisposable);
+            _renderTarget = new RenderTargetView(Device, _renderTarget2D).AddTo(D3DRenderTargetCompositeDisposable);
 
             Device.ImmediateContext.Rasterizer.SetViewport(0, 0, width, height);
 
@@ -344,31 +432,20 @@ namespace PMMEditor.SharpDxControl
             context.Flush();
         }
 
-        private void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
-                _d3DSurface.IsFrontBufferAvailableChanged -= OnIsFrontBufferAvailableChanged;
                 Source = null;
-                Device?.Dispose();
-                D2DRenderTarget?.Dispose();
-                _renderTarget2D?.Dispose();
-                _d3DSurface?.Dispose();
-                _d2DFactory?.Dispose();
-                D3DCompositeDisposable.Dispose();
+                D3DRenderTargetCompositeDisposable.Dispose();
+                AllCompositeDisposable.Dispose();
             }
         }
 
-        protected readonly CompositeDisposable CompositeDisposable = new CompositeDisposable();
-        private DepthStencilState _depthStencilState;
-        private RenderTargetView _renderTarget;
 
-        /// <summary> Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. </summary>
         public virtual void Dispose()
         {
-            CompositeDisposable.Dispose();
             Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using PMMEditor.Models;
 using PMMEditor.Views.Documents;
 using Reactive.Bindings;
+using SharpDX.Direct3D;
+using SharpDX.Direct3D11;
 
 namespace PMMEditor.ViewModels.Documents
 {
@@ -10,6 +12,7 @@ namespace PMMEditor.ViewModels.Documents
 
         public MainRenderViewModel(Model model)
         {
+            Device = new Device(DriverType.Hardware, DeviceCreationFlags.BgraSupport);
             _model = model;
             Items = _model.MmdModelList.List.ToReadOnlyReactiveCollection(_ => (IRenderer) new MmdModelRenderer(_));
         }
@@ -26,5 +29,7 @@ namespace PMMEditor.ViewModels.Documents
         public override string ContentId { get; } = GetContentId();
 
         public ReadOnlyReactiveCollection<IRenderer> Items { get; set; }
+
+        public Device Device { get; private set; }
     }
 }

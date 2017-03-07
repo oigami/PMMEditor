@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Markup;
 using Reactive.Bindings.Extensions;
 
 namespace PMMEditor.Views.Documents
 {
-    [ContentProperty("Children")]
-    public class MainRenderer : SharpDxControl.SharpDxControl
+    public abstract class RendererPanel : SharpDxControl.SharpDxControl
     {
         public class ItemCollection : ObservableCollection<IRenderer> {}
 
         public ItemCollection Children { get; } = new ItemCollection();
+    }
 
+    [ContentProperty("Children")]
+    public class MainRenderer : RendererPanel
+    {
         public MainRenderer()
         {
             if (IsInDesignMode)
@@ -19,7 +24,7 @@ namespace PMMEditor.Views.Documents
                 return;
             }
 
-            Children.ObserveAddChanged().Subscribe(_ => _.Initialize(Device)).AddTo(CompositeDisposable);
+            Children.ObserveAddChanged().Subscribe(_ => _.Initialize(Device)).AddTo(AllCompositeDisposable);
         }
 
         protected override void Render()
@@ -28,20 +33,6 @@ namespace PMMEditor.Views.Documents
             {
                 child.Render(Device.ImmediateContext);
             }
-        }
-
-        /// <summary> 子オブジェクトを追加します。 </summary>
-        /// <param name = "value"> 追加する子オブジェクト。 </param>
-        public void AddChild(object value)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary> オブジェクトにノードのテキスト コンテンツを追加します。 </summary>
-        /// <param name = "text"> オブジェクトに追加するテキスト。 </param>
-        public void AddText(string text)
-        {
-            throw new NotImplementedException();
         }
     }
 }
