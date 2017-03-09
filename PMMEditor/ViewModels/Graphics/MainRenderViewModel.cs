@@ -1,15 +1,13 @@
-﻿using PMMEditor.Models;
-using PMMEditor.Models.Graphics;
-using PMMEditor.Views.Documents;
+﻿using PMMEditor.Models.Graphics;
+using PMMEditor.ViewModels.Documents;
 using Reactive.Bindings;
-using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 
-namespace PMMEditor.ViewModels.Documents
+namespace PMMEditor.ViewModels.Graphics
 {
     public class MainRenderViewModel : DocumentViewModelBase
     {
-        private GraphicsModel _model;
+        private readonly GraphicsModel _model;
 
         public MainRenderViewModel(GraphicsModel model)
         {
@@ -17,10 +15,8 @@ namespace PMMEditor.ViewModels.Documents
             _model = model;
             Items = _model.MmdModelSource.ToReadOnlyReactiveCollection(_ => (IRenderer) new MmdModelRenderer(_));
         }
-            
-        public void Initialize()
-        {
-        }
+
+        public void Initialize() {}
 
         public static string GetTitle() => "Main Camera";
         public static string GetContentId() => typeof(MainRenderViewModel).FullName + GetTitle();

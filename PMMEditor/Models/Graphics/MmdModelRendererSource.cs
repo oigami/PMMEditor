@@ -4,8 +4,8 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using PMMEditor.MMDFileParser;
+using PMMEditor.Models.MMDModel;
 using PMMEditor.MVVM;
-using PMMEditor.Views.Documents;
 using Reactive.Bindings.Extensions;
 using SharpDX;
 using Direct3D11 = SharpDX.Direct3D11;
@@ -18,13 +18,17 @@ namespace PMMEditor.Models.Graphics
         {
             _model = model;
             _device = device;
-            BoneCalculator = new MmdModelBoneCalculatorSRV(model, device);
+            BoneCount = _model.BoneKeyList.Count;
             Task.Run(() =>
             {
                 CreateData();
                 IsInitialized = true;
             });
         }
+
+        public MmdModelBoneCalculator BoneCalculator => _model.BoneCalculator;
+
+        public int BoneCount { get; private set; }
 
         private CompositeDisposable D3DObjectCompositeDisposable = new CompositeDisposable();
         private bool disposedValue;
@@ -80,8 +84,6 @@ namespace PMMEditor.Models.Graphics
         }
 
         #endregion
-
-        public MmdModelBoneCalculatorSRV BoneCalculator { get; }
 
         public class Material
         {
@@ -206,4 +208,6 @@ namespace PMMEditor.Models.Graphics
 
         #endregion
     }
+
+
 }

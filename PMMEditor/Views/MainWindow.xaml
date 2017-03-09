@@ -13,6 +13,7 @@
   xmlns:vm="clr-namespace:PMMEditor.ViewModels"
   xmlns:vmDocuments="clr-namespace:PMMEditor.ViewModels.Documents"
   xmlns:vmPanes="clr-namespace:PMMEditor.ViewModels.Panes"
+  xmlns:graphics="clr-namespace:PMMEditor.ViewModels.Graphics"
   Title="MainWindow"
   Width="640"
   Height="480"
@@ -109,7 +110,7 @@
           <DataTemplate DataType="{x:Type vmDocuments:CameraLightAccessoryViewModel}">
             <documents:TimelineView />
           </DataTemplate>
-          <DataTemplate DataType="{x:Type vmDocuments:MainRenderViewModel}">
+          <DataTemplate DataType="{x:Type graphics:MainRenderViewModel}">
             <documents:MainCameraView />
           </DataTemplate>
         </v:LayoutItemTemplateSelector>

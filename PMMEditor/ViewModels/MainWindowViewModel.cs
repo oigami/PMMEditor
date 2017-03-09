@@ -11,6 +11,7 @@ using Microsoft.Win32;
 using PMMEditor.MMDFileParser;
 using PMMEditor.MVVM;
 using PMMEditor.ViewModels.Documents;
+using PMMEditor.ViewModels.Graphics;
 using PMMEditor.ViewModels.Panes;
 using Reactive.Bindings.Extensions;
 

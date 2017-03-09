@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Markup;
+using PMMEditor.ViewModels.Graphics;
 using Reactive.Bindings.Extensions;
 
 namespace PMMEditor.Views.Documents

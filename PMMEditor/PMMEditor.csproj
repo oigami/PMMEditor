@@ -189,12 +189,12 @@
     <Compile Include="SharpDxControl\D3D9Instance.cs" />
     <Compile Include="SharpDxControl\SharpDxControl.cs" />
     <Compile Include="ViewModels\Documents\CameraLightAccessoryViewModel.cs" />
-    <Compile Include="ViewModels\Documents\MainRenderViewModel.cs" />
+    <Compile Include="ViewModels\Graphics\MainRenderViewModel.cs" />
     <Compile Include="ViewModels\Documents\TimelineViewModelBase.cs" />
     <Compile Include="ViewModels\Documents\DocumentViewModelBase.cs" />
     <Compile Include="ViewModels\ExpressionConverter.cs" />
     <Compile Include="Views\Documents\MmdModelItemsControl.cs" />
-    <Compile Include="Views\Documents\MmdModelRenderer.cs" />
+    <Compile Include="ViewModels\Graphics\MmdModelRenderer.cs" />
     <Compile Include="ViewModels\Panes\AccessoryViewModel.cs" />
     <Compile Include="ViewModels\Panes\CameraViewModel.cs" />
     <Compile Include="ViewModels\Panes\ModelViewModel.cs" />
@@ -325,7 +325,9 @@
     <Content Include="InfrastructureAssemblies\System.Windows.Interactivity.dll" />
     <Content Include="Resources\TestShader.hlsl" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Views\Graphics\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

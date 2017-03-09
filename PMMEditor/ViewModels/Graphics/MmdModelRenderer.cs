@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Livet;
 using PMMEditor.Models;
-using PMMEditor.Models.Graphics;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using SharpDX;
@@ -10,8 +11,10 @@ using SharpDX.D3DCompiler;
 using SharpDX.DXGI;
 using Direct3D11 = SharpDX.Direct3D11;
 using Direct3D = SharpDX.Direct3D;
+using PMMEditor.Models.Graphics;
+using PMMEditor.MVVM;
 
-namespace PMMEditor.Views.Documents
+namespace PMMEditor.ViewModels.Graphics
 {
     public interface IInitializable
     {
@@ -26,22 +29,22 @@ namespace PMMEditor.Views.Documents
 
     public class MmdModelBoneCalculatorSRV
     {
-        private readonly MmdModelModel _model;
+        private readonly MmdModelRendererSource _model;
         private readonly Direct3D11.Device _device;
         private Direct3D11.Texture2D _boneTexture2D;
 
         public Direct3D11.ShaderResourceView BoneSrv { get; private set; }
 
-        public MmdModelBoneCalculatorSRV(MmdModelModel model, Direct3D11.Device device)
+        public MmdModelBoneCalculatorSRV(MmdModelRendererSource model, Direct3D11.Device device)
         {
             _device = device;
             _model = model;
             CreateData(model);
         }
 
-        private void CreateData(MmdModelModel model)
+        private void CreateData(MmdModelRendererSource model)
         {
-            var boneNum = model.BoneKeyList.Count;
+            var boneNum = model.BoneCount;
             _boneTexture2D = new Direct3D11.Texture2D(
                 _device,
                 new Direct3D11.Texture2DDescription
@@ -66,10 +69,11 @@ namespace PMMEditor.Views.Documents
         }
     }
 
-    public class MmdModelRenderer : ViewModel, IRenderer
+    public class MmdModelRenderer : BindableDisposableBase, IRenderer
     {
         public MmdModelRendererSource Model { get; }
 
+        private MmdModelBoneCalculatorSRV boneCalculator;
         private Direct3D11.Device _device;
 
         private Direct3D11.InputLayout _inputLayout;
@@ -77,16 +81,23 @@ namespace PMMEditor.Views.Documents
         private Direct3D11.PixelShader _pixelShader;
         private Direct3D11.Buffer _viewProjConstantBuffer;
 
+        private readonly ReactiveProperty<bool> _isInternalInitialized = new ReactiveProperty<bool>(false);
+
         public MmdModelRenderer(MmdModelRendererSource model)
         {
             Model = model;
-            IsInitialized = Model.ObserveProperty(_ => _.IsInitialized).ToReactiveProperty().AddTo(CompositeDisposable);
+            IsInitialized =
+                Model.ObserveProperty(_ => _.IsInitialized)
+                     .CombineLatest(_isInternalInitialized.AsObservable(), (a, b) => a && b)
+                     .ToReadOnlyReactiveProperty(false).AddTo(CompositeDisposable);
         }
 
-        private readonly ReactiveProperty<bool> IsInitialized;
+        public ReadOnlyReactiveProperty<bool> IsInitialized { get; }
 
         private void InitializeInternal()
         {
+            boneCalculator = new MmdModelBoneCalculatorSRV(Model, _device);
+
             // 頂点シェーダ生成
             var shaderSource = Resource1.TestShader;
             // UTF-8 BOMチェック
@@ -130,6 +141,8 @@ namespace PMMEditor.Views.Documents
             _viewProjConstantBuffer =
                 Direct3D11.Buffer.Create(_device, Direct3D11.BindFlags.ConstantBuffer, ref m, 0,
                                          Direct3D11.ResourceUsage.Immutable).AddTo(CompositeDisposable);
+
+            _isInternalInitialized.Value = true;
         }
 
         public void Initialize(Direct3D11.Device device)
@@ -154,8 +167,8 @@ namespace PMMEditor.Views.Documents
             target.PixelShader.Set(_pixelShader);
 
             target.InputAssembler.PrimitiveTopology = Direct3D.PrimitiveTopology.TriangleList;
-            Model.BoneCalculator.Update(target);
-            target.VertexShader.SetShaderResource(0, Model.BoneCalculator.BoneSrv);
+            boneCalculator.Update(target);
+            target.VertexShader.SetShaderResource(0, boneCalculator.BoneSrv);
             foreach (var material in Model.Materials)
             {
                 target.PixelShader.SetConstantBuffer(0, material.PixelConstantBuffer0);
