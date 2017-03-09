@@ -6,12 +6,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Livet;
 using PMMEditor.MMDFileParser;
+using PMMEditor.MVVM;
 
 namespace PMMEditor.Models
 {
-    public delegate void MoveChangedHandler(int index, int diff);
-
-    public class KeyFrameBase : NotificationObject
+    public abstract class KeyFrameBase : BindableDisposableBase
     {
         #region IsSelected変更通知プロパティ
 
@@ -20,15 +19,7 @@ namespace PMMEditor.Models
         public bool IsSelected
         {
             get { return _IsSelected; }
-            set
-            {
-                if (_IsSelected == value)
-                {
-                    return;
-                }
-                _IsSelected = value;
-                RaisePropertyChanged();
-            }
+            set { SetProperty(ref _IsSelected, value); }
         }
 
         #endregion
@@ -40,18 +31,23 @@ namespace PMMEditor.Models
         public int FrameNumber
         {
             get { return _FrameNumber; }
-            set
-            {
-                if (_FrameNumber == value)
-                {
-                    return;
-                }
-                _FrameNumber = value;
-                RaisePropertyChanged();
-            }
+            set { SetProperty(ref _FrameNumber, value); }
         }
 
         #endregion
+    }
+
+    public interface IKeyFrameInterpolationMethod<T>
+    {
+        T Interpolation(T left, T right, int frame);
+    }
+
+    public class DefaultKeyFrameInterpolationMethod<T> : IKeyFrameInterpolationMethod<T>
+    {
+        public T Interpolation(T left, T right, int frame)
+        {
+            return left;
+        }
     }
 
     public interface IKeyFrameList : IDictionary, INotifyCollectionChanged
@@ -63,7 +59,14 @@ namespace PMMEditor.Models
         string Name { get; }
     }
 
-    public class KeyFrameList<T> : NotificationObject, IDictionary<int, T>, IKeyFrameList where T : KeyFrameBase
+    public class KeyFrameList<T> : KeyFrameList<T, DefaultKeyFrameInterpolationMethod<T>> where T : KeyFrameBase
+    {
+        public KeyFrameList(string name) : base(name) {}
+    }
+
+    public class KeyFrameList<T, InterpolationMethod> : NotificationObject, IDictionary<int, T>, IKeyFrameList
+        where T : KeyFrameBase
+        where InterpolationMethod : IKeyFrameInterpolationMethod<T>
     {
         private readonly SortedDictionary<int, T> _item = new SortedDictionary<int, T>();
 
@@ -397,6 +400,7 @@ namespace PMMEditor.Models
             get { return _item[key]; }
             set { _item[key] = value; }
         }
+
         /// <summary>
         /// <see cref = "T:System.Collections.Generic.ICollection`1" /> のキーを保持している
         /// <see cref = "T:System.Collections.Generic.IDictionary`2" /> を取得します。
