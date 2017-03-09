@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Livet;
-using PMMEditor.MMDFileParser;
 using PMMEditor.Models;
-using PMMEditor.MVVM;
+using PMMEditor.Models.Graphics;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using SharpDX;
@@ -27,47 +23,25 @@ namespace PMMEditor.Views.Documents
         void Render(Direct3D11.DeviceContext context);
     }
 
-    public class MmdModelBoneCalculator
+
+    public class MmdModelBoneCalculatorSRV
     {
-        private MmdModelModel _model;
+        private readonly MmdModelModel _model;
         private readonly Direct3D11.Device _device;
-        private List<MmdModelRendererSource.Bone> _bones;
         private Direct3D11.Texture2D _boneTexture2D;
 
         public Direct3D11.ShaderResourceView BoneSrv { get; private set; }
 
-        public MmdModelBoneCalculator(Direct3D11.Device device)
+        public MmdModelBoneCalculatorSRV(MmdModelModel model, Direct3D11.Device device)
         {
             _device = device;
-        }
-
-        private void CalcBoneWorld(
-            MmdModelRendererSource.Bone me, List<MmdModelRendererSource.Bone> bones, Matrix parent,
-            ref Matrix[] resultWorlds)
-        {
-            while (true)
-            {
-                var m = me.boneMat * parent;
-                resultWorlds[me.id] = me.offsetMat * m;
-                if (me.firstChild != -1)
-                {
-                    CalcBoneWorld(bones[me.firstChild], bones, m, ref resultWorlds);
-                }
-                if (me.sibling != -1)
-                {
-                    me = bones[me.sibling];
-                    continue;
-                }
-                break;
-            }
-        }
-
-        public void CreateData(MmdModelModel model, List<MmdModelRendererSource.Bone> bones)
-        {
             _model = model;
-            _bones = bones;
-            int boneNum = bones.Count;
+            CreateData(model);
+        }
 
+        private void CreateData(MmdModelModel model)
+        {
+            var boneNum = model.BoneKeyList.Count;
             _boneTexture2D = new Direct3D11.Texture2D(
                 _device,
                 new Direct3D11.Texture2DDescription
@@ -88,321 +62,8 @@ namespace PMMEditor.Views.Documents
 
         public void Update(Direct3D11.DeviceContext context)
         {
-            foreach (var i in Enumerable.Range(0, _bones.Count))
-            {
-                var boneKeyFrames = _model.BoneKeyList.First(_ => _.Name == _bones[i].name);
-
-                var pos = boneKeyFrames[0].Position;
-                var q = boneKeyFrames[0].Quaternion;
-                _bones[i].boneMat = Matrix.RotationQuaternion(new Quaternion(q.X, q.Y, q.Z, q.W))
-                                    * Matrix.Translation(pos.X, pos.Y, pos.Z) * _bones[i].initMat;
-            }
-            Matrix[] worldBones = Enumerable.Range(0, _bones.Count).Select(_ => Matrix.Identity).ToArray();
-            CalcBoneWorld(_bones[0], _bones, Matrix.Identity, ref worldBones);
-            context.UpdateSubresource(worldBones, _boneTexture2D);
+            context.UpdateSubresource(_model.BoneCalculator.WorldBones, _boneTexture2D);
         }
-    }
-
-    public class MmdModelRendererSource : BindableBase
-    {
-        public MmdModelRendererSource(MmdModelModel model)
-        {
-            _model = model;
-        }
-
-        private CompositeDisposable D3DObjectCompositeDisposable = new CompositeDisposable();
-        private bool disposedValue;
-        private Direct3D11.Device _device;
-
-        #region IsInitialized変更通知プロパティ
-
-        private bool _isInitialized;
-
-        public bool IsInitialized
-        {
-            get { return _isInitialized; }
-            private set { SetProperty(ref _isInitialized, value); }
-        }
-
-        #endregion
-
-        public Direct3D11.Device Device
-        {
-            get { return _device; }
-            set
-            {
-                if (Equals(_device, value))
-                {
-                    return;
-                }
-                _device = value;
-
-                Task.Run(() => CreateData());
-            }
-        }
-
-        private readonly MmdModelModel _model;
-        private List<Bone> _bones;
-
-        #region BoneCalculator変更通知プロパティ
-
-        private MmdModelBoneCalculator _boneCalculator;
-
-        public MmdModelBoneCalculator BoneCalculator
-        {
-            get { return _boneCalculator; }
-            private set { SetProperty(ref _boneCalculator, value); }
-        }
-
-        #endregion
-
-        #region VertexBufferBinding変更通知プロパティ
-
-        private Direct3D11.Buffer _verteBuffer;
-        private Direct3D11.VertexBufferBinding _vertexBufferBinding;
-
-        public Direct3D11.VertexBufferBinding VertexBufferBinding
-        {
-            get { return _vertexBufferBinding; }
-            private set { SetProperty(ref _vertexBufferBinding, value); }
-        }
-
-        #endregion
-
-        #region IndexBuffer変更通知プロパティ
-
-        private Direct3D11.Buffer _indexBuffer;
-
-        public Direct3D11.Buffer IndexBuffer
-        {
-            get { return _indexBuffer; }
-            private set { SetProperty(ref _indexBuffer, value); }
-        }
-
-        #endregion
-
-        #region Materials変更通知プロパティ
-
-        private List<Material> _materials;
-
-        public List<Material> Materials
-        {
-            get { return _materials; }
-            private set { SetProperty(ref _materials, value); }
-        }
-
-        #endregion
-
-        public class Material
-        {
-            public int IndexStart { get; set; }
-
-            public int IndexNum { get; set; }
-
-            public Direct3D11.Buffer PixelConstantBuffer0 { get; set; }
-        }
-
-        private struct Vertex
-        {
-            public Vector4 Position { get; set; }
-
-            public Int4 Idx { get; set; }
-
-            public float Weight { get; set; }
-        }
-
-
-        private void OnUnload()
-        {
-            D3DObjectCompositeDisposable.Dispose();
-            D3DObjectCompositeDisposable = new CompositeDisposable();
-            IsInitialized = false;
-            BoneCalculator = null;
-            VertexBufferBinding = new Direct3D11.VertexBufferBinding();
-            IndexBuffer = null;
-            Materials = null;
-        }
-
-        private void OnLoad()
-        {
-            IsInitialized = true;
-        }
-
-        private void CreateData()
-        {
-            OnUnload();
-            if (_device == null)
-            {
-                return;
-            }
-            var data = Pmd.ReadFile(_model.FilePath);
-
-            Materials = new List<Material>(data.Materials.Count);
-            int preIndex = 0;
-            foreach (var material in data.Materials)
-            {
-                var diffuse = new Color4(new Color3(material.Diffuse.R, material.Diffuse.G, material.Diffuse.B),
-                                         material.DiffuseAlpha);
-                Materials.Add(new Material
-                {
-                    IndexNum = (int) material.FaceVertexCount,
-                    IndexStart = preIndex,
-                    PixelConstantBuffer0 =
-                        Direct3D11.Buffer.Create(_device, Direct3D11.BindFlags.ConstantBuffer, ref diffuse, 0,
-                                                 Direct3D11.ResourceUsage.Immutable).AddTo(D3DObjectCompositeDisposable)
-                });
-                preIndex += (int) material.FaceVertexCount;
-            }
-
-            // 頂点データ生成
-            if (data.Vertices.Count > 0)
-            {
-                var typeSize = Utilities.SizeOf<Vertex>();
-                _verteBuffer = Direct3D11.Buffer.Create(
-                    _device,
-                    data.Vertices.Select(_ => new Vertex
-                    {
-                        Position = new Vector4(_.Position.X, _.Position.Y, _.Position.Z, 1.0f),
-                        Weight = _.BoneWeight / 100.0f,
-                        Idx = new Int4
-                        {
-                            X = _.BoneNum1,
-                            Y = _.BoneNum2
-                        }
-                    }).ToArray(),
-                    new Direct3D11.BufferDescription
-                    {
-                        SizeInBytes = typeSize * data.Vertices.Count,
-                        Usage = Direct3D11.ResourceUsage.Immutable,
-                        BindFlags = Direct3D11.BindFlags.VertexBuffer,
-                        StructureByteStride = typeSize
-                    }).AddTo(D3DObjectCompositeDisposable);
-                VertexBufferBinding = new Direct3D11.VertexBufferBinding(_verteBuffer, typeSize, 0);
-
-                // 頂点インデックス生成
-                var indexNum = data.VertexIndex.Count;
-                IndexBuffer = Direct3D11.Buffer.Create(
-                    _device, data.VertexIndex.ToArray(),
-                    new Direct3D11.BufferDescription
-                    {
-                        SizeInBytes = Utilities.SizeOf<ushort>() * indexNum,
-                        Usage = Direct3D11.ResourceUsage.Immutable,
-                        BindFlags = Direct3D11.BindFlags.IndexBuffer,
-                        StructureByteStride = Utilities.SizeOf<ushort>()
-                    }).AddTo(D3DObjectCompositeDisposable);
-            }
-
-            CreateBone(data);
-            BoneCalculator = new MmdModelBoneCalculator(_device);
-            BoneCalculator.CreateData(_model, _bones);
-            OnLoad();
-        }
-
-        public class Bone
-        {
-            public int sibling = -1;
-            public int firstChild = -1;
-            public int id;
-            public int parent = -1;
-            public PmdStruct.BoneKind type;
-            public Matrix initMat;
-            public Matrix boneMatML;
-            public Matrix initMatML;
-            public Matrix offsetMat;
-            public Matrix boneMat;
-            public string name;
-        }
-
-
-        void InitBoneCalc(Bone me, Matrix parentoffsetMat)
-        {
-            if (me.firstChild != -1)
-            {
-                InitBoneCalc(_bones[me.firstChild], me.offsetMat);
-            }
-            if (me.sibling != -1)
-            {
-                InitBoneCalc(_bones[me.sibling], parentoffsetMat);
-            }
-            me.initMat = me.initMatML * parentoffsetMat;
-        }
-
-        private void CreateBone(PmdStruct data)
-        {
-            var size = data.Bones.Count;
-            _bones = new List<Bone>(size);
-
-            foreach (int i in Enumerable.Range(0, size))
-            {
-                var item = data.Bones[i];
-                var inputBone = data.Bones;
-                var outputBone = new Bone();
-                if (item.ParentBoneIndex != null)
-                {
-                    ushort parentBoneIndex = (ushort) item.ParentBoneIndex;
-
-                    //自分と同じ親で自分よりあとのボーンが兄弟になる
-                    for (int j = i + 1; j < size; ++j)
-                    {
-                        if (parentBoneIndex == inputBone[j].ParentBoneIndex)
-                        {
-                            outputBone.sibling = j;
-                            break;
-                        }
-                    }
-                    outputBone.parent = parentBoneIndex;
-                }
-
-                //自分が親になっていて一番早く現れるボーンが子になる
-                foreach (int j in Enumerable.Range(0, size))
-                {
-                    if (i == inputBone[j].ParentBoneIndex)
-                    {
-                        outputBone.firstChild = j;
-                        break;
-                    }
-                }
-
-
-                outputBone.name = item.Name;
-                outputBone.id = i;
-                outputBone.type = item.Kind;
-                Matrix modelLocalInitMat = Matrix.Translation(item.Position.X, item.Position.Y, item.Position.Z);
-                outputBone.initMatML = outputBone.boneMatML = outputBone.initMat = modelLocalInitMat; // モデルローカル座標系
-                outputBone.offsetMat = Matrix.Invert(modelLocalInitMat);
-
-                _bones.Add(outputBone);
-            }
-
-
-            InitBoneCalc(_bones[0], Matrix.Identity);
-            foreach (var i in _bones)
-            {
-                i.boneMat = i.initMat;
-            }
-        }
-
-        #region IDisposable Support
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    D3DObjectCompositeDisposable.Dispose();
-                    D3DObjectCompositeDisposable = null;
-                }
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        #endregion
     }
 
     public class MmdModelRenderer : ViewModel, IRenderer
@@ -421,8 +82,6 @@ namespace PMMEditor.Views.Documents
             Model = model;
             IsInitialized = Model.ObserveProperty(_ => _.IsInitialized).ToReactiveProperty().AddTo(CompositeDisposable);
         }
-
-        public MmdModelRenderer(MmdModelModel model) : this(new MmdModelRendererSource(model)) {}
 
         private readonly ReactiveProperty<bool> IsInitialized;
 
@@ -471,8 +130,6 @@ namespace PMMEditor.Views.Documents
             _viewProjConstantBuffer =
                 Direct3D11.Buffer.Create(_device, Direct3D11.BindFlags.ConstantBuffer, ref m, 0,
                                          Direct3D11.ResourceUsage.Immutable).AddTo(CompositeDisposable);
-
-            Model.Device = _device;
         }
 
         public void Initialize(Direct3D11.Device device)

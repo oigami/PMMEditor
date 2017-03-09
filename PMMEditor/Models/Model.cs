@@ -8,15 +8,21 @@ using System.Text;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using PMMEditor.MMDFileParser;
+using PMMEditor.Models.Graphics;
 using PMMEditor.MVVM;
+using PMMEditor.Views.Documents;
+using Reactive.Bindings;
+using SharpDX.Direct3D;
+using Direct3D11 = SharpDX.Direct3D11;
 
 namespace PMMEditor.Models
 {
     public class Model : BindableBase
     {
-        /*
-         * NotificationObjectはプロパティ変更通知の仕組みを実装したオブジェクトです。
-         */
+        public Model()
+        {
+            GraphicsModel = new GraphicsModel(MmdModelList);
+        }
 
         #region ReadWriteFile
 
@@ -28,6 +34,8 @@ namespace PMMEditor.Models
             await MmdAccessoryList.Set(PmmStruct.AccessoryDatas);
             await MmdModelList.Set(PmmStruct.ModelDatas);
         }
+
+        public GraphicsModel GraphicsModel { get; }
 
         public async Task SavePmm(string filename)
         {
@@ -212,5 +220,7 @@ namespace PMMEditor.Models
         public MmdLightModel Light { get; } = new MmdLightModel();
 
         #endregion
+
+    
     }
 }

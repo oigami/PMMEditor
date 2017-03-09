@@ -114,6 +114,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -165,6 +168,7 @@
     <Compile Include="MMDFileParser\Pmd.cs" />
     <Compile Include="MMDFileParser\PmdReader.cs" />
     <Compile Include="Models\CameraLightAccessoryTimelineModel.cs" />
+    <Compile Include="Models\Graphics\GraphicsModel.cs" />
     <Compile Include="Models\KeyFrameList.cs" />
     <Compile Include="Models\MmdAccessoryList.cs" />
     <Compile Include="Models\MmdAccessoryModel.cs" />
@@ -174,6 +178,7 @@
     <Compile Include="Models\MmdModelModel.cs" />
     <Compile Include="MMDFileParser\Pmm.cs" />
     <Compile Include="MMDFileParser\PmmWriter.cs" />
+    <Compile Include="Models\MMDModel\MmdBoneCalculator.cs" />
     <Compile Include="MVVM\BindableBase.cs" />
     <Compile Include="Resource1.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -201,6 +206,7 @@
       <DependentUpon>MainCameraView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Documents\MainRenderer.cs" />
+    <Compile Include="Models\Graphics\MmdModelRendererSource.cs" />
     <Compile Include="Views\Documents\TimelineView.xaml.cs">
       <DependentUpon>TimelineView.xaml</DependentUpon>
     </Compile>
@@ -319,6 +325,7 @@
     <Content Include="InfrastructureAssemblies\System.Windows.Interactivity.dll" />
     <Content Include="Resources\TestShader.hlsl" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

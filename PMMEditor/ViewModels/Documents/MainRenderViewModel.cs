@@ -1,4 +1,5 @@
 ﻿using PMMEditor.Models;
+using PMMEditor.Models.Graphics;
 using PMMEditor.Views.Documents;
 using Reactive.Bindings;
 using SharpDX.Direct3D;
@@ -8,13 +9,13 @@ namespace PMMEditor.ViewModels.Documents
 {
     public class MainRenderViewModel : DocumentViewModelBase
     {
-        private Model _model;
+        private GraphicsModel _model;
 
-        public MainRenderViewModel(Model model)
+        public MainRenderViewModel(GraphicsModel model)
         {
-            Device = new Device(DriverType.Hardware, DeviceCreationFlags.BgraSupport);
+            Device = model.Device;
             _model = model;
-            Items = _model.MmdModelList.List.ToReadOnlyReactiveCollection(_ => (IRenderer) new MmdModelRenderer(_));
+            Items = _model.MmdModelSource.ToReadOnlyReactiveCollection(_ => (IRenderer) new MmdModelRenderer(_));
         }
             
         public void Initialize()
