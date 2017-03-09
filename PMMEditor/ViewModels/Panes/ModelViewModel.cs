@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Livet.EventListeners;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models;
@@ -14,15 +15,12 @@ namespace PMMEditor.ViewModels.Panes
         public ModelViewModel(Model _model)
         {
             this._model = _model;
-            _listener = new PropertyChangedEventListener(_model)
-            {
-                nameof(_model.PmmStruct),
-                (_, __) =>
+            _model.ObserveProperty(_ => _.PmmStruct).Subscribe(
+                _ =>
                 {
                     RaisePropertyChanged(nameof(PmmStruct));
                     RaisePropertyChanged(nameof(ModelList));
-                }
-            }.AddTo(CompositeDisposable);
+                }).AddTo(CompositeDisposable);
         }
 
         public override string Title { get; } = "Model";

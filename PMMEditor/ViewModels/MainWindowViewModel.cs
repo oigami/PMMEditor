@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using PMMEditor.Models;
 using Livet.Commands;
-using Livet.EventListeners;
 using Microsoft.Win32;
 using PMMEditor.MMDFileParser;
 using PMMEditor.MVVM;
@@ -20,16 +19,11 @@ namespace PMMEditor.ViewModels
     public class MainWindowViewModel : BindableDisposableBase
     {
         private readonly Model _model = new Model();
-        private PropertyChangedEventListener _listener;
 
         public async void Initialize()
         {
-            _listener = new PropertyChangedEventListener(_model)
-            {
-                nameof(_model.PmmStruct),
-                (_, __) => RaisePropertyChanged(nameof(PmmStruct))
-            }.AddTo(CompositeDisposable);
-
+            _model.ObserveProperty(_ => _.PmmStruct).Subscribe(_ => RaisePropertyChanged(nameof(PmmStruct)))
+                  .AddTo(CompositeDisposable);
 #if DEBUG
             try
             {
@@ -46,7 +40,7 @@ namespace PMMEditor.ViewModels
             AddPane(() => new CameraViewModel(_model).AddTo(CompositeDisposable));
             AddPane(() => new AccessoryViewModel(_model).AddTo(CompositeDisposable));
 
-            await AddDocument(async() => new MainRenderViewModel(_model.GraphicsModel), "test");
+            await AddDocument(async () => new MainRenderViewModel(_model.GraphicsModel), "test");
         }
 
         #region PmmStruct変更通知プロパティ
