@@ -20,6 +20,12 @@ namespace PMMEditor.ViewModels
     {
         private readonly Model _model = new Model();
 
+        public MainWindowViewModel()
+        {
+            NextFrameCommand = new ViewModelCommand(NextFrame);
+            PrevFrameCommand = new ViewModelCommand(PrevFrame);
+        }
+
         public async void Initialize()
         {
             _model.ObserveProperty(_ => _.PmmStruct).Subscribe(_ => RaisePropertyChanged(nameof(PmmStruct)))
@@ -179,6 +185,28 @@ namespace PMMEditor.ViewModels
 
         public ObservableCollection<PaneViewModelBase> DockingPaneViewModels { get; } =
             new ObservableCollection<PaneViewModelBase>();
+
+        #endregion
+
+        #region NextFrameCommand
+
+        public ViewModelCommand NextFrameCommand { get; }
+
+        private void NextFrame()
+        {
+            _model.FrameControlModel.NextFrame();
+        }
+
+        #endregion
+
+        #region PrevFrameCommand
+
+        public ViewModelCommand PrevFrameCommand { get; }
+
+        private void PrevFrame()
+        {
+            _model.FrameControlModel.PrevFrame();
+        }
 
         #endregion
     }

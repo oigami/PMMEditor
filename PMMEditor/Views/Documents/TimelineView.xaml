@@ -484,12 +484,12 @@
             IndexWidth="14"
             IsHitTestVisible="False">
             <DockPanel
-              views:TimelinePanel.Index="9"
+              views:TimelinePanel.Index="{Binding NowFrame.Value}"
               Background="{x:Null}">
               <TextBlock
                 DockPanel.Dock="Top"
                 Foreground="LightSeaGreen"
-                Text="9" />
+                Text="{Binding NowFrame.Value}" />
               <Line
                 HorizontalAlignment="Center"
                 VerticalAlignment="Stretch"

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace PMMEditor.Views
 {
@@ -38,6 +39,14 @@ namespace PMMEditor.Views
         public MainWindow()
         {
             InitializeComponent();
+
+            // キーボードショートカットなどに対応するためEnterを押したらフォーカスを強制的に外す
+            this.KeyDown += (sender, e) =>
+            {
+                if (e.Key != Key.Enter) { return; }
+                Keyboard.ClearFocus();
+                FocusManager.SetFocusedElement(this, this);
+            };
         }
     }
 }

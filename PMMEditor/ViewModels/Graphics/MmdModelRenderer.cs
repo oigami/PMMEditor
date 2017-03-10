@@ -88,7 +88,8 @@ namespace PMMEditor.ViewModels.Graphics
         public MmdModelRenderer(Model model, MmdModelRendererSource sourceModel)
         {
             Model = sourceModel;
-            _nowFrame = model.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty();
+            _nowFrame = model.FrameControlModel.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty()
+                             .AddTo(CompositeDisposable);
             IsInitialized =
                 Model.ObserveProperty(_ => _.IsInitialized)
                      .CombineLatest(_isInternalInitialized.AsObservable(), (a, b) => a && b)

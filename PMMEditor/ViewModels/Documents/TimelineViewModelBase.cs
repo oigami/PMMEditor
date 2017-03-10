@@ -94,6 +94,8 @@ namespace PMMEditor.ViewModels.Documents
         public TimelineViewModelBase(Model model)
         {
             _model = model;
+            NowFrame = _model.FrameControlModel.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty()
+                             .AddTo(CompositeDisposable);
         }
 
         #region ListOfKeyFrameList変更通知プロパティ
@@ -158,5 +160,7 @@ namespace PMMEditor.ViewModels.Documents
         public abstract ListenerCommand<KeyFrameMoveEventArgs> KeyFrameMoveCompletedCommand { get; protected set; }
 
         #endregion
+
+        public ReadOnlyReactiveProperty<int> NowFrame { get; }
     }
 }

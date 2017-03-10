@@ -171,6 +171,7 @@
     <Compile Include="MMDFileParser\Pmd.cs" />
     <Compile Include="MMDFileParser\PmdReader.cs" />
     <Compile Include="Models\CameraLightAccessoryTimelineModel.cs" />
+    <Compile Include="Models\FrameControlModel.cs" />
     <Compile Include="Models\Graphics\GraphicsModel.cs" />
     <Compile Include="Models\KeyFrameList.cs" />
     <Compile Include="Models\MmdAccessoryList.cs" />

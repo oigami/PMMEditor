@@ -17,6 +17,7 @@ namespace PMMEditor.Models
     {
         public Model()
         {
+            FrameControlModel = new FrameControlModel();
             GraphicsModel = new GraphicsModel(MmdModelList);
         }
 
@@ -31,7 +32,6 @@ namespace PMMEditor.Models
             await MmdModelList.Set(PmmStruct.ModelDatas);
         }
 
-        public GraphicsModel GraphicsModel { get; }
 
         public async Task SavePmm(string filename)
         {
@@ -217,16 +217,8 @@ namespace PMMEditor.Models
 
         #endregion
 
-        #region NowFrame変更通知プロパティ
+        public FrameControlModel FrameControlModel { get; }
 
-        private int _nowFrame;
-
-        public int NowFrame
-        {
-            get { return _nowFrame; }
-            set { SetProperty(ref _nowFrame, value); }
-        }
-
-        #endregion
+        public GraphicsModel GraphicsModel { get; }
     }
 }

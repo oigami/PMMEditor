@@ -30,7 +30,7 @@ namespace PMMEditor.Views
                                                 typeof(TimelinePanel),
                                                 new FrameworkPropertyMetadata(0,
                                                                               FrameworkPropertyMetadataOptions
-                                                                                  .AffectsArrange));
+                                                                                  .AffectsParentArrange));
 
         #endregion
 

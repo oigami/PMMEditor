@@ -43,6 +43,16 @@
     <!--  WindowのCloseキャンセル処理に対応する場合は、WindowCloseCancelBehaviorの使用を検討してください  -->
 
   </i:Interaction.Triggers>
+
+  <Window.InputBindings>
+    <KeyBinding
+      Gesture="Right"
+      Command="{Binding NextFrameCommand}" />
+    <KeyBinding
+      Gesture="Left"
+      Command="{Binding PrevFrameCommand}" />
+  </Window.InputBindings>
+
   <DockPanel>
     <Menu
       Background="Transparent"

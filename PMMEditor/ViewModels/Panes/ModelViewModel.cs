@@ -10,7 +10,6 @@ namespace PMMEditor.ViewModels.Panes
     public class ModelViewModel : PaneViewModelBase
     {
         private readonly Model _model;
-        private PropertyChangedEventListener _listener;
 
         public ModelViewModel(Model _model)
         {
