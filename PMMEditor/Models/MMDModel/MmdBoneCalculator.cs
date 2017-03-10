@@ -39,15 +39,16 @@ namespace PMMEditor.Models.MMDModel
             }
         }
 
-        public void Update()
+        public void Update(int index)
         {
             var bones = _model.BoneKeyList;
             foreach (var i in Enumerable.Range(0, bones.Count))
             {
                 var boneKeyFrames = _model.BoneKeyList.First(_ => _.name == bones[i].name);
 
-                var pos = boneKeyFrames.KeyFrameList[0].Position;
-                var q = boneKeyFrames.KeyFrameList[0].Quaternion;
+                var data = boneKeyFrames.KeyFrameList.GetInterpolationData(index);
+                var pos = data.Position;
+                var q = data.Quaternion;
                 bones[i].boneMat = Matrix.RotationQuaternion(new Quaternion(q.X, q.Y, q.Z, q.W))
                                    * Matrix.Translation(pos.X, pos.Y, pos.Z) * bones[i].initMat;
             }

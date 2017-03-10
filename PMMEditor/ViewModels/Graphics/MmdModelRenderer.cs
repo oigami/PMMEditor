@@ -63,8 +63,9 @@ namespace PMMEditor.ViewModels.Graphics
             BoneSrv = new Direct3D11.ShaderResourceView(_device, _boneTexture2D);
         }
 
-        public void Update(Direct3D11.DeviceContext context)
+        public void Update(Direct3D11.DeviceContext context, int nowFrame)
         {
+            _model.BoneCalculator.Update(nowFrame);
             context.UpdateSubresource(_model.BoneCalculator.WorldBones, _boneTexture2D);
         }
     }
@@ -81,11 +82,13 @@ namespace PMMEditor.ViewModels.Graphics
         private Direct3D11.PixelShader _pixelShader;
         private Direct3D11.Buffer _viewProjConstantBuffer;
 
+        private readonly ReadOnlyReactiveProperty<int> _nowFrame;
         private readonly ReactiveProperty<bool> _isInternalInitialized = new ReactiveProperty<bool>(false);
 
-        public MmdModelRenderer(MmdModelRendererSource model)
+        public MmdModelRenderer(Model model, MmdModelRendererSource sourceModel)
         {
-            Model = model;
+            Model = sourceModel;
+            _nowFrame = model.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty();
             IsInitialized =
                 Model.ObserveProperty(_ => _.IsInitialized)
                      .CombineLatest(_isInternalInitialized.AsObservable(), (a, b) => a && b)
@@ -167,7 +170,7 @@ namespace PMMEditor.ViewModels.Graphics
             target.PixelShader.Set(_pixelShader);
 
             target.InputAssembler.PrimitiveTopology = Direct3D.PrimitiveTopology.TriangleList;
-            boneCalculator.Update(target);
+            boneCalculator.Update(target, _nowFrame.Value);
             target.VertexShader.SetShaderResource(0, boneCalculator.BoneSrv);
             foreach (var material in Model.Materials)
             {

@@ -42,7 +42,7 @@ namespace PMMEditor.Models
         T Interpolation(T left, T right, int frame);
     }
 
-    public class DefaultKeyFrameInterpolationMethod<T> : IKeyFrameInterpolationMethod<T>
+    public struct DefaultKeyFrameInterpolationMethod<T> : IKeyFrameInterpolationMethod<T>
     {
         public T Interpolation(T left, T right, int frame)
         {
@@ -66,9 +66,10 @@ namespace PMMEditor.Models
 
     public class KeyFrameList<T, InterpolationMethod> : NotificationObject, IDictionary<int, T>, IKeyFrameList
         where T : KeyFrameBase
-        where InterpolationMethod : IKeyFrameInterpolationMethod<T>
+        where InterpolationMethod : IKeyFrameInterpolationMethod<T>, new()
     {
         private readonly SortedDictionary<int, T> _item = new SortedDictionary<int, T>();
+        private readonly InterpolationMethod _interpolationMethod = new InterpolationMethod();
 
         public KeyFrameList(string name)
         {
@@ -153,6 +154,27 @@ namespace PMMEditor.Models
         }
 
         #endregion
+
+        public T GetInterpolationData(int index)
+        {
+            if (index < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), "Negative number is out of range");
+            }
+            T preData = null;
+            // TODO: 二分探索にする
+            foreach (var item in this)
+            {
+                if (index < item.Key)
+                {
+                    var left = preData;
+                    var right = item.Value;
+                    return _interpolationMethod.Interpolation(left, right, index);
+                }
+                preData = item.Value;
+            }
+            return preData;
+        }
 
         public async Task CreateKeyFrame<TIn>(
             TIn[] frame,

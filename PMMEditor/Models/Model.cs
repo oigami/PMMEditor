@@ -10,10 +10,6 @@ using System.Threading.Tasks;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models.Graphics;
 using PMMEditor.MVVM;
-using PMMEditor.Views.Documents;
-using Reactive.Bindings;
-using SharpDX.Direct3D;
-using Direct3D11 = SharpDX.Direct3D11;
 
 namespace PMMEditor.Models
 {
@@ -221,6 +217,16 @@ namespace PMMEditor.Models
 
         #endregion
 
-    
+        #region NowFrame変更通知プロパティ
+
+        private int _nowFrame;
+
+        public int NowFrame
+        {
+            get { return _nowFrame; }
+            set { SetProperty(ref _nowFrame, value); }
+        }
+
+        #endregion
     }
 }

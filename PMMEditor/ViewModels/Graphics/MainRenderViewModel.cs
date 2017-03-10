@@ -1,6 +1,12 @@
-﻿using PMMEditor.Models.Graphics;
+﻿using System;
+using System.Reactive.Linq;
+using System.Windows.Media;
+using PMMEditor.Models;
+using PMMEditor.Models.Graphics;
 using PMMEditor.ViewModels.Documents;
 using Reactive.Bindings;
+using Reactive;
+using Reactive.Bindings.Extensions;
 using SharpDX.Direct3D11;
 
 namespace PMMEditor.ViewModels.Graphics
@@ -9,12 +15,22 @@ namespace PMMEditor.ViewModels.Graphics
     {
         private readonly GraphicsModel _model;
 
-        public MainRenderViewModel(GraphicsModel model)
+        public MainRenderViewModel(Model model)
         {
-            Device = model.Device;
-            _model = model;
-            Items = _model.MmdModelSource.ToReadOnlyReactiveCollection(_ => (IRenderer) new MmdModelRenderer(_));
+            _model = model.GraphicsModel;
+            Device = _model.Device;
+            NowFrame = model.ToReactivePropertyAsSynchronized(_ => _.NowFrame);
+            Items = _model.MmdModelSource.ToReadOnlyReactiveCollection(_ => (IRenderer) new MmdModelRenderer(model, _))
+                          .AddTo(CompositeDisposable);
+            CompositionTarget.Rendering += CompositionTarget_Rendering;
         }
+
+        private void CompositionTarget_Rendering(object sender, EventArgs e)
+        {
+            NowFrame.Value++;
+        }
+
+        public ReactiveProperty<int> NowFrame { get; }
 
         public void Initialize() {}
 

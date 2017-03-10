@@ -78,7 +78,7 @@ namespace PMMEditor.Models
 
         public string FilePath { get; private set; }
 
-        public MmdModelBoneCalculator BoneCalculator { get; private set; }
+        public MmdModelBoneCalculator BoneCalculator { get; }
 
         public async Task Set(PmmStruct.ModelData modelData)
         {
@@ -90,7 +90,7 @@ namespace PMMEditor.Models
             var data = Pmd.ReadFile(modelData.Path);
             await CreateBones(modelData, data.Bones);
             BoneCalculator.InitBoneCalc();
-            BoneCalculator.Update();
+            BoneCalculator.Update(0);
         }
 
         private async Task CreateBones(PmmStruct.ModelData modelData, IList<PmdStruct.Bone> bones)

@@ -16,8 +16,14 @@ namespace PMMEditor.Models.Graphics
     {
         public MmdModelRendererSource(MmdModelModel model, Direct3D11.Device device)
         {
+            if (device == null)
+            {
+                throw new ArgumentNullException(nameof(device));
+            }
+
             _model = model;
             _device = device;
+
             BoneCount = _model.BoneKeyList.Count;
             Task.Run(() =>
             {
@@ -122,10 +128,7 @@ namespace PMMEditor.Models.Graphics
         private void CreateData()
         {
             OnUnload();
-            if (_device == null)
-            {
-                return;
-            }
+
             var data = Pmd.ReadFile(_model.FilePath);
 
             Materials = new List<Material>(data.Materials.Count);
@@ -208,6 +211,4 @@ namespace PMMEditor.Models.Graphics
 
         #endregion
     }
-
-
 }

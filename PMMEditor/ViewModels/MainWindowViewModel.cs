@@ -40,7 +40,7 @@ namespace PMMEditor.ViewModels
             AddPane(() => new CameraViewModel(_model).AddTo(CompositeDisposable));
             AddPane(() => new AccessoryViewModel(_model).AddTo(CompositeDisposable));
 
-            await AddDocument(async () => new MainRenderViewModel(_model.GraphicsModel), "test");
+            await AddDocument(async () => new MainRenderViewModel(_model), "test");
         }
 
         #region PmmStruct変更通知プロパティ
