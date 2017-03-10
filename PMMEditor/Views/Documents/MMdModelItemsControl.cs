@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
@@ -7,9 +8,9 @@ using SharpDX.Direct3D11;
 
 namespace PMMEditor.Views.Documents
 {
-    public class MmdModelItemsControl: ContentControl
+    public class MmdModelItemsControl : ContentControl
     {
-        #region ItemsSrouce
+        #region ItemsSource
 
         public IEnumerable<IRenderer> ItemsSource
         {
@@ -117,16 +118,31 @@ namespace PMMEditor.Views.Documents
             {
                 return;
             }
+            int index = args.NewStartingIndex;
             switch (args.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    int index = args.NewStartingIndex;
                     foreach (IRenderer argsNewItem in args.NewItems)
                     {
                         _renderer.Children.Insert(index++, argsNewItem);
                     }
                     break;
-                // TODO: 削除時などの処理
+                case NotifyCollectionChangedAction.Remove:
+                    foreach (IRenderer item in args.OldItems)
+                    {
+                        _renderer.Children.Remove(item);
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    _renderer.Children.Clear();
+                    foreach (var item in ItemsSource)
+                    {
+                        _renderer.Children.Add(item);
+                    }
+                    break;
+                default:
+                    // TODO: Replace, Moveの処理
+                    throw new NotImplementedException("Replace, Moveの処理");
             }
         }
 

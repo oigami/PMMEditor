@@ -89,8 +89,6 @@ namespace PMMEditor.Models
 
             var data = Pmd.ReadFile(modelData.Path);
             await CreateBones(modelData, data.Bones);
-            BoneCalculator.InitBoneCalc();
-            BoneCalculator.Update(0);
         }
 
         private async Task CreateBones(PmmStruct.ModelData modelData, IList<PmdStruct.Bone> bones)
@@ -111,6 +109,8 @@ namespace PMMEditor.Models
             {
                 BoneKeyList.Add(item);
             }
+            BoneCalculator.InitBoneCalc();
+            BoneCalculator.Update(0);
         }
 
         private Bone CreateBone(

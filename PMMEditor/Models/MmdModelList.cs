@@ -23,6 +23,7 @@ namespace PMMEditor.Models
         public async Task Set(IEnumerable<PmmStruct.ModelData> list)
         {
             var order = new SortedDictionary<int, int>();
+            List.Clear();
             foreach (var item in list.Select((data, i) => new {data, i}))
             {
                 var model = new MmdModelModel();
