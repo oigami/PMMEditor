@@ -18,10 +18,11 @@ namespace PMMEditor.ViewModels
 {
     public class MainWindowViewModel : BindableDisposableBase
     {
-        private readonly Model _model = new Model();
+        private readonly Model _model;
 
         public MainWindowViewModel()
         {
+            _model = new Model().AddTo(CompositeDisposable);
             SwitchPlayAndStopCommand = new ViewModelCommand(SwitchPlayAndStop);
             NextFrameCommand = new ViewModelCommand(NextFrame);
             PrevFrameCommand = new ViewModelCommand(PrevFrame);

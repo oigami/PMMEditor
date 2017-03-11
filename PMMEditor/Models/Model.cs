@@ -10,15 +10,16 @@ using System.Threading.Tasks;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models.Graphics;
 using PMMEditor.MVVM;
+using Reactive.Bindings.Extensions;
 
 namespace PMMEditor.Models
 {
-    public class Model : BindableBase
+    public class Model : BindableDisposableBase
     {
         public Model()
         {
             FrameControlModel = new FrameControlModel();
-            GraphicsModel = new GraphicsModel(MmdModelList);
+            GraphicsModel = new GraphicsModel(MmdModelList).AddTo(CompositeDisposable);
         }
 
         #region ReadWriteFile
