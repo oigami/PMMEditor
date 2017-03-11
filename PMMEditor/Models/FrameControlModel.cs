@@ -61,7 +61,7 @@ namespace PMMEditor.Models
 
         public void Play()
         {
-            _isPlaying = false;
+            _isPlaying = true;
         }
 
         public void Stop()

@@ -164,7 +164,7 @@ namespace PMMEditor.Models
             outputBone.name = item.Name;
             outputBone.id = i;
             outputBone.type = item.Kind;
-            Matrix modelLocalInitMat = Matrix.Translation(item.Position.X, item.Position.Y, item.Position.Z);
+            var modelLocalInitMat = Matrix.Translation(item.Position.X, item.Position.Y, item.Position.Z);
             outputBone.initMatML = outputBone.boneMatML = outputBone.initMat = modelLocalInitMat; // モデルローカル座標系
             outputBone.offsetMat = Matrix.Invert(modelLocalInitMat);
 
