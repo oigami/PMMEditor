@@ -27,7 +27,7 @@ namespace PMMEditor.Models
 
         #endregion
 
-        private readonly bool _isPlaying = false;
+        private bool _isPlaying;
 
         private void CompositionTarget_FrameUpdate(object sender, EventArgs e)
         {
@@ -40,15 +40,38 @@ namespace PMMEditor.Models
 
         public void NextFrame()
         {
+            if (_isPlaying)
+            {
+                return;
+            }
             NowFrame++;
         }
 
         public void PrevFrame()
         {
+            if (_isPlaying)
+            {
+                return;
+            }
             if (NowFrame > 0)
             {
                 NowFrame--;
             }
+        }
+
+        public void Play()
+        {
+            _isPlaying = false;
+        }
+
+        public void Stop()
+        {
+            _isPlaying = false;
+        }
+
+        public void SwitchPlayAndStop()
+        {
+            _isPlaying = !_isPlaying;
         }
     }
 }

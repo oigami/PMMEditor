@@ -22,6 +22,7 @@ namespace PMMEditor.ViewModels
 
         public MainWindowViewModel()
         {
+            SwitchPlayAndStopCommand = new ViewModelCommand(SwitchPlayAndStop);
             NextFrameCommand = new ViewModelCommand(NextFrame);
             PrevFrameCommand = new ViewModelCommand(PrevFrame);
         }
@@ -209,5 +210,17 @@ namespace PMMEditor.ViewModels
         }
 
         #endregion
+
+        #region SwitchPlayAndStopCommand
+
+        public ViewModelCommand SwitchPlayAndStopCommand { get; }
+
+        private void SwitchPlayAndStop()
+        {
+            _model.FrameControlModel.SwitchPlayAndStop();
+        }
+
+        #endregion
+
     }
 }

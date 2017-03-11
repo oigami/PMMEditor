@@ -5,6 +5,7 @@
   xmlns:avalonDock="http://schemas.xceed.com/wpf/xaml/avalondock"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:documents="clr-namespace:PMMEditor.Views.Documents"
+  xmlns:graphics="clr-namespace:PMMEditor.ViewModels.Graphics"
   xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
   xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -13,7 +14,6 @@
   xmlns:vm="clr-namespace:PMMEditor.ViewModels"
   xmlns:vmDocuments="clr-namespace:PMMEditor.ViewModels.Documents"
   xmlns:vmPanes="clr-namespace:PMMEditor.ViewModels.Panes"
-  xmlns:graphics="clr-namespace:PMMEditor.ViewModels.Graphics"
   Title="MainWindow"
   Width="640"
   Height="480"
@@ -46,11 +46,14 @@
 
   <Window.InputBindings>
     <KeyBinding
-      Gesture="Right"
-      Command="{Binding NextFrameCommand}" />
+      Command="{Binding NextFrameCommand}"
+      Gesture="Right" />
     <KeyBinding
-      Gesture="Left"
-      Command="{Binding PrevFrameCommand}" />
+      Command="{Binding PrevFrameCommand}"
+      Gesture="Left" />
+    <KeyBinding
+      Command="{Binding SwitchPlayAndStopCommand}"
+      Gesture="Space" />
   </Window.InputBindings>
 
   <DockPanel>
