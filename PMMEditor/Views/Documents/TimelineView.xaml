@@ -318,6 +318,7 @@
         <Style TargetType="{x:Type TreeViewItem}">
           <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
           <Setter Property="Template" Value="{StaticResource TreeViewItemControlTemplate}" />
+          <Setter Property="OverridesDefaultStyle" Value="True" />
         </Style>
       </TreeView.ItemContainerStyle>
     </TreeView>
