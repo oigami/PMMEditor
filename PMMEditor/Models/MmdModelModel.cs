@@ -42,6 +42,21 @@ namespace PMMEditor.Models
             public bool IsPhysicsDisabled { get; set; }
         }
 
+        public class KeyInterpolationMethod : IKeyFrameInterpolationMethod<BoneKeyFrame>
+        {
+            private BoneKeyFrame res = new BoneKeyFrame();
+
+            public BoneKeyFrame Interpolation(BoneKeyFrame left, BoneKeyFrame right, int frame)
+            {
+                int diff = right.FrameNumber - left.FrameNumber;
+                // TODO: 補完曲線に対応する（ニュートン法）
+                float t =(float)(frame - left.FrameNumber) / diff;
+                res.Position = (right.Position - left.Position) * new Vector3(t, t, t) + left.Position;
+                res.Quaternion = Quaternion.Slerp(left.Quaternion, right.Quaternion, t);
+                return res;
+            }
+        }
+
         public class Bone
         {
             public int sibling = -1;
@@ -56,7 +71,7 @@ namespace PMMEditor.Models
             public Matrix boneMat;
             public string name;
 
-            public KeyFrameList<BoneKeyFrame> KeyFrameList;
+            public KeyFrameList<BoneKeyFrame, KeyInterpolationMethod> KeyFrameList;
         }
 
         #region BonekeyListプロパティ
@@ -153,7 +168,7 @@ namespace PMMEditor.Models
             outputBone.initMatML = outputBone.boneMatML = outputBone.initMat = modelLocalInitMat; // モデルローカル座標系
             outputBone.offsetMat = Matrix.Invert(modelLocalInitMat);
 
-            var list = new KeyFrameList<BoneKeyFrame>(item.Name);
+            var list = new KeyFrameList<BoneKeyFrame, KeyInterpolationMethod>(item.Name);
             outputBone.KeyFrameList = list;
             Func<sbyte[], int[]> createArray4 = _ => new int[] {_[0], _[1], _[2], _[3]};
             list.CreateKeyFrame(keyFrame, boneInitFrame, listBone =>

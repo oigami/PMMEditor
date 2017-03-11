@@ -167,6 +167,10 @@ namespace PMMEditor.Models
             {
                 if (index < item.Key)
                 {
+                    if (preData.FrameNumber == index)
+                    {
+                        return preData;
+                    }
                     var left = preData;
                     var right = item.Value;
                     return _interpolationMethod.Interpolation(left, right, index);
