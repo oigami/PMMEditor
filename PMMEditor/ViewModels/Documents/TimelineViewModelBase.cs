@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using PMMEditor.Models;
 using Livet.Commands;
 using PMMEditor.MVVM;
@@ -110,7 +111,7 @@ namespace PMMEditor.ViewModels.Documents
 
         #endregion
 
-        public class GridNumberList : IEnumerable<int>
+        public class GridNumberList : IEnumerable<int>, INotifyCollectionChanged
         {
             private int _size;
 
@@ -122,6 +123,8 @@ namespace PMMEditor.ViewModels.Documents
             public void Resize(int size)
             {
                 _size = size;
+                CollectionChanged?.Invoke(this,
+                                          new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             }
 
             public IEnumerator<int> GetEnumerator()
@@ -137,6 +140,8 @@ namespace PMMEditor.ViewModels.Documents
             {
                 return GetEnumerator();
             }
+
+            public event NotifyCollectionChangedEventHandler CollectionChanged;
         }
 
         #region GridFrameNumberList変更通知プロパティ
