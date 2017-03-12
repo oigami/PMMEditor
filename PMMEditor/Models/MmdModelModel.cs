@@ -44,16 +44,16 @@ namespace PMMEditor.Models
 
         public class KeyInterpolationMethod : IKeyFrameInterpolationMethod<BoneKeyFrame>
         {
-            private BoneKeyFrame res = new BoneKeyFrame();
+            private readonly BoneKeyFrame _res = new BoneKeyFrame();
 
             public BoneKeyFrame Interpolation(BoneKeyFrame left, BoneKeyFrame right, int frame)
             {
                 int diff = right.FrameNumber - left.FrameNumber;
                 // TODO: 補完曲線に対応する（ニュートン法）
                 float t =(float)(frame - left.FrameNumber) / diff;
-                res.Position = (right.Position - left.Position) * new Vector3(t, t, t) + left.Position;
-                res.Quaternion = Quaternion.Slerp(left.Quaternion, right.Quaternion, t);
-                return res;
+                _res.Position = (right.Position - left.Position) * new Vector3(t, t, t) + left.Position;
+                _res.Quaternion = Quaternion.Slerp(left.Quaternion, right.Quaternion, t);
+                return _res;
             }
         }
 
