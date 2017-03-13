@@ -10,6 +10,21 @@ namespace PMMEditor.SharpDxControl
 
         public static D3D9Instance Instance { get; } = new D3D9Instance();
 
+        public void CheckDeviceLost()
+        {
+            var d = D3DDevice.CheckDeviceState((IntPtr)null);
+            if (d != DeviceState.Ok)
+            {
+                var presentParams = new PresentParameters
+                {
+                    Windowed = true,
+                    SwapEffect = SwapEffect.Discard,
+                    DeviceWindowHandle = NativeMethods.GetDesktopWindow(),
+                    PresentationInterval = PresentInterval.Default
+                };
+                D3DDevice.ResetEx(ref presentParams);
+            }
+        }
         private D3D9Instance()
         {
             var presentParams = new PresentParameters

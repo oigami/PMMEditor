@@ -7,15 +7,38 @@ using System.Windows.Interop;
 using SharpDX;
 using SharpDX.Direct3D11;
 using Resource = SharpDX.DXGI.Resource;
+using System.Reactive.Disposables;
 
 namespace PMMEditor.SharpDxControl
 {
     public class D3D11Image : D3DImage, IDisposable
     {
+        private CompositeDisposable CompositeDisposable = new CompositeDisposable();
         private Texture _renderTarget;
+        private void OnDeviceLostCheck(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (IsFrontBufferAvailable == false)
+            {
+                return;
+            }
+            D3D9Instance.Instance.CheckDeviceLost();
 
+            var renderTarget = _renderTarget;
+            if (renderTarget == null)
+            {
+                return;
+            }
+
+            using (var surface = renderTarget.GetSurfaceLevel(0))
+            {
+                SetBackBuffer(surface.NativePointer);
+            }
+        }
         public void InvalidateD3DImage()
         {
+            IsFrontBufferAvailableChanged += OnDeviceLostCheck;
+            CompositeDisposable.Add(Disposable.Create(() => IsFrontBufferAvailableChanged -= OnDeviceLostCheck));
+
             if (_renderTarget == null)
             {
                 return;
@@ -100,6 +123,7 @@ namespace PMMEditor.SharpDxControl
         {
             if (disposing)
             {
+                CompositeDisposable.Dispose();
                 _renderTarget?.Dispose();
             }
         }
