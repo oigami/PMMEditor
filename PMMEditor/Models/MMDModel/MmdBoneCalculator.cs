@@ -56,7 +56,7 @@ namespace PMMEditor.Models.MMDModel
             foreach (var i in Enumerable.Range(0, bones.Count))
             {
                 if (bones[i].type == PmdStruct.BoneKind.IKAffected
-                    || bones[i].type== PmdStruct.BoneKind.IKTarget)
+                    || bones[i].type == PmdStruct.BoneKind.IKTarget)
                 {
                     continue;
                 }
@@ -100,7 +100,7 @@ namespace PMMEditor.Models.MMDModel
                             Math.Min((float) Math.Acos(Clamp(Vector3.Dot(localEffectorDir, localTargetDir),
                                                              -1.0, 1.0f)),
                                      ik.LimitAngle * (float) Math.PI);
-                        Debug.Assert(float.IsNaN(angle) == false && float.IsInfinity(angle)==false);
+                        Debug.Assert(float.IsNaN(angle) == false && float.IsInfinity(angle) == false);
                         if (Math.Abs(angle) < 1e-7f)
                         {
                             continue;
@@ -119,7 +119,21 @@ namespace PMMEditor.Models.MMDModel
                         axis.Normalize();
 
                         var rotation = Quaternion.RotationAxis(axis, angle);
-                        bone.boneMat = Matrix.RotationQuaternion(rotation) * bone.boneMat;
+                        if (bone.name == "左ひざ" || bone.name == "右ひざ")
+                        {
+                            Quaternion rv = rotation * Quaternion.RotationMatrix(bone.boneMat);
+                            rv.Normalize();
+                            var eulerAngle = new EulerAngles(Matrix.RotationQuaternion(rv));
+                            eulerAngle.X = Clamp(eulerAngle.X, MathUtil.Radians(-180.0f), MathUtil.Radians(-10.0f));
+                            eulerAngle.Y = 0;
+                            eulerAngle.Z = 0;
+                            bone.boneMat = eulerAngle.CreateMatrix()
+                                           * Matrix.Translation(bone.boneMat.TranslationVector);
+                        }
+                        else
+                        {
+                            bone.boneMat = Matrix.RotationQuaternion(rotation) * bone.boneMat;
+                        }
                     }
                 }
             }
