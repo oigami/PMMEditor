@@ -95,6 +95,8 @@ namespace PMMEditor.Models
 
         public MmdModelBoneCalculator BoneCalculator { get; }
 
+        public List<PmdStruct.IK> IKList { get;private set; }
+
         public async Task Set(PmmStruct.ModelData modelData)
         {
             _modelData = modelData;
@@ -103,6 +105,7 @@ namespace PMMEditor.Models
             FilePath = modelData.Path;
 
             var data = Pmd.ReadFile(modelData.Path);
+            IKList = data.IKs;
             await CreateBones(modelData, data.Bones);
         }
 
