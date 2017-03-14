@@ -10,7 +10,8 @@ namespace PMMEditor.Models
     public class MmdModelList : NotificationObject
     {
         private readonly List<int> _drawOrder = new List<int>();
-        public ObservableCollection<MmdModelModel> List { get; }= new ObservableCollection<MmdModelModel>();
+
+        public ObservableCollection<MmdModelModel> List { get; } = new ObservableCollection<MmdModelModel>();
 
         #region NameList変更通知プロパティ
 
@@ -24,7 +25,7 @@ namespace PMMEditor.Models
         {
             var order = new SortedDictionary<int, int>();
             List.Clear();
-            foreach (var item in list.Select((data, i) => new {data, i}))
+            foreach (var item in list.Select((data, i) => new { data, i }))
             {
                 var model = new MmdModelModel();
                 await model.Set(item.data);

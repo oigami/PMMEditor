@@ -104,7 +104,7 @@ namespace PMMEditor.Models.MMDModel
                 {
                     //if ( !CreateZXY(rot) ) // x が90度以内に制限されると膝が上がらなくなってしまう
                     //{
-                        throw new ArgumentException(nameof(rot));
+                    throw new ArgumentException(nameof(rot));
                     //}
                 }
             }

@@ -52,7 +52,7 @@ namespace PMMEditor.Models.Graphics
 
         #endregion
 
-        public  MmdModelModel Model { get; }
+        public MmdModelModel Model { get; }
 
         #region VertexBufferBinding変更通知プロパティ
 

@@ -222,6 +222,5 @@ namespace PMMEditor.ViewModels
         }
 
         #endregion
-
     }
 }

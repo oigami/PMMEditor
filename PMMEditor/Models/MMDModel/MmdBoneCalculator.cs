@@ -83,7 +83,7 @@ namespace PMMEditor.Models.MMDModel
                 var q = data.Quaternion;
 
                 bones[i].BoneMatBoneLocal = Matrix.RotationQuaternion(new Quaternion(q.X, q.Y, q.Z, q.W))
-                                   * Matrix.Translation(pos.X, pos.Y, pos.Z) * bones[i].InitMatBoneLocal;
+                                            * Matrix.Translation(pos.X, pos.Y, pos.Z) * bones[i].InitMatBoneLocal;
             }
         }
 
@@ -143,7 +143,7 @@ namespace PMMEditor.Models.MMDModel
                             eulerAngle.Y = 0;
                             eulerAngle.Z = 0;
                             bone.BoneMatBoneLocal = eulerAngle.CreateMatrix()
-                                           * Matrix.Translation(bone.BoneMatBoneLocal.TranslationVector);
+                                                    * Matrix.Translation(bone.BoneMatBoneLocal.TranslationVector);
                         }
                         else
                         {

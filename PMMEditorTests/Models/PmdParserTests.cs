@@ -21,6 +21,5 @@ namespace PMMEditorTests.Models
                 Assert.Fail(e.Message + "\n\n" + e.StackTrace);
             }
         }
-
     }
 }

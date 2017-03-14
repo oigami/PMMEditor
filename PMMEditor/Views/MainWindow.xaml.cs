@@ -41,9 +41,12 @@ namespace PMMEditor.Views
             InitializeComponent();
 
             // キーボードショートカットなどに対応するためEnterを押したらフォーカスを強制的に外す
-            this.KeyDown += (sender, e) =>
+            KeyDown += (sender, e) =>
             {
-                if (e.Key != Key.Enter) { return; }
+                if (e.Key != Key.Enter)
+                {
+                    return;
+                }
                 Keyboard.ClearFocus();
                 FocusManager.SetFocusedElement(this, this);
             };

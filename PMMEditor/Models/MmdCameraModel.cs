@@ -59,7 +59,7 @@ namespace PMMEditor.Models
             BoneKeyList.Add(await Task.Run(async () =>
             {
                 var list = new KeyFrameList<BoneKeyFrame>("");
-                Func<sbyte[], int[]> createArray4 = i => new int[] {i[0], i[1], i[2], i[3]};
+                Func<sbyte[], int[]> createArray4 = i => new int[] { i[0], i[1], i[2], i[3] };
 
                 await list.CreateKeyFrame(keyFrame, cameraInitFrame, i =>
                 {
@@ -72,7 +72,7 @@ namespace PMMEditor.Models
                         LookingBoneIndex = i.LookingBoneIndex,
                         Distance = i.Distance,
                         Translation = new Point3D(i.EyePosition[0], i.EyePosition[1], i.EyePosition[2]),
-                        Rotation = new[] {i.Rotation[0], i.Rotation[1], i.Rotation[2]},
+                        Rotation = new[] { i.Rotation[0], i.Rotation[1], i.Rotation[2] },
                         InterpolationX = createArray4(i.InterpolationX),
                         InterpolationY = createArray4(i.InterpolationY),
                         InterpolationZ = createArray4(i.InterpolationZ),

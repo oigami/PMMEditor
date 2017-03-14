@@ -30,7 +30,7 @@ namespace PMMEditor.Models
         {
             List.Clear();
             var order = new SortedDictionary<int, int>();
-            foreach (var item in list.Select((data, i) => new {data, i}))
+            foreach (var item in list.Select((data, i) => new { data, i }))
             {
                 var accessory = new MmdAccessoryModel();
                 await accessory.Set(item.data);

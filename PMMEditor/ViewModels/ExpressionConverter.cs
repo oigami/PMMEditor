@@ -52,7 +52,7 @@ namespace PMMEditor.ViewModels
             object evaluator = Activator.CreateInstance(EvalType);
 
             string output = (string) EvalType.InvokeMember("Eval", BindingFlags.InvokeMethod, null, evaluator,
-                                                           new object[] {exp});
+                                                           new object[] { exp });
 
             return output;
         }

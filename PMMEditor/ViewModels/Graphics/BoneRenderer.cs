@@ -64,8 +64,8 @@ namespace PMMEditor.ViewModels.Graphics
 
                 return new[]
                 {
-                    new Vertex {Id = new Int3(nowX, nowY, 0), IsBegin = 1},
-                    new Vertex {Id = new Int3(nextX, nextY, 0), IsBegin = 0}
+                    new Vertex { Id = new Int3(nowX, nowY, 0), IsBegin = 1 },
+                    new Vertex { Id = new Int3(nextX, nextY, 0), IsBegin = 0 }
                 };
             }).ToArray();
             _numVertex = vertexArr.Length;

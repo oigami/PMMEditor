@@ -436,10 +436,10 @@ namespace PMMEditor.MMDFileParser
             Write(pmm.CameraCurrentLookingAtModel);
             Write(pmm.CameraCurrentLookingAtBone);
 
-            WriteArray(new[] {1.0f, 0.0f, 0.0f, 0.0f}, Write);
-            WriteArray(new[] {0.0f, 1.0f, 0.0f, 0.0f}, Write);
-            WriteArray(new[] {0.0f, 0.0f, 1.0f, 0.0f}, Write);
-            WriteArray(new[] {0.0f, 0.0f, 0.0f, 1.0f}, Write);
+            WriteArray(new[] { 1.0f, 0.0f, 0.0f, 0.0f }, Write);
+            WriteArray(new[] { 0.0f, 1.0f, 0.0f, 0.0f }, Write);
+            WriteArray(new[] { 0.0f, 0.0f, 1.0f, 0.0f }, Write);
+            WriteArray(new[] { 0.0f, 0.0f, 0.0f, 1.0f }, Write);
 
             Write(pmm.IsViewLookAtEnabled);
 

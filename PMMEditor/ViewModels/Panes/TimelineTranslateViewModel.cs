@@ -59,7 +59,7 @@ namespace PMMEditor.ViewModels.Panes
         {
             get
             {
-                List<IEnumerable<PmmStruct.ModelData.BoneInitFrame>> list =
+                var list =
                     new List<IEnumerable<PmmStruct.ModelData.BoneInitFrame>>();
                 for (int i = 0; i < _model?.PmmStruct?.ModelDatas?[0].BoneInitFrames?.Count; i++)
                 {
