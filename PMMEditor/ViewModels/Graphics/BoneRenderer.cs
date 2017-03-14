@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PMMEditor.MMDFileParser;
 using PMMEditor.Models.Graphics;
 using PMMEditor.MVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using SharpDX;
 using SharpDX.D3DCompiler;
+using SharpDX.Direct3D;
 using SharpDX.DXGI;
 using Direct3D11 = SharpDX.Direct3D11;
 
@@ -25,7 +27,7 @@ namespace PMMEditor.ViewModels.Graphics
             public int IsBegin; // 0 or 1
         }
 
-        private readonly ReactiveProperty<bool> IsInternalInitialized = new ReactiveProperty<bool>(false);
+        public readonly ReadOnlyReactiveProperty<bool> IsInitialized;
         private readonly MmdModelRendererSource _model;
         private readonly Direct3D11.Device _device;
         private int _numVertex;
@@ -33,24 +35,30 @@ namespace PMMEditor.ViewModels.Graphics
         private Direct3D11.VertexShader _vertexShader;
         private Direct3D11.InputLayout _inputLayout;
         private Direct3D11.PixelShader _pixelShader;
+        private bool _isInitialized;
+
+        private bool IsInternalInitialized
+        {
+            get { return _isInitialized; }
+            set { SetProperty(ref _isInitialized, value); }
+        }
 
         private void InitializeInternal()
         {
-
             var boneNum = _model.Model.BoneKeyList.Count;
             // 頂点バッファ生成
             var vertexArr = _model.Model.BoneKeyList.SelectMany(_ =>
             {
-                if (_.type == MMDFileParser.PmdStruct.BoneKind.Invisible
-                || _.TailChildId == -1)
+                if (_.Type == PmdStruct.BoneKind.Invisible
+                    || _.TailChildIndex == -1)
                 {
                     return Enumerable.Empty<Vertex>();
                 }
-                var now = (_.id + boneNum) * 4;
+                var now = (_.Index + boneNum) * 4;
                 var nowX = now % 1024;
                 var nowY = now / 1024;
 
-                var next = (_.TailChildId + boneNum) * 4;
+                var next = (_.TailChildIndex + boneNum) * 4;
                 var nextX = next % 1024;
                 var nextY = next / 1024;
 
@@ -73,12 +81,12 @@ namespace PMMEditor.ViewModels.Graphics
             _vertexBufferBinding = new Direct3D11.VertexBufferBinding(_vertexBuffer, Utilities.SizeOf<Vertex>(),
                                                                       0);
             _boneRenderDepthState = new Direct3D11.DepthStencilState(
-              _device,
-              new Direct3D11.DepthStencilStateDescription
-              {
-                  IsDepthEnabled = false,
-                  IsStencilEnabled = false
-              });
+                _device,
+                new Direct3D11.DepthStencilStateDescription
+                {
+                    IsDepthEnabled = false,
+                    IsStencilEnabled = false
+                });
 
             // 頂点シェーダ生成
             var shaderSource = Resource1.BoneRenderingShader;
@@ -88,7 +96,7 @@ namespace PMMEditor.ViewModels.Graphics
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    shaderSource[i] = (byte)' ';
+                    shaderSource[i] = (byte) ' ';
                 }
             }
             var vertexShaderByteCode = ShaderBytecode.Compile(shaderSource, "VS", "vs_4_0", ShaderFlags.Debug);
@@ -104,7 +112,7 @@ namespace PMMEditor.ViewModels.Graphics
             _inputLayout = new Direct3D11.InputLayout(_device, inputSignature, new[]
             {
                 new Direct3D11.InputElement("BONE_INDEX", 0, Format.R32G32B32_SInt, 0, 0),
-                new Direct3D11.InputElement("IS_BEGIN", 0, Format.R32_SInt, 12, 0),
+                new Direct3D11.InputElement("IS_BEGIN", 0, Format.R32_SInt, 12, 0)
             });
 
             // ピクセルシェーダ生成
@@ -116,21 +124,22 @@ namespace PMMEditor.ViewModels.Graphics
             }
             _pixelShader = new Direct3D11.PixelShader(_device, pixelShaderByteCode);
 
-            IsInternalInitialized.Value = true;
+            IsInternalInitialized = true;
         }
 
         public BoneRenderer(MmdModelRendererSource model, Direct3D11.Device device)
         {
+            IsInitialized = this.ObserveProperty(_ => _.IsInternalInitialized).ToReadOnlyReactiveProperty();
             _model = model;
             _device = device;
             Task.Run(() => InitializeInternal());
         }
 
-        public void Initialize(Direct3D11.Device device) { }
+        public void Initialize(Direct3D11.Device device) {}
 
         public void Render(Direct3D11.DeviceContext context)
         {
-            if (IsInternalInitialized.Value == false)
+            if (IsInitialized.Value == false)
             {
                 return;
             }
@@ -144,7 +153,7 @@ namespace PMMEditor.ViewModels.Graphics
 
             context.PixelShader.Set(_pixelShader);
 
-            context.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.LineList;
+            context.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineList;
             context.Draw(_numVertex, 0);
             context.OutputMerger.DepthStencilState = depthState;
         }

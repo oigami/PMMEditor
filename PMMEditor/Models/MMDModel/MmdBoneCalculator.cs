@@ -26,7 +26,7 @@ namespace PMMEditor.Models.MMDModel
             var bones = _model.BoneKeyList;
             foreach (var bone in bones)
             {
-                inOutWorlds[bone.id] = bone.offsetMat * inOutWorlds[bone.id];
+                inOutWorlds[bone.Index] = bone.InverseInitMatModelLocal * inOutWorlds[bone.Index];
             }
         }
 
@@ -36,15 +36,15 @@ namespace PMMEditor.Models.MMDModel
         {
             while (true)
             {
-                var m = me.boneMat * parent;
-                resultModelLocalMatrix[me.id] = m;
-                if (me.firstChild != -1)
+                var m = me.BoneMatBoneLocal * parent;
+                resultModelLocalMatrix[me.Index] = m;
+                if (me.FirstChildIndex != -1)
                 {
-                    CalcBoneModelLocalMatrix(_model.BoneKeyList[me.firstChild], m, ref resultModelLocalMatrix);
+                    CalcBoneModelLocalMatrix(_model.BoneKeyList[me.FirstChildIndex], m, ref resultModelLocalMatrix);
                 }
-                if (me.sibling != -1)
+                if (me.SiblingIndex != -1)
                 {
-                    me = _model.BoneKeyList[me.sibling];
+                    me = _model.BoneKeyList[me.SiblingIndex];
                     continue;
                 }
                 break;
@@ -70,20 +70,20 @@ namespace PMMEditor.Models.MMDModel
             var bones = _model.BoneKeyList;
             foreach (var i in Enumerable.Range(0, bones.Count))
             {
-                if (bones[i].type == PmdStruct.BoneKind.IKAffected
-                    || bones[i].type == PmdStruct.BoneKind.IKTarget)
+                if (bones[i].Type == PmdStruct.BoneKind.IKAffected
+                    || bones[i].Type == PmdStruct.BoneKind.IKTarget)
                 {
                     continue;
                 }
 
-                var boneKeyFrames = _model.BoneKeyList.First(_ => _.name == bones[i].name);
+                var boneKeyFrames = _model.BoneKeyList.First(_ => _.Name == bones[i].Name);
 
                 var data = boneKeyFrames.KeyFrameList.GetInterpolationData(index);
                 var pos = data.Position;
                 var q = data.Quaternion;
 
-                bones[i].boneMat = Matrix.RotationQuaternion(new Quaternion(q.X, q.Y, q.Z, q.W))
-                                   * Matrix.Translation(pos.X, pos.Y, pos.Z) * bones[i].initMat;
+                bones[i].BoneMatBoneLocal = Matrix.RotationQuaternion(new Quaternion(q.X, q.Y, q.Z, q.W))
+                                   * Matrix.Translation(pos.X, pos.Y, pos.Z) * bones[i].InitMatBoneLocal;
             }
         }
 
@@ -122,7 +122,7 @@ namespace PMMEditor.Models.MMDModel
                         }
 
                         var axis = Vector3.Cross(localEffectorDir, localTargetDir);
-                        if (bone.name == "左足" || bone.name == "右足")
+                        if (bone.Name == "左足" || bone.Name == "右足")
                         {
                             axis.Y = 0.0f;
                         }
@@ -134,20 +134,20 @@ namespace PMMEditor.Models.MMDModel
                         axis.Normalize();
 
                         var rotation = Quaternion.RotationAxis(axis, angle);
-                        if (bone.name == "左ひざ" || bone.name == "右ひざ")
+                        if (bone.Name == "左ひざ" || bone.Name == "右ひざ")
                         {
-                            Quaternion rv = rotation * Quaternion.RotationMatrix(bone.boneMat);
+                            Quaternion rv = rotation * Quaternion.RotationMatrix(bone.BoneMatBoneLocal);
                             rv.Normalize();
                             var eulerAngle = new EulerAngles(Matrix.RotationQuaternion(rv));
                             eulerAngle.X = Clamp(eulerAngle.X, MathUtil.Radians(-180.0f), MathUtil.Radians(-10.0f));
                             eulerAngle.Y = 0;
                             eulerAngle.Z = 0;
-                            bone.boneMat = eulerAngle.CreateMatrix()
-                                           * Matrix.Translation(bone.boneMat.TranslationVector);
+                            bone.BoneMatBoneLocal = eulerAngle.CreateMatrix()
+                                           * Matrix.Translation(bone.BoneMatBoneLocal.TranslationVector);
                         }
                         else
                         {
-                            bone.boneMat = Matrix.RotationQuaternion(rotation) * bone.boneMat;
+                            bone.BoneMatBoneLocal = Matrix.RotationQuaternion(rotation) * bone.BoneMatBoneLocal;
                         }
                     }
                 }
@@ -170,11 +170,11 @@ namespace PMMEditor.Models.MMDModel
         private Matrix CalcBoneModelLocalMatrix(int index)
         {
             var bones = _model.BoneKeyList;
-            Matrix res = bones[index].boneMat;
+            Matrix res = bones[index].BoneMatBoneLocal;
 
-            for (int parent = bones[index].parent; parent != -1; parent = bones[parent].parent)
+            for (int parent = bones[index].ParentIndex; parent != -1; parent = bones[parent].ParentIndex)
             {
-                res *= bones[parent].boneMat;
+                res *= bones[parent].BoneMatBoneLocal;
             }
 
             return res;
@@ -209,21 +209,21 @@ namespace PMMEditor.Models.MMDModel
             InitBoneCalc(_model.BoneKeyList[0], Matrix.Identity);
             foreach (var i in _model.BoneKeyList)
             {
-                i.boneMat = i.initMat;
+                i.BoneMatBoneLocal = i.InitMatBoneLocal;
             }
         }
 
         private void InitBoneCalc(MmdModelModel.Bone me, Matrix parentoffsetMat)
         {
-            if (me.firstChild != -1)
+            if (me.FirstChildIndex != -1)
             {
-                InitBoneCalc(_model.BoneKeyList[me.firstChild], me.offsetMat);
+                InitBoneCalc(_model.BoneKeyList[me.FirstChildIndex], me.InverseInitMatModelLocal);
             }
-            if (me.sibling != -1)
+            if (me.SiblingIndex != -1)
             {
-                InitBoneCalc(_model.BoneKeyList[me.sibling], parentoffsetMat);
+                InitBoneCalc(_model.BoneKeyList[me.SiblingIndex], parentoffsetMat);
             }
-            me.initMat = me.initMatML * parentoffsetMat;
+            me.InitMatBoneLocal = me.InitMatModelLocal * parentoffsetMat;
         }
     }
 }

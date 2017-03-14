@@ -50,7 +50,7 @@ namespace PMMEditor.Models
             {
                 int diff = right.FrameNumber - left.FrameNumber;
                 // TODO: 補完曲線に対応する（ニュートン法）
-                float t =(float)(frame - left.FrameNumber) / diff;
+                float t = (float) (frame - left.FrameNumber) / diff;
                 _res.Position = (right.Position - left.Position) * new Vector3(t, t, t) + left.Position;
                 _res.Quaternion = Quaternion.Slerp(left.Quaternion, right.Quaternion, t);
                 return _res;
@@ -59,18 +59,29 @@ namespace PMMEditor.Models
 
         public class Bone
         {
-            public int sibling = -1;
-            public int firstChild = -1;
-            public int id;
-            public int parent = -1;
-            public int TailChildId;
-            public PmdStruct.BoneKind type;
-            public Matrix initMat;
-            public Matrix boneMatML;
-            public Matrix initMatML;
-            public Matrix offsetMat;
-            public Matrix boneMat;
-            public string name;
+            public int SiblingIndex { get; set; } = -1;
+
+            public int FirstChildIndex { get; set; } = -1;
+
+            public int Index { get; set; }
+
+            public int ParentIndex { get; set; } = -1;
+
+            public int TailChildIndex { get; set; }
+
+            public PmdStruct.BoneKind Type { get; set; }
+
+            public Matrix InitMatBoneLocal { get; set; }
+
+            public Matrix BoneMatModelLocal { get; set; }
+
+            public Matrix InitMatModelLocal { get; set; }
+
+            public Matrix InverseInitMatModelLocal { get; set; }
+
+            public Matrix BoneMatBoneLocal { get; set; }
+
+            public string Name { get; set; }
 
             public KeyFrameList<BoneKeyFrame, KeyInterpolationMethod> KeyFrameList;
         }
@@ -96,7 +107,7 @@ namespace PMMEditor.Models
 
         public MmdModelBoneCalculator BoneCalculator { get; }
 
-        public List<PmdStruct.IK> IKList { get;private set; }
+        public List<PmdStruct.IK> IKList { get; private set; }
 
         public async Task Set(PmmStruct.ModelData modelData)
         {
@@ -148,11 +159,11 @@ namespace PMMEditor.Models
                 {
                     if (parentBoneIndex == inputBone[j].ParentBoneIndex)
                     {
-                        outputBone.sibling = j;
+                        outputBone.SiblingIndex = j;
                         break;
                     }
                 }
-                outputBone.parent = parentBoneIndex;
+                outputBone.ParentIndex = parentBoneIndex;
             }
 
             //自分が親になっていて一番早く現れるボーンが子になる
@@ -160,18 +171,19 @@ namespace PMMEditor.Models
             {
                 if (i == inputBone[j].ParentBoneIndex)
                 {
-                    outputBone.firstChild = j;
+                    outputBone.FirstChildIndex = j;
                     break;
                 }
             }
 
-            outputBone.name = item.Name;
-            outputBone.id = i;
-            outputBone.type = item.Kind;
-            outputBone.TailChildId = item.TailBoneIndex ?? -1;
+            outputBone.Name = item.Name;
+            outputBone.Index = i;
+            outputBone.Type = item.Kind;
+            outputBone.TailChildIndex = item.TailBoneIndex ?? -1;
             var modelLocalInitMat = Matrix.Translation(item.Position.X, item.Position.Y, item.Position.Z);
-            outputBone.initMatML = outputBone.boneMatML = outputBone.initMat = modelLocalInitMat; // モデルローカル座標系
-            outputBone.offsetMat = Matrix.Invert(modelLocalInitMat);
+            outputBone.InitMatModelLocal =
+                outputBone.BoneMatModelLocal = outputBone.InitMatBoneLocal = modelLocalInitMat; // モデルローカル座標系
+            outputBone.InverseInitMatModelLocal = Matrix.Invert(modelLocalInitMat);
 
             var list = new KeyFrameList<BoneKeyFrame, KeyInterpolationMethod>(item.Name);
             outputBone.KeyFrameList = list;
