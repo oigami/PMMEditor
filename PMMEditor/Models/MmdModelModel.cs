@@ -63,6 +63,7 @@ namespace PMMEditor.Models
             public int firstChild = -1;
             public int id;
             public int parent = -1;
+            public int TailChildId;
             public PmdStruct.BoneKind type;
             public Matrix initMat;
             public Matrix boneMatML;
@@ -167,6 +168,7 @@ namespace PMMEditor.Models
             outputBone.name = item.Name;
             outputBone.id = i;
             outputBone.type = item.Kind;
+            outputBone.TailChildId = item.TailBoneIndex ?? -1;
             var modelLocalInitMat = Matrix.Translation(item.Position.X, item.Position.Y, item.Position.Z);
             outputBone.initMatML = outputBone.boneMatML = outputBone.initMat = modelLocalInitMat; // モデルローカル座標系
             outputBone.offsetMat = Matrix.Invert(modelLocalInitMat);
