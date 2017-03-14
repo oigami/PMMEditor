@@ -21,10 +21,10 @@ namespace PMMEditor.Models.Graphics
                 throw new ArgumentNullException(nameof(device));
             }
 
-            _model = model;
+            Model = model;
             _device = device;
 
-            BoneCount = _model.BoneKeyList.Count;
+            BoneCount = Model.BoneKeyList.Count;
             Task.Run(() =>
             {
                 CreateData();
@@ -32,7 +32,7 @@ namespace PMMEditor.Models.Graphics
             });
         }
 
-        public MmdModelBoneCalculator BoneCalculator => _model.BoneCalculator;
+        public MmdModelBoneCalculator BoneCalculator => Model.BoneCalculator;
 
         public int BoneCount { get; private set; }
 
@@ -52,7 +52,7 @@ namespace PMMEditor.Models.Graphics
 
         #endregion
 
-        private readonly MmdModelModel _model;
+        public  MmdModelModel Model { get; }
 
         #region VertexBufferBinding変更通知プロパティ
 
@@ -129,7 +129,7 @@ namespace PMMEditor.Models.Graphics
         {
             OnUnload();
 
-            var data = Pmd.ReadFile(_model.FilePath);
+            var data = Pmd.ReadFile(Model.FilePath);
 
             Materials = new List<Material>(data.Materials.Count);
             int preIndex = 0;
