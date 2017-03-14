@@ -194,6 +194,7 @@
     <Compile Include="SharpDxControl\D3D9Instance.cs" />
     <Compile Include="SharpDxControl\SharpDxControl.cs" />
     <Compile Include="ViewModels\Documents\CameraLightAccessoryViewModel.cs" />
+    <Compile Include="ViewModels\Graphics\BoneRenderer.cs" />
     <Compile Include="ViewModels\Graphics\MainRenderViewModel.cs" />
     <Compile Include="ViewModels\Documents\TimelineViewModelBase.cs" />
     <Compile Include="ViewModels\Documents\DocumentViewModelBase.cs" />
@@ -329,6 +330,7 @@
     <Content Include="InfrastructureAssemblies\Livet.XML" />
     <Content Include="InfrastructureAssemblies\Microsoft.Expression.Interactions.dll" />
     <Content Include="InfrastructureAssemblies\System.Windows.Interactivity.dll" />
+    <Content Include="Resources\BoneRenderingShader.hlsl" />
     <Content Include="Resources\TestShader.hlsl" />
   </ItemGroup>
   <ItemGroup>

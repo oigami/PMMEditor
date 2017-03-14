@@ -21,15 +21,26 @@ namespace PMMEditor.Models.MMDModel
 
         private void CalcBoneWorld(
             MmdModelModel.Bone me, Matrix parent,
-            ref Matrix[] resultWorlds)
+            ref Matrix[] inOutWorlds)
+        {
+            var bones = _model.BoneKeyList;
+            foreach (var bone in bones)
+            {
+                inOutWorlds[bone.id] = bone.offsetMat * inOutWorlds[bone.id];
+            }
+        }
+
+        private void CalcBoneModelLocalMatrix(
+            MmdModelModel.Bone me, Matrix parent,
+            ref Matrix[] resultModelLocalMatrix)
         {
             while (true)
             {
                 var m = me.boneMat * parent;
-                resultWorlds[me.id] = me.offsetMat * m;
+                resultModelLocalMatrix[me.id] = m;
                 if (me.firstChild != -1)
                 {
-                    CalcBoneWorld(_model.BoneKeyList[me.firstChild], m, ref resultWorlds);
+                    CalcBoneModelLocalMatrix(_model.BoneKeyList[me.firstChild], m, ref resultModelLocalMatrix);
                 }
                 if (me.sibling != -1)
                 {
@@ -40,12 +51,16 @@ namespace PMMEditor.Models.MMDModel
             }
         }
 
+
         public void Update(int frameIndex)
         {
             var bones = _model.BoneKeyList;
             UpdateForwardKinematics(frameIndex);
             UpdateInverseKinematics();
+            ModelLocalBones = Enumerable.Range(0, bones.Count).Select(_ => Matrix.Identity).ToArray();
             WorldBones = Enumerable.Range(0, bones.Count).Select(_ => Matrix.Identity).ToArray();
+            CalcBoneModelLocalMatrix(bones[0], Matrix.Identity, ref _ModelLocalBones);
+            ModelLocalBones.CopyTo(WorldBones, 0);
             CalcBoneWorld(bones[0], Matrix.Identity, ref _worldBones);
             RaisePropertyChanged(nameof(WorldBones));
         }
@@ -173,6 +188,18 @@ namespace PMMEditor.Models.MMDModel
         {
             get { return _worldBones; }
             set { SetProperty(ref _worldBones, value); }
+        }
+
+        #endregion
+
+        #region ModelLocalBonesプロパティ
+
+        private Matrix[] _ModelLocalBones;
+
+        public Matrix[] ModelLocalBones
+        {
+            get { return _ModelLocalBones; }
+            set { SetProperty(ref _ModelLocalBones, value); }
         }
 
         #endregion

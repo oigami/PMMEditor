@@ -63,6 +63,16 @@ namespace PMMEditor {
         /// <summary>
         ///   型 System.Byte[] のローカライズされたリソースを検索します。
         /// </summary>
+        internal static byte[] BoneRenderingShader {
+            get {
+                object obj = ResourceManager.GetObject("BoneRenderingShader", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Byte[] のローカライズされたリソースを検索します。
+        /// </summary>
         internal static byte[] TestShader {
             get {
                 object obj = ResourceManager.GetObject("TestShader", resourceCulture);

@@ -32,6 +32,7 @@ namespace PMMEditor.ViewModels.Graphics
         private readonly MmdModelRendererSource _model;
         private readonly Direct3D11.Device _device;
         private Direct3D11.Texture2D _boneTexture2D;
+        private Matrix[] _outputArr;
 
         public Direct3D11.ShaderResourceView BoneSrv { get; private set; }
 
@@ -44,7 +45,8 @@ namespace PMMEditor.ViewModels.Graphics
 
         private void CreateData(MmdModelRendererSource model)
         {
-            var boneNum = model.BoneCount;
+            var boneNum = model.BoneCount * 2;
+            _outputArr = new Matrix[boneNum];
             _boneTexture2D = new Direct3D11.Texture2D(
                 _device,
                 new Direct3D11.Texture2DDescription
@@ -65,8 +67,19 @@ namespace PMMEditor.ViewModels.Graphics
 
         public void Update(Direct3D11.DeviceContext context, int nowFrame)
         {
-            _model.BoneCalculator.Update(nowFrame);
-            context.UpdateSubresource(_model.BoneCalculator.WorldBones, _boneTexture2D);
+            var calclator = _model.BoneCalculator;
+            calclator.Update(nowFrame);
+            calclator.WorldBones.CopyTo(_outputArr, 0);
+            calclator.ModelLocalBones.CopyTo(_outputArr, calclator.WorldBones.Length);
+            context.UpdateSubresource(_outputArr, _boneTexture2D, 0, 16 * 1024, 16 * 1024, new Direct3D11.ResourceRegion
+            {
+                Left = 0,
+                Top = 0,
+                Right = _boneTexture2D.Description.Width,
+                Bottom = _boneTexture2D.Description.Height,
+                Front = 0,
+                Back = 1
+            });
         }
     }
 
@@ -101,6 +114,7 @@ namespace PMMEditor.ViewModels.Graphics
         private void InitializeInternal()
         {
             boneCalculator = new MmdModelBoneCalculatorSRV(Model, _device);
+            BoneRenderer = new BoneRenderer(Model, _device);
 
             // 頂点シェーダ生成
             var shaderSource = Resource1.TestShader;
@@ -149,6 +163,8 @@ namespace PMMEditor.ViewModels.Graphics
             _isInternalInitialized.Value = true;
         }
 
+        public BoneRenderer BoneRenderer { get; set; }
+
         public void Initialize(Direct3D11.Device device)
         {
             _device = device;
@@ -178,6 +194,8 @@ namespace PMMEditor.ViewModels.Graphics
                 target.PixelShader.SetConstantBuffer(0, material.PixelConstantBuffer0);
                 target.DrawIndexed(material.IndexNum, material.IndexStart, 0);
             }
+
+            BoneRenderer.Render(target);
         }
     }
 }
