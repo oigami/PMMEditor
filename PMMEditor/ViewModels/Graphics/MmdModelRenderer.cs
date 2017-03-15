@@ -85,8 +85,9 @@ namespace PMMEditor.ViewModels.Graphics
 
     public class MmdModelRenderer : BindableDisposableBase, IRenderer
     {
-        public MmdModelRendererSource Model { get; }
+        public MmdModelRendererSource ModelSource { get; }
 
+        private Model _model;
         private MmdModelBoneCalculatorSRV boneCalculator;
         private Direct3D11.Device _device;
 
@@ -100,11 +101,12 @@ namespace PMMEditor.ViewModels.Graphics
 
         public MmdModelRenderer(Model model, MmdModelRendererSource sourceModel)
         {
-            Model = sourceModel;
+            _model = model;
+            ModelSource = sourceModel;
             _nowFrame = model.FrameControlModel.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty()
                              .AddTo(CompositeDisposable);
             IsInitialized =
-                Model.ObserveProperty(_ => _.IsInitialized)
+                ModelSource.ObserveProperty(_ => _.IsInitialized)
                      .CombineLatest(_isInternalInitialized.AsObservable(), (a, b) => a && b)
                      .ToReadOnlyReactiveProperty(false).AddTo(CompositeDisposable);
         }
@@ -113,8 +115,8 @@ namespace PMMEditor.ViewModels.Graphics
 
         private void InitializeInternal()
         {
-            boneCalculator = new MmdModelBoneCalculatorSRV(Model, _device);
-            BoneRenderer = new BoneRenderer(Model, _device);
+            boneCalculator = new MmdModelBoneCalculatorSRV(ModelSource, _device);
+            BoneRenderer = new BoneRenderer(ModelSource, _device);
 
             // 頂点シェーダ生成
             var shaderSource = Resource1.TestShader;
@@ -157,8 +159,7 @@ namespace PMMEditor.ViewModels.Graphics
             m *= Matrix.PerspectiveFovLH((float) Math.PI / 3, 1.4f, 0.1f, 10000000f);
             m.Transpose();
             _viewProjConstantBuffer =
-                Direct3D11.Buffer.Create(_device, Direct3D11.BindFlags.ConstantBuffer, ref m, 0,
-                                         Direct3D11.ResourceUsage.Immutable).AddTo(CompositeDisposable);
+                Direct3D11.Buffer.Create(_device, Direct3D11.BindFlags.ConstantBuffer, ref m).AddTo(CompositeDisposable);
 
             _isInternalInitialized.Value = true;
         }
@@ -177,19 +178,26 @@ namespace PMMEditor.ViewModels.Graphics
             {
                 return;
             }
+
+            // view,proj行列の設定
+            var m = _model.CameraControlModel.CreateWorldViewProj();
+            m.Transpose();
+            target.UpdateSubresource(ref m, _viewProjConstantBuffer);
+
+            // シェーダの設定
             target.InputAssembler.InputLayout = _inputLayout;
 
             target.VertexShader.Set(_vertexShader);
             target.VertexShader.SetConstantBuffer(0, _viewProjConstantBuffer);
-            target.InputAssembler.SetVertexBuffers(0, Model.VertexBufferBinding);
-            target.InputAssembler.SetIndexBuffer(Model.IndexBuffer, Format.R16_UInt, 0);
+            target.InputAssembler.SetVertexBuffers(0, ModelSource.VertexBufferBinding);
+            target.InputAssembler.SetIndexBuffer(ModelSource.IndexBuffer, Format.R16_UInt, 0);
 
             target.PixelShader.Set(_pixelShader);
 
             target.InputAssembler.PrimitiveTopology = Direct3D.PrimitiveTopology.TriangleList;
             boneCalculator.Update(target, _nowFrame.Value);
             target.VertexShader.SetShaderResource(0, boneCalculator.BoneSrv);
-            foreach (var material in Model.Materials)
+            foreach (var material in ModelSource.Materials)
             {
                 target.PixelShader.SetConstantBuffer(0, material.PixelConstantBuffer0);
                 target.DrawIndexed(material.IndexNum, material.IndexStart, 0);

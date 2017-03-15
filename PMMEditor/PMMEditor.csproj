@@ -170,6 +170,7 @@
     <Compile Include="MMDFileParser\MMDFileReaderBase.cs" />
     <Compile Include="MMDFileParser\Pmd.cs" />
     <Compile Include="MMDFileParser\PmdReader.cs" />
+    <Compile Include="Models\CameraControlModel.cs" />
     <Compile Include="Models\CameraLightAccessoryTimelineModel.cs" />
     <Compile Include="Models\FrameControlModel.cs" />
     <Compile Include="Models\Graphics\GraphicsModel.cs" />

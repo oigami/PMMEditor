@@ -20,6 +20,7 @@ namespace PMMEditor.Models
         {
             FrameControlModel = new FrameControlModel();
             GraphicsModel = new GraphicsModel(MmdModelList).AddTo(CompositeDisposable);
+            CameraControlModel = new CameraControlModel();
         }
 
         #region ReadWriteFile
@@ -221,5 +222,7 @@ namespace PMMEditor.Models
         public FrameControlModel FrameControlModel { get; }
 
         public GraphicsModel GraphicsModel { get; }
+
+        public CameraControlModel CameraControlModel { get; }
     }
 }
