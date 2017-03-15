@@ -8,13 +8,20 @@ namespace PMMEditor.Models
 {
     internal class CameraLightAccessoryTimelineModel : BindableDisposableBase
     {
-        public ReadOnlyReactiveCollection<KeyFrameList<MmdAccessoryModel.BoneKeyFrame>> AccessoryKeyFrameLists { get; }
+        public ReadOnlyReactiveCollection<KeyFrameList<MmdAccessoryModel.BoneKeyFrame,
+            DefaultKeyFrameInterpolationMethod<MmdAccessoryModel.BoneKeyFrame>>> AccessoryKeyFrameLists { get; }
 
-        public ReadOnlyReactiveCollection<KeyFrameList<MmdCameraModel.BoneKeyFrame>> CamerakeyFrameLists { get; }
+        public
+            ReadOnlyReactiveCollection
+                <KeyFrameList<CameraControlModel.BoneKeyFrame, CameraControlModel.BoneInterpolationMethod>>
+            CamerakeyFrameLists { get; }
 
-        public ReadOnlyReactiveCollection<KeyFrameList<MmdLightModel.BoneKeyFrame>> LightkeyFrameLists { get; }
+        public ReadOnlyReactiveCollection<KeyFrameList<MmdLightModel.BoneKeyFrame,
+            DefaultKeyFrameInterpolationMethod<MmdLightModel.BoneKeyFrame>>> LightkeyFrameLists { get; }
 
-        private void MaxFrameEventSubscribe<T>(ReadOnlyReactiveCollection<KeyFrameList<T>> list) where T : KeyFrameBase
+        private void MaxFrameEventSubscribe<T, Method>(ReadOnlyReactiveCollection<KeyFrameList<T, Method>> list)
+            where T : KeyFrameBase
+            where Method : IKeyFrameInterpolationMethod<T>, new()
         {
             list.ObserveElementProperty(i => i.MaxFrame)
                 .Subscribe(i => MaxFrameIndex = Math.Max(MaxFrameIndex, i.Value)).AddTo(CompositeDisposable);
@@ -49,14 +56,16 @@ namespace PMMEditor.Models
             MaxFrameEventSubscribe(LightkeyFrameLists);
         }
 
-        private static bool CanMove<T>(int diffFrame, ReadOnlyReactiveCollection<KeyFrameList<T>> list)
+        private static bool CanMove<T, Method>(int diffFrame, ReadOnlyReactiveCollection<KeyFrameList<T, Method>> list)
             where T : KeyFrameBase
+            where Method : IKeyFrameInterpolationMethod<T>, new()
         {
             return list.All(x => x.CanSelectedFrameMove(diffFrame));
         }
 
-        private static void Move<T>(int diffFrame, ReadOnlyReactiveCollection<KeyFrameList<T>> list)
+        private static void Move<T, Method>(int diffFrame, ReadOnlyReactiveCollection<KeyFrameList<T, Method>> list)
             where T : KeyFrameBase
+            where Method : IKeyFrameInterpolationMethod<T>, new()
         {
             foreach (var item in list)
             {

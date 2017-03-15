@@ -123,7 +123,9 @@ namespace PMMEditor.Models
 
         private async Task CreateBones(PmmStruct.ModelData modelData, IList<PmdStruct.Bone> bones)
         {
-            var keyFrame = await KeyFrameList<BoneKeyFrame>.CreateKeyFrameArray(modelData.BoneKeyFrames);
+            var keyFrame =
+                await KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>
+                .CreateKeyFrameArray(modelData.BoneKeyFrames);
             _BoneKeyList.Clear();
 
             var res = await Task.WhenAll(bones.Select(

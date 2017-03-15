@@ -180,7 +180,7 @@ namespace PMMEditor.ViewModels.Graphics
             }
 
             // view,proj行列の設定
-            var m = _model.CameraControlModel.CreateWorldViewProj();
+            var m = _model.Camera.CreateWorldViewProj();
             m.Transpose();
             target.UpdateSubresource(ref m, _viewProjConstantBuffer);
 

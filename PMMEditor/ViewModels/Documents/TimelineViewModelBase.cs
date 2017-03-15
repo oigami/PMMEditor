@@ -69,7 +69,9 @@ namespace PMMEditor.ViewModels.Documents
 
         public ReadOnlyReactiveCollection<TimelineKeyFrameList> Children { get; set; }
 
-        public static TimelineKeyFrameList Create<T>(KeyFrameList<T> list, string name) where T : KeyFrameBase
+        public static TimelineKeyFrameList Create<T, Method>(KeyFrameList<T, Method> list, string name)
+            where T : KeyFrameBase
+            where Method : IKeyFrameInterpolationMethod<T>, new()
         {
             var res = new TimelineKeyFrameList
             {
@@ -82,7 +84,9 @@ namespace PMMEditor.ViewModels.Documents
             return res;
         }
 
-        public static TimelineKeyFrameList Create<T>(KeyFrameList<T> list) where T : KeyFrameBase
+        public static TimelineKeyFrameList Create<T, Method>(KeyFrameList<T, Method> list)
+            where T : KeyFrameBase
+            where Method : IKeyFrameInterpolationMethod<T>, new()
         {
             return Create(list, list.Name);
         }

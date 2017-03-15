@@ -20,24 +20,21 @@ namespace PMMEditor.Models
 
         #region BoneKeyList変更通知プロパティ
 
-        private ObservableCollection<KeyFrameList<BoneKeyFrame>> _BoneKeyList =
-            new ObservableCollection<KeyFrameList<BoneKeyFrame>>();
-
-        public ObservableCollection<KeyFrameList<BoneKeyFrame>> BoneKeyList
-        {
-            get { return _BoneKeyList; }
-            set { SetProperty(ref _BoneKeyList, value); }
-        }
+        public ObservableCollection<KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>>
+            BoneKeyList { get; } =
+            new ObservableCollection<KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>>();
 
         #endregion
 
         public async Task Set(List<PmmStruct.LightFrame> cameraData, PmmStruct.LightFrame lightInitFrame)
         {
             BoneKeyList.Clear();
-            var keyFrame = await KeyFrameList<BoneKeyFrame>.CreateKeyFrameArray(cameraData);
+            var keyFrame =
+                await KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>.CreateKeyFrameArray(
+                    cameraData);
             BoneKeyList.Add(await Task.Run(async () =>
             {
-                var list = new KeyFrameList<BoneKeyFrame>("");
+                var list = new KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>("");
 
                 await list.CreateKeyFrame(keyFrame, lightInitFrame, i =>
                 {

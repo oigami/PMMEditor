@@ -26,17 +26,12 @@ namespace PMMEditor.Models
             public bool IsVisible { get; set; }
         }
 
-        private readonly List<KeyFrameList<BoneKeyFrame>> _boneKeyList = new List<KeyFrameList<BoneKeyFrame>>();
-
         #region BonekeyListプロパティ
 
-        private ReadOnlyCollection<KeyFrameList<BoneKeyFrame>> _BoneKeyList;
 
-        public ReadOnlyCollection<KeyFrameList<BoneKeyFrame>> BoneKeyList
-        {
-            get { return _BoneKeyList; }
-            private set { SetProperty(ref _BoneKeyList, value); }
-        }
+        public ObservableCollection<KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>>
+            BoneKeyList { get; } =
+            new ObservableCollection<KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>>();
 
         #endregion
 
@@ -52,11 +47,11 @@ namespace PMMEditor.Models
         {
             Name = accessoryData.Name;
             NameEnglish = Name;
-            _boneKeyList.Clear();
-            var keyFrame = await KeyFrameList<BoneKeyFrame>.CreateKeyFrameArray(accessoryData.KeyFrames);
-            _boneKeyList.Add(await Task.Run(async () =>
+            BoneKeyList.Clear();
+            var keyFrame = await KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>.CreateKeyFrameArray(accessoryData.KeyFrames);
+            BoneKeyList.Add(await Task.Run(async () =>
             {
-                var list = new KeyFrameList<BoneKeyFrame>(Name);
+                var list = new KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>(Name);
 
                 await list.CreateKeyFrame(keyFrame, accessoryData.InitFrame, i =>
                 {
@@ -75,7 +70,6 @@ namespace PMMEditor.Models
                 });
                 return list;
             }));
-            BoneKeyList = new ReadOnlyCollection<KeyFrameList<BoneKeyFrame>>(_boneKeyList);
         }
     }
 }

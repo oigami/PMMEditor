@@ -59,11 +59,6 @@ namespace PMMEditor.Models
         string Name { get; }
     }
 
-    public class KeyFrameList<T> : KeyFrameList<T, DefaultKeyFrameInterpolationMethod<T>> where T : KeyFrameBase
-    {
-        public KeyFrameList(string name) : base(name) {}
-    }
-
     public class KeyFrameList<T, InterpolationMethod> : NotificationObject, IDictionary<int, T>, IKeyFrameList
         where T : KeyFrameBase
         where InterpolationMethod : IKeyFrameInterpolationMethod<T>, new()
