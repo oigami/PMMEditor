@@ -199,6 +199,7 @@
     <Compile Include="ViewModels\Documents\TimelineViewModelBase.cs" />
     <Compile Include="ViewModels\Documents\DocumentViewModelBase.cs" />
     <Compile Include="ViewModels\ExpressionConverter.cs" />
+    <Compile Include="ViewModels\MMD\MainWindowViewModel.cs" />
     <Compile Include="Views\Documents\MmdModelItemsControl.cs" />
     <Compile Include="ViewModels\Graphics\MmdModelRenderer.cs" />
     <Compile Include="ViewModels\Panes\AccessoryViewModel.cs" />
@@ -215,6 +216,21 @@
     <Compile Include="Models\Graphics\MmdModelRendererSource.cs" />
     <Compile Include="Views\Documents\TimelineView.xaml.cs">
       <DependentUpon>TimelineView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MMD\BoneManipulation.xaml.cs">
+      <DependentUpon>BoneManipulation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MMD\FacialManipulation.xaml.cs">
+      <DependentUpon>FacialManipulation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MMD\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MMD\ModelManipulation.xaml.cs">
+      <DependentUpon>ModelManipulation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MMD\ViewAndPlay.xaml.cs">
+      <DependentUpon>ViewAndPlay.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MyScrollViewer.cs" />
     <Compile Include="Views\Panes\AccessoryView.xaml.cs">
@@ -246,6 +262,26 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Documents\TimelineView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MMD\BoneManipulation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MMD\FacialManipulation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MMD\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MMD\ModelManipulation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MMD\ViewAndPlay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
