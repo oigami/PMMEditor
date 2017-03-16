@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PMMEditor.ViewModels.MMD
 {
-    class MainWindowViewModel
+    class MainViewViewModel
     {
     }
 }

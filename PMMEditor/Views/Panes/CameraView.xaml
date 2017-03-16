@@ -5,13 +5,14 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:views="clr-namespace:PMMEditor.Views"
-  xmlns:vm="clr-namespace:PMMEditor.ViewModels.Panes"
+  xmlns:vm="clr-namespace:PMMEditor.ViewModels.Panes" 
+  xmlns:mmw="clr-namespace:PMMEditor.Views.MMW"
   d:DataContext="{d:DesignInstance {x:Type vm:CameraViewModel}}"
   d:DesignHeight="300"
   d:DesignWidth="300"
   mc:Ignorable="d">
   <UserControl.Resources>
-    <views:ByteArrayToStringConverter x:Key="ByteArrayToStringConverter" />
+    <mmw:ByteArrayToStringConverter x:Key="ByteArrayToStringConverter" />
   </UserControl.Resources>
 
   <ListView

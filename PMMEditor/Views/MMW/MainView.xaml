@@ -1,0 +1,136 @@
+﻿<UserControl
+  x:Class="PMMEditor.Views.MMW.MainWindow"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:avalonDock="http://schemas.xceed.com/wpf/xaml/avalondock"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:documents="clr-namespace:PMMEditor.Views.Documents"
+  xmlns:graphics="clr-namespace:PMMEditor.ViewModels.Graphics"
+  xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+  xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:panes="clr-namespace:PMMEditor.Views.Panes"
+  xmlns:v="clr-namespace:PMMEditor.Views"
+  xmlns:vm="clr-namespace:PMMEditor.ViewModels"
+  xmlns:vmDocuments="clr-namespace:PMMEditor.ViewModels.Documents"
+  xmlns:vmPanes="clr-namespace:PMMEditor.ViewModels.Panes"
+  Width="640"
+  Height="480"
+  mc:Ignorable="d">
+
+  <i:Interaction.Triggers>
+
+    <!--  Viewに特別な要件が存在しない限りは、トリガーやアクションの自作にこだわらず積極的にコードビハインドを使いましょう  -->
+    <!--  Viewのコードビハインドは、基本的にView内で完結するロジックとViewModelからのイベントの受信(専用リスナを使用する)に限るとトラブルが少なくなります  -->
+    <!--  Livet1.1からはコードビハインドでViewModelのイベントを受信するためのWeakEventLisnterサポートが追加されています  -->
+
+    <!--  WindowのContentRenderedイベントのタイミングでViewModelのInitializeメソッドが呼ばれます  -->
+    <i:EventTrigger EventName="ContentRendered">
+      <l:LivetCallMethodAction
+        MethodName="Initialize"
+        MethodTarget="{Binding}" />
+    </i:EventTrigger>
+
+    <!--  Windowが閉じたタイミングでViewModelのDisposeメソッドが呼ばれます  -->
+    <i:EventTrigger EventName="Closed">
+      <l:DataContextDisposeAction />
+    </i:EventTrigger>
+
+    <!--  WindowのCloseキャンセル処理に対応する場合は、WindowCloseCancelBehaviorの使用を検討してください  -->
+
+  </i:Interaction.Triggers>
+
+  <UserControl.InputBindings>
+    <KeyBinding
+      Command="{Binding NextFrameCommand}"
+      Gesture="Right" />
+    <KeyBinding
+      Command="{Binding PrevFrameCommand}"
+      Gesture="Left" />
+    <KeyBinding
+      Command="{Binding SwitchPlayAndStopCommand}"
+      Gesture="Space" />
+  </UserControl.InputBindings>
+
+  <DockPanel>
+    <Menu
+      Background="Transparent"
+      DockPanel.Dock="Top">
+      <MenuItem Header="File(_F)">
+        <MenuItem
+          Command="{Binding OpenPmmCommand}"
+          Header="Open pmm" />
+        <MenuItem
+          Command="{Binding SavePmmCommand}"
+          Header="Save as" />
+      </MenuItem>
+      <MenuItem Header="Window(_F)">
+        <MenuItem
+          Command="{Binding AllTimelineTranslateCommand}"
+          Header="TimelineTranslate" />
+        <MenuItem
+          Command="{Binding OpenCameraLightAccessoryTimelineCommand}"
+          Header="Camera, Light, Accessory Timeline" />
+      </MenuItem>
+    </Menu>
+    <avalonDock:DockingManager
+      Margin="0,5,0,0"
+      AnchorablesSource="{Binding DockingPaneViewModels}"
+      DocumentsSource="{Binding DockingDocumentViewModels}">
+      <avalonDock:DockingManager.LayoutItemContainerStyleSelector>
+        <v:LayoutItemContainerStyleSelector>
+          <v:LayoutItemTypedStyle DataType="{x:Type vmDocuments:DocumentViewModelBase}">
+            <Style TargetType="{x:Type avalonDock:LayoutItem}">
+              <Setter Property="Title" Value="{Binding Model.Title}" />
+            </Style>
+          </v:LayoutItemTypedStyle>
+          <v:LayoutItemTypedStyle DataType="{x:Type vmPanes:PaneViewModelBase}">
+            <Style TargetType="{x:Type avalonDock:LayoutAnchorableItem}">
+              <Setter Property="Title" Value="{Binding Model.Title}" />
+              <Setter Property="ContentId" Value="{Binding Model.ContentId}" />
+              <Setter Property="ToolTip" Value="{Binding Model.Title}" />
+              <Setter Property="IsSelected" Value="{Binding Model.IsSelected, Mode=TwoWay}" />
+              <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}" />
+              <Setter Property="CanHide" Value="{Binding Model.CanHide}" />
+              <Setter Property="Visibility" Value="{Binding Model.Visibility, Mode=TwoWay}" />
+              <Setter Property="CanClose" Value="{Binding Model.CanClose}" />
+            </Style>
+          </v:LayoutItemTypedStyle>
+        </v:LayoutItemContainerStyleSelector>
+      </avalonDock:DockingManager.LayoutItemContainerStyleSelector>
+
+      <avalonDock:DockingManager.LayoutItemTemplateSelector>
+        <v:LayoutItemTemplateSelector>
+          <DataTemplate DataType="{x:Type vmPanes:TimelineTranslateViewModel}">
+            <panes:TimelineTranslateWindow />
+          </DataTemplate>
+          <DataTemplate DataType="{x:Type vmPanes:HeaderViewModel}">
+            <panes:HeaderView />
+          </DataTemplate>
+          <DataTemplate DataType="{x:Type vmPanes:ModelViewModel}">
+            <panes:ModelView />
+          </DataTemplate>
+          <DataTemplate DataType="{x:Type vmPanes:CameraViewModel}">
+            <panes:CameraView />
+          </DataTemplate>
+          <DataTemplate DataType="{x:Type vmPanes:AccessoryViewModel}">
+            <panes:AccessoryView />
+          </DataTemplate>
+          <DataTemplate DataType="{x:Type vmDocuments:CameraLightAccessoryViewModel}">
+            <documents:TimelineView />
+          </DataTemplate>
+          <DataTemplate DataType="{x:Type graphics:MainRenderViewModel}">
+            <documents:MainCameraView />
+          </DataTemplate>
+        </v:LayoutItemTemplateSelector>
+      </avalonDock:DockingManager.LayoutItemTemplateSelector>
+
+      <avalonDock:LayoutRoot>
+        <avalonDock:LayoutPanel Orientation="Vertical">
+          <avalonDock:LayoutAnchorablePane DockHeight="300" />
+          <avalonDock:LayoutDocumentPane />
+        </avalonDock:LayoutPanel>
+      </avalonDock:LayoutRoot>
+    </avalonDock:DockingManager>
+  </DockPanel>
+</UserControl>
