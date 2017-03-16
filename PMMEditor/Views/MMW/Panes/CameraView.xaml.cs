@@ -1,4 +1,4 @@
-﻿namespace PMMEditor.Views.Panes
+﻿namespace PMMEditor.Views.MMW.Panes
 {
     /// <summary>
     /// CameraView.xaml の相互作用ロジック

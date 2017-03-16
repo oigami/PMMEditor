@@ -3,10 +3,11 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:documents="clr-namespace:PMMEditor.Views.Documents"
   xmlns:local="clr-namespace:PMMEditor.Views.MMD"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:mmd="clr-namespace:PMMEditor.ViewModels.MMD"
+  xmlns:timeline="clr-namespace:PMMEditor.Views.Timeline"
+  xmlns:graphics="clr-namespace:PMMEditor.Views.Graphics"
   d:DataContext="{d:DesignInstance mmd:MainViewViewModel}"
   d:DesignHeight="600"
   d:DesignWidth="800"
@@ -29,11 +30,11 @@
         <ColumnDefinition Width="5" />
         <ColumnDefinition />
       </Grid.ColumnDefinitions>
-      <documents:TimelineView Grid.Column="0" />
+      <timeline:TimelineView Grid.Column="0" />
       <GridSplitter
         Grid.Column="1"
         HorizontalAlignment="Stretch" />
-      <documents:MainRenderer Grid.Column="2" />
+      <graphics:MainRenderer Grid.Column="2" />
     </Grid>
 
   </DockPanel>

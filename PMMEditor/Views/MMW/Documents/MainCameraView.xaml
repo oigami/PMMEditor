@@ -1,31 +1,34 @@
 ﻿<UserControl
-  x:Class="PMMEditor.Views.Documents.MainCameraView"
+  x:Class="PMMEditor.Views.MMW.Documents.MainCameraView"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:documents="clr-namespace:PMMEditor.ViewModels.Documents"
-  xmlns:local="clr-namespace:PMMEditor.Views.Documents"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-  xmlns:graphics="clr-namespace:PMMEditor.ViewModels.Graphics"
+  xmlns:graphics="clr-namespace:PMMEditor.ViewModels.Graphics" 
+  xmlns:graphics1="clr-namespace:PMMEditor.Views.Graphics"
   d:DataContext="{d:DesignInstance graphics:MainRenderViewModel}"
   d:DesignHeight="300"
   d:DesignWidth="300"
   mc:Ignorable="d">
   <Grid>
 
-    <local:MmdModelItemsControl
+    <graphics1:MmdModelItemsControl
       Device="{Binding Device}"
       ItemsSource="{Binding Items}">
-      <local:MmdModelItemsControl.ItemsPanel>
+      <graphics1:MmdModelItemsControl.ItemsPanel>
         <ControlTemplate>
-          <local:MainRenderer
+          <graphics1:MainRenderer
             D3DHeight="600"
             D3DWidth="800"
             Stretch="Uniform" 
             VerticalAlignment="Center"/>
         </ControlTemplate>
-      </local:MmdModelItemsControl.ItemsPanel>
-    </local:MmdModelItemsControl>
+      </graphics1:MmdModelItemsControl.ItemsPanel>
+    </graphics1:MmdModelItemsControl>
 
   </Grid>
 </UserControl>
+
+
+

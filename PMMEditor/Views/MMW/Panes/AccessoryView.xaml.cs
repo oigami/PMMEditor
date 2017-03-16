@@ -1,4 +1,4 @@
-﻿namespace PMMEditor.Views.Panes
+﻿namespace PMMEditor.Views.MMW.Panes
 {
     /// <summary>
     /// AccessoryView.xaml の相互作用ロジック

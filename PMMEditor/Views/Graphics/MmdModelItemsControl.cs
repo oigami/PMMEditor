@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using PMMEditor.ViewModels.Graphics;
 using SharpDX.Direct3D11;
 
-namespace PMMEditor.Views.Documents
+namespace PMMEditor.Views.Graphics
 {
     public class MmdModelItemsControl : ContentControl
     {

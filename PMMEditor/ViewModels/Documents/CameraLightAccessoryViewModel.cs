@@ -6,7 +6,7 @@ using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Livet.Commands;
 using PMMEditor.Models;
-using PMMEditor.Views.Documents;
+using PMMEditor.Views.Timeline;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 

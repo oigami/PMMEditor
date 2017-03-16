@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 using PMMEditor.Models;
 using Livet.Commands;
 using PMMEditor.MVVM;
-using PMMEditor.Views.Documents;
+using PMMEditor.Views.Timeline;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 

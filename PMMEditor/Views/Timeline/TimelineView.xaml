@@ -1,15 +1,14 @@
 ﻿<UserControl
-  x:Class="PMMEditor.Views.Documents.TimelineView"
+  x:Class="PMMEditor.Views.Timeline.TimelineView"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:behaviors="clr-namespace:PMMEditor.Views.Behaviors"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:documents="clr-namespace:PMMEditor.ViewModels.Documents"
   xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-  xmlns:local="clr-namespace:PMMEditor.Views.Documents"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:panes="clr-namespace:PMMEditor.Views.Panes"
   xmlns:views="clr-namespace:PMMEditor.Views"
+  xmlns:timeline="clr-namespace:PMMEditor.Views.Timeline"
   Name="TimelineViewN"
   d:DataContext="{d:DesignInstance {x:Type documents:TimelineViewModelBase}}"
   d:DesignHeight="300"
@@ -248,7 +247,7 @@
     </ControlTemplate>
 
     <!--  デフォルトのスタイル  -->
-    <Style TargetType="{x:Type local:TimelineView}">
+    <Style TargetType="{x:Type timeline:TimelineView}">
       <Setter Property="TimelinePanelStyle" Value="{StaticResource TimelinePanelStyle}" />
       <Setter Property="AllGridStyle" Value="{StaticResource AllGridStyle}" />
       <Setter Property="SelectRangeTemplate" Value="{StaticResource SelectRange}" />
@@ -277,7 +276,7 @@
 
 
 
-  <Grid Style="{Binding AllGridStyle, RelativeSource={RelativeSource AncestorType=local:TimelineView}}">
+  <Grid Style="{Binding AllGridStyle, RelativeSource={RelativeSource AncestorType=timeline:TimelineView}}">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="80" />
       <ColumnDefinition Width="5" />
@@ -388,37 +387,37 @@
           </ItemsControl.Template>
           <ItemsControl.ItemTemplate>
             <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-              <panes:TimelineControl
+              <timeline:TimelineControl
                 x:Name="TimelineControl"
                 HorizontalAlignment="Stretch"
                 ItemsSource="{Binding Frame}">
-                <panes:TimelineControl.ItemsPanel>
+                <timeline:TimelineControl.ItemsPanel>
                   <ItemsPanelTemplate>
-                    <views:TimelinePanel
+                    <timeline:TimelinePanel
                       Alignment="Center"
                       IndexWidth="14"
-                      MaxIndex="{Binding DataContext.MaxFrameIndex.Value, RelativeSource={RelativeSource AncestorType=local:TimelineView}}"
-                      Style="{Binding Path=TimelinePanelStyle, RelativeSource={RelativeSource AncestorType=local:TimelineView}}" />
+                      MaxIndex="{Binding DataContext.MaxFrameIndex.Value, RelativeSource={RelativeSource AncestorType=timeline:TimelineView}}"
+                      Style="{Binding Path=TimelinePanelStyle, RelativeSource={RelativeSource AncestorType=timeline:TimelineView}}" />
                   </ItemsPanelTemplate>
-                </panes:TimelineControl.ItemsPanel>
-                <panes:TimelineControl.ItemContainerStyle>
-                  <Style TargetType="panes:TimelineItem">
+                </timeline:TimelineControl.ItemsPanel>
+                <timeline:TimelineControl.ItemContainerStyle>
+                  <Style TargetType="timeline:TimelineItem">
                     <Setter Property="Index" Value="{Binding FrameNumber}" />
                     <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                     <Setter Property="Template">
                       <Setter.Value>
-                        <ControlTemplate TargetType="panes:TimelineItem">
+                        <ControlTemplate TargetType="timeline:TimelineItem">
                           <Thumb>
                             <Thumb.Style>
                               <Style
                                 BasedOn="{StaticResource TimelineThumbBaseStyle}"
                                 TargetType="{x:Type Thumb}">
-                                <Setter Property="Template" Value="{Binding UnselectedContainerTemplate, RelativeSource={RelativeSource AncestorType=local:TimelineView}}" />
+                                <Setter Property="Template" Value="{Binding UnselectedContainerTemplate, RelativeSource={RelativeSource AncestorType=timeline:TimelineView}}" />
                                 <Style.Triggers>
                                   <DataTrigger
                                     Binding="{Binding IsSelected}"
                                     Value="True">
-                                    <Setter Property="Template" Value="{Binding SelectedContainerTemplate, RelativeSource={RelativeSource AncestorType=local:TimelineView}}" />
+                                    <Setter Property="Template" Value="{Binding SelectedContainerTemplate, RelativeSource={RelativeSource AncestorType=timeline:TimelineView}}" />
                                   </DataTrigger>
                                 </Style.Triggers>
                               </Style>
@@ -428,8 +427,8 @@
                       </Setter.Value>
                     </Setter>
                   </Style>
-                </panes:TimelineControl.ItemContainerStyle>
-              </panes:TimelineControl>
+                </timeline:TimelineControl.ItemContainerStyle>
+              </timeline:TimelineControl>
             </HierarchicalDataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
@@ -448,24 +447,24 @@
         <Grid Background="{x:Null}">
 
           <!--  タイムラインの数値  -->
-          <panes:TimelineControl
+          <timeline:TimelineControl
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Background="{x:Null}"
             ItemsSource="{Binding GridFrameNumberList}">
-            <panes:TimelineControl.ItemsPanel>
+            <timeline:TimelineControl.ItemsPanel>
               <ItemsPanelTemplate>
-                <views:TimelinePanel
+                <timeline:TimelinePanel
                   Alignment="Center"
                   IndexWidth="14" />
               </ItemsPanelTemplate>
-            </panes:TimelineControl.ItemsPanel>
-            <panes:TimelineControl.ItemContainerStyle>
-              <Style TargetType="{x:Type panes:TimelineItem}">
+            </timeline:TimelineControl.ItemsPanel>
+            <timeline:TimelineControl.ItemContainerStyle>
+              <Style TargetType="{x:Type timeline:TimelineItem}">
                 <Setter Property="Index" Value="{Binding}" />
                 <Setter Property="Template">
                   <Setter.Value>
-                    <ControlTemplate TargetType="panes:TimelineItem">
+                    <ControlTemplate TargetType="timeline:TimelineItem">
                       <TextBlock
                         Height="14"
                         Text="{Binding}"
@@ -474,18 +473,18 @@
                   </Setter.Value>
                 </Setter>
               </Style>
-            </panes:TimelineControl.ItemContainerStyle>
-          </panes:TimelineControl>
+            </timeline:TimelineControl.ItemContainerStyle>
+          </timeline:TimelineControl>
 
           <!--  現在のフレーム  -->
-          <views:TimelinePanel
+          <timeline:TimelinePanel
             HorizontalAlignment="Left"
             Alignment="Center"
             Background="{x:Null}"
             IndexWidth="14"
             IsHitTestVisible="False">
             <DockPanel
-              views:TimelinePanel.Index="{Binding NowFrame.Value}"
+              timeline:TimelinePanel.Index="{Binding NowFrame.Value}"
               Background="{x:Null}">
               <TextBlock
                 DockPanel.Dock="Top"
@@ -501,13 +500,521 @@
                 Y1="0"
                 Y2="14" />
             </DockPanel>
-          </views:TimelinePanel>
+          </timeline:TimelinePanel>
 
         </Grid>
       </views:MyScrollViewer>
     </Grid>
   </Grid>
 </UserControl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,4 +1,4 @@
-﻿namespace PMMEditor.Views.Documents
+﻿namespace PMMEditor.Views.MMW.Documents
 {
     /// <summary>
     /// MainCameraView.xaml の相互作用ロジック

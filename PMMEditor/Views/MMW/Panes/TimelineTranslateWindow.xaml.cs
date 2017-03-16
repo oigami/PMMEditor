@@ -1,4 +1,4 @@
-﻿namespace PMMEditor.Views.Panes
+﻿namespace PMMEditor.Views.MMW.Panes
 {
     /// <summary>
     /// TimelineTranslateWindow.xaml の相互作用ロジック

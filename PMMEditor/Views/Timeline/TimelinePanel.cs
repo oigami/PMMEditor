@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace PMMEditor.Views
+namespace PMMEditor.Views.Timeline
 {
     /// <summary>
     /// TimelinePanel.xaml の相互作用ロジック

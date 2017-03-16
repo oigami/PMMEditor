@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
-namespace PMMEditor.Views.Panes
+namespace PMMEditor.Views.Timeline
 {
     public class TimelineItem : ContentControl
     {

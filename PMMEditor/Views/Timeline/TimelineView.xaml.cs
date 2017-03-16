@@ -6,9 +6,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using PMMEditor.Views.Panes;
 
-namespace PMMEditor.Views.Documents
+namespace PMMEditor.Views.Timeline
 {
     public class KeyFrameMoveEventArgs
     {

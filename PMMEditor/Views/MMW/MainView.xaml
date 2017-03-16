@@ -4,16 +4,18 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:avalonDock="http://schemas.xceed.com/wpf/xaml/avalondock"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:documents="clr-namespace:PMMEditor.Views.Documents"
   xmlns:graphics="clr-namespace:PMMEditor.ViewModels.Graphics"
   xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
   xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:panes="clr-namespace:PMMEditor.Views.Panes"
   xmlns:v="clr-namespace:PMMEditor.Views"
   xmlns:vm="clr-namespace:PMMEditor.ViewModels"
   xmlns:vmDocuments="clr-namespace:PMMEditor.ViewModels.Documents"
   xmlns:vmPanes="clr-namespace:PMMEditor.ViewModels.Panes"
+  xmlns:timeline="clr-namespace:PMMEditor.Views.Timeline"
+  xmlns:documents1="clr-namespace:PMMEditor.Views.MMW.Documents"
+  xmlns:panes1="clr-namespace:PMMEditor.Views.MMW.Panes"
+  xmlns:mmw="clr-namespace:PMMEditor.Views.MMW"
   Width="640"
   Height="480"
   mc:Ignorable="d">
@@ -78,13 +80,13 @@
       AnchorablesSource="{Binding DockingPaneViewModels}"
       DocumentsSource="{Binding DockingDocumentViewModels}">
       <avalonDock:DockingManager.LayoutItemContainerStyleSelector>
-        <v:LayoutItemContainerStyleSelector>
-          <v:LayoutItemTypedStyle DataType="{x:Type vmDocuments:DocumentViewModelBase}">
+        <mmw:LayoutItemContainerStyleSelector>
+          <mmw:LayoutItemTypedStyle DataType="{x:Type vmDocuments:DocumentViewModelBase}">
             <Style TargetType="{x:Type avalonDock:LayoutItem}">
               <Setter Property="Title" Value="{Binding Model.Title}" />
             </Style>
-          </v:LayoutItemTypedStyle>
-          <v:LayoutItemTypedStyle DataType="{x:Type vmPanes:PaneViewModelBase}">
+          </mmw:LayoutItemTypedStyle>
+          <mmw:LayoutItemTypedStyle DataType="{x:Type vmPanes:PaneViewModelBase}">
             <Style TargetType="{x:Type avalonDock:LayoutAnchorableItem}">
               <Setter Property="Title" Value="{Binding Model.Title}" />
               <Setter Property="ContentId" Value="{Binding Model.ContentId}" />
@@ -95,34 +97,34 @@
               <Setter Property="Visibility" Value="{Binding Model.Visibility, Mode=TwoWay}" />
               <Setter Property="CanClose" Value="{Binding Model.CanClose}" />
             </Style>
-          </v:LayoutItemTypedStyle>
-        </v:LayoutItemContainerStyleSelector>
+          </mmw:LayoutItemTypedStyle>
+        </mmw:LayoutItemContainerStyleSelector>
       </avalonDock:DockingManager.LayoutItemContainerStyleSelector>
 
       <avalonDock:DockingManager.LayoutItemTemplateSelector>
-        <v:LayoutItemTemplateSelector>
+        <mmw:LayoutItemTemplateSelector>
           <DataTemplate DataType="{x:Type vmPanes:TimelineTranslateViewModel}">
-            <panes:TimelineTranslateWindow />
+            <panes1:TimelineTranslateWindow />
           </DataTemplate>
           <DataTemplate DataType="{x:Type vmPanes:HeaderViewModel}">
-            <panes:HeaderView />
+            <panes1:HeaderView />
           </DataTemplate>
           <DataTemplate DataType="{x:Type vmPanes:ModelViewModel}">
-            <panes:ModelView />
+            <panes1:ModelView />
           </DataTemplate>
           <DataTemplate DataType="{x:Type vmPanes:CameraViewModel}">
-            <panes:CameraView />
+            <panes1:CameraView />
           </DataTemplate>
           <DataTemplate DataType="{x:Type vmPanes:AccessoryViewModel}">
-            <panes:AccessoryView />
+            <panes1:AccessoryView />
           </DataTemplate>
           <DataTemplate DataType="{x:Type vmDocuments:CameraLightAccessoryViewModel}">
-            <documents:TimelineView />
+            <timeline:TimelineView />
           </DataTemplate>
           <DataTemplate DataType="{x:Type graphics:MainRenderViewModel}">
-            <documents:MainCameraView />
+            <documents1:MainCameraView />
           </DataTemplate>
-        </v:LayoutItemTemplateSelector>
+        </mmw:LayoutItemTemplateSelector>
       </avalonDock:DockingManager.LayoutItemTemplateSelector>
 
       <avalonDock:LayoutRoot>
@@ -134,3 +136,4 @@
     </avalonDock:DockingManager>
   </DockPanel>
 </UserControl>
+

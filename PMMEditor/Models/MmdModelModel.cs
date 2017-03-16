@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models.MMDModel;
 using PMMEditor.MVVM;
-using PMMEditor.Views.Documents;
 using SharpDX;
 using Quaternion = System.Numerics.Quaternion;
 using Vector3 = System.Numerics.Vector3;

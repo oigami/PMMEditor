@@ -1,12 +1,12 @@
-﻿<local:TimelineControlBase
-  x:Class="PMMEditor.Views.Panes.TimelineControl"
+﻿<timeline:TimelineControlBase
+  x:Class="PMMEditor.Views.Timeline.TimelineControl"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:local="clr-namespace:PMMEditor.Views.Panes">
-  <local:TimelineControlBase.Resources>
+  xmlns:timeline="clr-namespace:PMMEditor.Views.Timeline">
+  <timeline:TimelineControlBase.Resources>
     <DataTemplate
       x:Key="DefaultTimelineItemTemplate"
-      DataType="{x:Type local:TimelineItem}">
+      DataType="{x:Type timeline:TimelineItem}">
       <Thumb>
         <Thumb.Template>
           <ControlTemplate>
@@ -27,8 +27,11 @@
         </Thumb.Template>
       </Thumb>
     </DataTemplate>
-    <Style TargetType="local:TimelineControl">
+    <Style TargetType="timeline:TimelineControl">
       <Setter Property="ItemTemplate" Value="{StaticResource DefaultTimelineItemTemplate}" />
     </Style>
-  </local:TimelineControlBase.Resources>
-</local:TimelineControlBase>
+  </timeline:TimelineControlBase.Resources>
+</timeline:TimelineControlBase>
+
+
+

@@ -4,7 +4,7 @@ using System.Windows.Markup;
 using PMMEditor.ViewModels.Graphics;
 using Reactive.Bindings.Extensions;
 
-namespace PMMEditor.Views.Documents
+namespace PMMEditor.Views.Graphics
 {
     public abstract class RendererPanel : SharpDxControl.SharpDxControl
     {
