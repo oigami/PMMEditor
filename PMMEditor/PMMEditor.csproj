@@ -210,7 +210,7 @@
     <Compile Include="ViewModels\Panes\PaneViewModelBase.cs" />
     <Compile Include="ViewModels\Panes\TimelineTranslateViewModel.cs" />
     <Compile Include="Views\Behaviors\ScrollSyncronizingBehavior.cs" />
-    <Compile Include="Views\MMW\Documents\MainCameraView.xaml.cs">
+    <Compile Include="Views\Graphics\MainCameraView.xaml.cs">
       <DependentUpon>MainCameraView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Graphics\MainRenderer.cs" />
@@ -261,7 +261,7 @@
       <DependentUpon>TimelineControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Timeline\TimelinePanel.cs" />
-    <Page Include="Views\MMW\Documents\MainCameraView.xaml">
+    <Page Include="Views\Graphics\MainCameraView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -377,7 +377,9 @@
     <Content Include="Resources\BoneRenderingShader.hlsl" />
     <Content Include="Resources\TestShader.hlsl" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Views\MMW\Documents\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

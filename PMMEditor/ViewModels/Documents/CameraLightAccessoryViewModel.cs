@@ -294,15 +294,11 @@ namespace PMMEditor.ViewModels.Documents
 
             KeyFrameMoveDeltaCommand = new ListenerCommand<KeyFrameMoveEventArgs>(
                 args => _timelineModel.Move(args.DiffFrame));
-        }
-
-        public async Task Initialize()
-        {
             ListOfKeyFrameList = ReadOnlyMutliCollection.Merge(
-                _cameraKeyList,
-                _lightKeyList,
-                _timelineModel.AccessoryKeyFrameLists
-                              .ToReadOnlyReactiveCollection(TimelineKeyFrameList.Create)).AddTo(CompositeDisposable);
+               _cameraKeyList,
+               _lightKeyList,
+               _timelineModel.AccessoryKeyFrameLists
+                             .ToReadOnlyReactiveCollection(TimelineKeyFrameList.Create)).AddTo(CompositeDisposable);
         }
 
         public static string GetTitle() => "Camera, Light, Accessory Timeline";

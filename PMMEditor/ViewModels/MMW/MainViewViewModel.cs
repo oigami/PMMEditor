@@ -140,12 +140,9 @@ namespace PMMEditor.ViewModels.MMW
 
         public async void OpenCameraLightAccessoryTimeline()
         {
-            await AddDocument(async () =>
-            {
-                var res = new CameraLightAccessoryViewModel(_model).AddTo(CompositeDisposable);
-                await res.Initialize();
-                return res;
-            }, CameraLightAccessoryViewModel.GetContentId());
+            await AddDocument(
+                async () => new CameraLightAccessoryViewModel(_model).AddTo(CompositeDisposable),
+                CameraLightAccessoryViewModel.GetContentId());
         }
 
         #endregion

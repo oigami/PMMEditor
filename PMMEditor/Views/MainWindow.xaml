@@ -11,12 +11,22 @@
   xmlns:mmwv="clr-namespace:PMMEditor.Views.MMW"
   xmlns:viewModels="clr-namespace:PMMEditor.ViewModels"
   xmlns:vm="clr-namespace:PMMEditor.ViewModels"
+  xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+  xmlns:behaviors="http://schemas.livet-mvvm.net/2011/wpf"
   Title="MainWindow"
   mc:Ignorable="d">
 
   <Window.DataContext>
     <vm:MainWindowViewModel />
   </Window.DataContext>
+  <i:Interaction.Triggers>
+    <i:EventTrigger
+      EventName="ContentRendered">
+      <behaviors:LivetCallMethodAction
+        MethodName="Initialize"
+        MethodTarget="{Binding}" />
+    </i:EventTrigger>
+  </i:Interaction.Triggers>
   <Window.Resources>
     <DataTemplate DataType="{x:Type mmd:MainViewViewModel}">
       <mmdv:MainWindow />

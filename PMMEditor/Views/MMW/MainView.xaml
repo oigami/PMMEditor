@@ -13,9 +13,9 @@
   xmlns:vmDocuments="clr-namespace:PMMEditor.ViewModels.Documents"
   xmlns:vmPanes="clr-namespace:PMMEditor.ViewModels.Panes"
   xmlns:timeline="clr-namespace:PMMEditor.Views.Timeline"
-  xmlns:documents1="clr-namespace:PMMEditor.Views.MMW.Documents"
   xmlns:panes1="clr-namespace:PMMEditor.Views.MMW.Panes"
   xmlns:mmw="clr-namespace:PMMEditor.Views.MMW"
+  xmlns:graphics1="clr-namespace:PMMEditor.Views.Graphics"
   Width="640"
   Height="480"
   mc:Ignorable="d">
@@ -122,7 +122,7 @@
             <timeline:TimelineView />
           </DataTemplate>
           <DataTemplate DataType="{x:Type graphics:MainRenderViewModel}">
-            <documents1:MainCameraView />
+            <graphics1:MainCameraView />
           </DataTemplate>
         </mmw:LayoutItemTemplateSelector>
       </avalonDock:DockingManager.LayoutItemTemplateSelector>
