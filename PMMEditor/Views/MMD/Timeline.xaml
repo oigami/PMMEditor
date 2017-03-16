@@ -1,0 +1,146 @@
+﻿<UserControl
+  x:Class="PMMEditor.Views.MMD.Timeline"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:local="clr-namespace:PMMEditor.Views.MMD"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:timeline="clr-namespace:PMMEditor.Views.Timeline"
+  d:DesignHeight="300"
+  d:DesignWidth="300"
+  mc:Ignorable="d">
+  <DockPanel>
+    <Label
+      HorizontalAlignment="Center"
+      Content="Bone/Frame Manipulation"
+      DockPanel.Dock="Top" />
+    <UniformGrid
+      Columns="2"
+      DockPanel.Dock="Top">
+      <Button
+        Margin="2"
+        HorizontalAlignment="Right"
+        Content="undo" />
+      <Button
+        Margin="2"
+        HorizontalAlignment="Left"
+        Content="redo" />
+    </UniformGrid>
+    <Label
+      HorizontalAlignment="Center"
+      Content="Frame Manipulation"
+      DockPanel.Dock="Top" />
+    <Grid DockPanel.Dock="Top">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="10*" />
+        <ColumnDefinition Width="30*" />
+        <ColumnDefinition Width="10*" />
+      </Grid.ColumnDefinitions>
+      <Button
+        Grid.Column="0"
+        Margin="2"
+        HorizontalAlignment="Left"
+        Content="&lt;" />
+      <Button
+        Grid.Column="2"
+        Margin="2"
+        HorizontalAlignment="Right"
+        Content="&gt;"
+        DockPanel.Dock="Right" />
+      <DockPanel Grid.Column="1">
+        <Button
+          Margin="2"
+          Content=".&lt;" />
+        <Button
+          Margin="2"
+          Content="&lt;" />
+        <Button
+          Margin="2"
+          Content="&gt;."
+          DockPanel.Dock="Right" />
+        <Button
+          Margin="2"
+          Content="&gt;"
+          DockPanel.Dock="Right" />
+        <TextBox Margin="2" />
+      </DockPanel>
+    </Grid>
+    <DockPanel DockPanel.Dock="Bottom"
+               HorizontalAlignment="Center">
+      <Grid DockPanel.Dock="Top">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="20*" />
+          <ColumnDefinition Width="17*" />
+        </Grid.ColumnDefinitions>
+        <UniformGrid
+          Margin="0,0,5,0"
+          Columns="3">
+          <Button
+            Margin="2"
+            Content="copy" />
+          <Button
+            Margin="2"
+            Content="paste" />
+          <Button
+            Margin="2"
+            Content="reverse" />
+        </UniformGrid>
+        <DockPanel Grid.Column="1">
+          <Button
+            Margin="2"
+            HorizontalAlignment="Stretch"
+            Content="vertical-select" />
+          <Button
+            Margin="2"
+            HorizontalAlignment="Stretch"
+            Content="delete" />
+        </DockPanel>
+      </Grid>
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="13*" />
+          <ColumnDefinition Width="10*" />
+        </Grid.ColumnDefinitions>
+        <ComboBox
+          Grid.Column="0"
+          Margin="10"
+          DockPanel.Dock="Left" />
+        <Grid
+          Grid.Column="1"
+          DockPanel.Dock="Right">
+          <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+          </Grid.RowDefinitions>
+          <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition />
+              <ColumnDefinition Width="20" />
+              <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <TextBox Margin="2" />
+            <Label
+              Grid.Column="1"
+              Margin="0"
+              Content="-" />
+            <TextBox
+              Grid.Column="2"
+              Margin="2" />
+          </Grid>
+          <UniformGrid
+            Grid.Row="1"
+            Columns="2">
+            <Button
+              Margin="2"
+              Content="range-select" />
+            <Button
+              Margin="2"
+              Content="expaned" />
+          </UniformGrid>
+        </Grid>
+      </Grid>
+    </DockPanel>
+    <timeline:TimelineView />
+  </DockPanel>
+</UserControl>

@@ -215,6 +215,9 @@
     </Compile>
     <Compile Include="Views\Graphics\MainRenderer.cs" />
     <Compile Include="Models\Graphics\MmdModelRendererSource.cs" />
+    <Compile Include="Views\MMD\Timeline.xaml.cs">
+      <DependentUpon>Timeline.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Timeline\TimelineView.xaml.cs">
       <DependentUpon>TimelineView.xaml</DependentUpon>
     </Compile>
@@ -262,6 +265,10 @@
     </Compile>
     <Compile Include="Views\Timeline\TimelinePanel.cs" />
     <Page Include="Views\Graphics\MainCameraView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MMD\Timeline.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
