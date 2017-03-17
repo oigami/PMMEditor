@@ -18,7 +18,19 @@ namespace PMMEditor.MVVM
             return true;
         }
     }
-
+    public class BindableViewModel : ViewModel
+    {
+        protected bool SetProperty<T>(ref T t, T val, [CallerMemberName] string propertyName = "")
+        {
+            if (Equals(t, val))
+            {
+                return false;
+            }
+            t = val;
+            RaisePropertyChanged(propertyName);
+            return true;
+        }
+    }
     public class BindableDisposableBase : BindableBase, IDisposable
     {
         protected CompositeDisposable CompositeDisposable = new CompositeDisposable();
