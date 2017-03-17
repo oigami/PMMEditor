@@ -121,8 +121,18 @@ namespace PMMEditor.SharpDxControl
             return (texture.Description.OptionFlags & ResourceOptionFlags.Shared) != 0;
         }
 
-        private void Dispose(bool disposing)
+        #region Dispose
+
+        private bool _disposed;
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_renderTarget")]
+        protected virtual void Dispose(bool disposing)
         {
+            if (_disposed)
+            {
+                return;
+            }
+            _disposed = true;
             if (disposing)
             {
                 CompositeDisposable.Dispose();
@@ -145,11 +155,13 @@ namespace PMMEditor.SharpDxControl
         {
             Dispose(false);
         }
+
+        #endregion
     }
 
-    public static class NativeMethods
+    internal static class NativeMethods
     {
         [DllImport("user32.dll", SetLastError = false)]
-        public static extern IntPtr GetDesktopWindow();
+        internal static extern IntPtr GetDesktopWindow();
     }
 }

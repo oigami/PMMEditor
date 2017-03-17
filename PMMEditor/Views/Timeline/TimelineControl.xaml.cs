@@ -49,11 +49,11 @@ namespace PMMEditor.Views.Timeline
             set
             {
                 SetValue(IsSelectedProperty, value);
-                SelectionChanged?.Invoke(value);
+                SelectionChanged?.Invoke(this, value);
             }
         }
 
-        public delegate void SelectionChangedDelegate(bool isSelected);
+        public delegate void SelectionChangedDelegate(object sender, bool isSelected);
 
         public event SelectionChangedDelegate SelectionChanged;
 
@@ -81,7 +81,7 @@ namespace PMMEditor.Views.Timeline
         protected override DependencyObject GetContainerForItemOverride()
         {
             var res = new TimelineItem();
-            res.SelectionChanged += selected =>
+            res.SelectionChanged += (s, selected) =>
             {
                 BeginUpdateSelectedItems();
                 if (selected)

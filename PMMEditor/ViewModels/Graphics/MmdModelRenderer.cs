@@ -27,7 +27,7 @@ namespace PMMEditor.ViewModels.Graphics
     }
 
 
-    public class MmdModelBoneCalculatorSRV
+    public class MmdModelBoneCalculatorSRV : BindableDisposableBase
     {
         private readonly MmdModelRendererSource _model;
         private readonly Direct3D11.Device _device;
@@ -61,8 +61,9 @@ namespace PMMEditor.ViewModels.Graphics
                     Usage = Direct3D11.ResourceUsage.Default,
                     SampleDescription = new SampleDescription(1, 0),
                     Format = Format.R32G32B32A32_Float
-                });
-            BoneSrv = new Direct3D11.ShaderResourceView(_device, _boneTexture2D);
+                }).AddTo(CompositeDisposable);
+            BoneSrv = new Direct3D11.ShaderResourceView(_device, _boneTexture2D)
+                .AddTo(CompositeDisposable);
         }
 
         public void Update(Direct3D11.DeviceContext context, int nowFrame)
@@ -87,7 +88,7 @@ namespace PMMEditor.ViewModels.Graphics
     {
         public MmdModelRendererSource ModelSource { get; }
 
-        private Model _model;
+        private readonly Model _model;
         private MmdModelBoneCalculatorSRV boneCalculator;
         private Direct3D11.Device _device;
 
@@ -107,16 +108,17 @@ namespace PMMEditor.ViewModels.Graphics
                              .AddTo(CompositeDisposable);
             IsInitialized =
                 ModelSource.ObserveProperty(_ => _.IsInitialized)
-                     .CombineLatest(_isInternalInitialized.AsObservable(), (a, b) => a && b)
-                     .ToReadOnlyReactiveProperty(false).AddTo(CompositeDisposable);
+                           .CombineLatest(_isInternalInitialized.AsObservable(), (a, b) => a && b)
+                           .ToReadOnlyReactiveProperty(false).AddTo(CompositeDisposable);
         }
 
         public ReadOnlyReactiveProperty<bool> IsInitialized { get; }
 
         private void InitializeInternal()
         {
-            boneCalculator = new MmdModelBoneCalculatorSRV(ModelSource, _device);
-            BoneRenderer = new BoneRenderer(ModelSource, _device);
+            boneCalculator = new MmdModelBoneCalculatorSRV(ModelSource, _device)
+                .AddTo(CompositeDisposable);
+            BoneRenderer = new BoneRenderer(ModelSource, _device).AddTo(CompositeDisposable);
 
             // 頂点シェーダ生成
             var shaderSource = Resource1.TestShader;

@@ -10,7 +10,7 @@ using PMMEditor.MVVM;
 
 namespace PMMEditor.Models
 {
-    public abstract class KeyFrameBase : BindableDisposableBase
+    public abstract class KeyFrameBase : BindableBase
     {
         #region IsSelected変更通知プロパティ
 
@@ -202,6 +202,10 @@ namespace PMMEditor.Models
         {
             return await Task.Run(() =>
             {
+                if (boneKeyFrames == null)
+                {
+                    return null;
+                }
                 int maxDataIndex = 0;
                 foreach (var item in boneKeyFrames)
                 {
@@ -225,11 +229,13 @@ namespace PMMEditor.Models
 
         /// <summary> コレクションを反復処理する列挙子を返します。 </summary>
         /// <returns> コレクションを反復処理するために使用できる <see cref = "T:System.Collections.IEnumerator" /> オブジェクト。 </returns>
-        IEnumerator IEnumerable.GetEnumerator() => _item.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <summary> コレクションを反復処理する列挙子を返します。 </summary>
         /// <returns> コレクションの反復処理に使用できる列挙子。 </returns>
-        IEnumerator<KeyValuePair<int, T>> IEnumerable<KeyValuePair<int, T>>.GetEnumerator() => _item.GetEnumerator();
+        IEnumerator<KeyValuePair<int, T>> IEnumerable<KeyValuePair<int, T>>.GetEnumerator() => GetEnumerator();
+
+        public IEnumerator<KeyValuePair<int, T>> GetEnumerator() => _item.GetEnumerator();
 
         /// <summary>
         /// <see cref = "T:System.Collections.Generic.ICollection`1" /> に項目を追加します。
@@ -254,7 +260,9 @@ namespace PMMEditor.Models
         /// <exception cref = "T:System.NotSupportedException">
         /// <see cref = "T:System.Collections.Generic.ICollection`1" /> は読み取り専用です。
         /// </exception>
-        void ICollection<KeyValuePair<int, T>>.Clear()
+        void ICollection<KeyValuePair<int, T>>.Clear() => Clear();
+
+        public void Clear()
         {
             _item.Clear();
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
@@ -319,13 +327,17 @@ namespace PMMEditor.Models
         /// <returns>
         /// <see cref = "T:System.Collections.Generic.ICollection`1" /> に格納されている要素の数。
         /// </returns>
-        int ICollection<KeyValuePair<int, T>>.Count => _item.Count;
+        int ICollection<KeyValuePair<int, T>>.Count => Count;
+
+        public int Count => _item.Count;
 
         /// <summary>
         /// <see cref = "T:System.Collections.Generic.ICollection`1" /> が読み取り専用かどうかを示す値を取得します。
         /// </summary>
         /// <returns> true が読み取り専用である場合は <see cref = "T:System.Collections.Generic.ICollection`1" />。それ以外の場合は false。 </returns>
-        bool ICollection<KeyValuePair<int, T>>.IsReadOnly => false;
+        bool ICollection<KeyValuePair<int, T>>.IsReadOnly => IsReadOnly;
+
+        public bool IsReadOnly => false;
 
         /// <summary> 指定したキーの要素が <see cref = "T:System.Collections.Generic.IDictionary`2" /> に格納されているかどうかを確認します。 </summary>
         /// <param name = "key">
@@ -430,7 +442,9 @@ namespace PMMEditor.Models
         /// <see cref = "T:System.Collections.Generic.ICollection`1" /> を実装するオブジェクトのキーを含む
         /// <see cref = "T:System.Collections.Generic.IDictionary`2" />します。
         /// </returns>
-        ICollection<int> IDictionary<int, T>.Keys => _item.Keys;
+        ICollection<int> IDictionary<int, T>.Keys => Keys;
+
+        public SortedDictionary<int, T>.KeyCollection Keys => _item.Keys;
 
         /// <summary>
         /// <see cref = "T:System.Collections.Generic.ICollection`1" /> 内の値を格納している
@@ -440,8 +454,9 @@ namespace PMMEditor.Models
         /// <see cref = "T:System.Collections.Generic.ICollection`1" /> を実装するオブジェクトの値を含む
         /// <see cref = "T:System.Collections.Generic.IDictionary`2" />します。
         /// </returns>
-        ICollection<T> IDictionary<int, T>.Values => _item.Values;
+        ICollection<T> IDictionary<int, T>.Values => Values;
 
+        public SortedDictionary<int, T>.ValueCollection Values => _item.Values;
         /// <summary>
         /// <see cref = "T:System.Collections.ICollection" /> の要素を <see cref = "T:System.Array" /> にコピーします。
         /// <see cref = "T:System.Array" /> の特定のインデックスからコピーが開始されます。
@@ -473,7 +488,7 @@ namespace PMMEditor.Models
         /// <returns>
         /// <see cref = "T:System.Collections.ICollection" /> に格納されている要素の数。
         /// </returns>
-        int ICollection.Count => _item.Count;
+        int ICollection.Count => Count;
 
         /// <summary>
         /// <see cref = "T:System.Collections.ICollection" /> へのアクセスを同期するために使用できるオブジェクトを取得します。
@@ -529,8 +544,7 @@ namespace PMMEditor.Models
         /// </exception>
         void IDictionary.Clear()
         {
-            _item.Clear();
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            Clear();
         }
 
         /// <summary>
@@ -585,7 +599,7 @@ namespace PMMEditor.Models
         /// <see cref = "T:System.Collections.ICollection" /> オブジェクトのキーを含む、 <see cref = "T:System.Collections.IDictionary" />
         /// オブジェクトです。
         /// </returns>
-        ICollection IDictionary.Keys => _item.Keys;
+        ICollection IDictionary.Keys => Keys;
 
         /// <summary>
         /// 取得、 <see cref = "T:System.Collections.ICollection" /> オブジェクトの値を含む、
@@ -595,11 +609,11 @@ namespace PMMEditor.Models
         /// <see cref = "T:System.Collections.ICollection" /> オブジェクトの値を含む、 <see cref = "T:System.Collections.IDictionary" />
         /// オブジェクトです。
         /// </returns>
-        ICollection IDictionary.Values => _item.Values;
+        ICollection IDictionary.Values => Values;
 
         /// <summary> 示す値を取得するかどうか、 <see cref = "T:System.Collections.IDictionary" /> オブジェクトは読み取り専用です。 </summary>
         /// <returns> true 場合、 <see cref = "T:System.Collections.IDictionary" /> オブジェクトが読み取り専用でない場合は falseです。 </returns>
-        bool IDictionary.IsReadOnly => false;
+        bool IDictionary.IsReadOnly => IsReadOnly;
 
         /// <summary> 示す値を取得するかどうか、 <see cref = "T:System.Collections.IDictionary" /> オブジェクトのサイズが固定されています。 </summary>
         /// <returns> true 場合、 <see cref = "T:System.Collections.IDictionary" /> オブジェクトが固定サイズでない場合は falseです。 </returns>

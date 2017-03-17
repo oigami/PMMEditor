@@ -52,7 +52,7 @@ namespace PMMEditor.MVVM
             }
         }
 
-        public virtual void Dispose()
+        public void Dispose() 
         {
             Dispose(true);
         }

@@ -12,7 +12,7 @@ using Reactive.Bindings.Extensions;
 
 namespace PMMEditor.ViewModels.Documents
 {
-    public class ReadOnlyMultiCollection<T> : IList<T>, INotifyCollectionChanged,
+    public sealed class ReadOnlyMultiCollection<T> : IList<T>, INotifyCollectionChanged,
                                               IDisposable
     {
         private readonly CompositeDisposable _disposable = new CompositeDisposable();

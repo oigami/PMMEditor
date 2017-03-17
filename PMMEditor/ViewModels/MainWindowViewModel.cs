@@ -6,15 +6,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using PMMEditor.Models;
+using PMMEditor.MVVM;
+using Reactive.Bindings.Extensions;
 
 namespace PMMEditor.ViewModels
 {
-    internal class MainWindowViewModel
+    internal class MainWindowViewModel : BindableDisposableBase
     {
         private readonly Model _model;
         public MainWindowViewModel()
         {
-            _model = new Model();
+            _model = new Model().AddTo(CompositeDisposable);
             WindowViewModel = new MMD.MainViewViewModel(_model);
         }
 

@@ -443,7 +443,7 @@ namespace PMMEditor.SharpDxControl
         }
 
 
-        public virtual void Dispose()
+        public void Dispose()
         {
             Dispose(true);
         }
