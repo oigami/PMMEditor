@@ -70,17 +70,16 @@
         Content="bone" />
     </UniformGrid>
     <DockPanel>
-      <DockPanel
-        DockPanel.Dock="Right">
+      <DockPanel DockPanel.Dock="Right">
         <Label
           HorizontalAlignment="Center"
-          Content="vol" DockPanel.Dock="Top" />
+          Content="vol"
+          DockPanel.Dock="Top" />
         <Slider
-          Orientation="Vertical"
           HorizontalAlignment="Center"
           VerticalAlignment="Stretch"
-          RenderTransformOrigin="0.5,0.5">
-        </Slider>
+          Orientation="Vertical"
+          RenderTransformOrigin="0.5,0.5" />
 
       </DockPanel>
       <StackPanel Orientation="Vertical">

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using PMMEditor.Log;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models.Graphics;
 using PMMEditor.MVVM;
@@ -16,9 +17,12 @@ namespace PMMEditor.Models
 {
     public class Model : BindableDisposableBase
     {
-        public Model()
+        public ILogger Logger { get; }
+        public Model(ILogger logger)
         {
+            Logger = logger;
             FrameControlModel = new FrameControlModel();
+            MmdModelList = new MmdModelList(Logger);
             GraphicsModel = new GraphicsModel(MmdModelList).AddTo(CompositeDisposable);
             Camera = new CameraControlModel(this).AddTo(CompositeDisposable);
         }
@@ -203,7 +207,7 @@ namespace PMMEditor.Models
 
         #region MmdModelList変更通知プロパティ
 
-        public MmdModelList MmdModelList { get; } = new MmdModelList();
+        public MmdModelList MmdModelList { get; }
 
         #endregion
 

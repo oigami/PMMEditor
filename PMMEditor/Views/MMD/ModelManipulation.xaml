@@ -3,16 +3,38 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
   xmlns:local="clr-namespace:PMMEditor.Views.MMD"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:messaging="http://schemas.livet-mvvm.net/2011/wpf"
+  xmlns:mmd="clr-namespace:PMMEditor.ViewModels.MMD"
+  d:DataContext="{d:DesignInstance Type={x:Type mmd:MainViewViewModel}}"
   d:DesignHeight="300"
   d:DesignWidth="300"
   mc:Ignorable="d">
+  <i:Interaction.Triggers>
+    <messaging:InteractionMessageTrigger
+      MessageKey="Open"
+      Messenger="{Binding Messenger}">
+      <messaging:OpenFileDialogInteractionMessageAction />
+    </messaging:InteractionMessageTrigger>
+  </i:Interaction.Triggers>
   <StackPanel Orientation="Vertical">
     <Label
       HorizontalAlignment="Center"
       Content="Model Manipulation" />
-    <ComboBox Margin="2" />
+    <ComboBox
+      Margin="2"
+      ItemsSource="{Binding ModelAndCameraList}"
+      SelectedItem="{Binding SelectedModel}">
+      <ComboBox.ItemTemplate>
+        <DataTemplate>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="{Binding Name}" />
+          </StackPanel>
+        </DataTemplate>
+      </ComboBox.ItemTemplate>
+    </ComboBox>
     <Grid>
       <Grid.ColumnDefinitions>
         <ColumnDefinition />
@@ -21,10 +43,12 @@
       <Button
         Grid.Column="0"
         Margin="2"
+        Command="{Binding ModelLoadCommand}"
         Content="load" />
       <Button
         Grid.Column="1"
         Margin="2"
+        Command="{Binding ModelDeleteCommand}"
         Content="delete" />
     </Grid>
     <Grid>

@@ -127,7 +127,7 @@ namespace PMMEditor.Models
                 var list = new KeyFrameList<BoneKeyFrame, BoneInterpolationMethod>("");
                 Func<sbyte[], int[]> createArray4 = i => new int[] { i[0], i[1], i[2], i[3] };
 
-                await list.CreateKeyFrame(keyFrame, cameraInitFrame, i =>
+                await list.CreateKeyFrameAsync(keyFrame, cameraInitFrame, i =>
                 {
                     var res = new BoneKeyFrame
                     {

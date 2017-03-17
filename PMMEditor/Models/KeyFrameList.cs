@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Livet;
@@ -175,25 +176,28 @@ namespace PMMEditor.Models
             return preData;
         }
 
-        public async Task CreateKeyFrame<TIn>(
+        public async Task CreateKeyFrameAsync<TIn>(
             TIn[] frame,
             TIn initFrame,
             Func<TIn, T> createFunc) where TIn : PmmStruct.IKeyFrame
         {
-            if (initFrame == null)
+            await Task.Run(() => CreateKeyFrame(frame, initFrame, createFunc));
+        }
+
+        public void CreateKeyFrame<TIn>(
+            TIn[] frame,
+            TIn initFrame,
+            Func<TIn, T> createFunc) where TIn : PmmStruct.IKeyFrame
+        {
+            Debug.Assert(initFrame != null && frame != null);
+
+            Add(initFrame.FrameNumber, createFunc(initFrame));
+            var next = initFrame.NextIndex;
+            while (next != 0)
             {
-                return;
+                Add(frame[next].FrameNumber, createFunc(frame[next]));
+                next = frame[next].NextIndex;
             }
-            await Task.Run(() =>
-            {
-                Add(initFrame.FrameNumber, createFunc(initFrame));
-                var next = initFrame.NextIndex;
-                while (next != 0)
-                {
-                    Add(frame[next].FrameNumber, createFunc(frame[next]));
-                    next = frame[next].NextIndex;
-                }
-            });
         }
 
 
@@ -457,6 +461,7 @@ namespace PMMEditor.Models
         ICollection<T> IDictionary<int, T>.Values => Values;
 
         public SortedDictionary<int, T>.ValueCollection Values => _item.Values;
+
         /// <summary>
         /// <see cref = "T:System.Collections.ICollection" /> の要素を <see cref = "T:System.Array" /> にコピーします。
         /// <see cref = "T:System.Array" /> の特定のインデックスからコピーが開始されます。

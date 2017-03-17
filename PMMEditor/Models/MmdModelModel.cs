@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using Livet;
+using PMMEditor.Log;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models.MMDModel;
 using PMMEditor.MVVM;
@@ -14,8 +17,19 @@ namespace PMMEditor.Models
 {
     public class MmdModelModel : BindableBase
     {
-        public MmdModelModel()
+        private readonly ILogger _logger;
+
+        private bool _isInitialized;
+
+        public bool IsInitialized
         {
+            get { return _isInitialized; }
+            set { SetProperty(ref _isInitialized, value); }
+        }
+
+        public MmdModelModel(ILogger logger)
+        {
+            _logger = logger;
             BoneCalculator = new MmdModelBoneCalculator(this);
         }
 
@@ -98,15 +112,69 @@ namespace PMMEditor.Models
 
         #endregion
 
-        public string Name { get; private set; }
+        #region Name変更通知プロパティ
 
-        public string NameEnglish { get; private set; }
+        private string _name;
 
-        public string FilePath { get; private set; }
+        public string Name
+        {
+            get { return _name; }
+            private set { SetProperty(ref _name, value); }
+        }
+
+        #endregion
+
+        #region NameEnglish変更通知プロパティ
+
+        private string _nameEnglish;
+
+        public string NameEnglish
+        {
+            get { return _nameEnglish; }
+            private set { SetProperty(ref _nameEnglish, value); }
+        }
+
+        #endregion
+
+        #region FilePath変更通知プロパティ
+
+        private string _filePath;
+
+        public string FilePath
+        {
+            get { return _filePath; }
+            private set { SetProperty(ref _filePath, value); }
+        }
+
+        #endregion
 
         public MmdModelBoneCalculator BoneCalculator { get; }
 
         public List<PmdStruct.IK> IKList { get; private set; }
+
+        public Task SetAsync(string filePath)
+        {
+            return Task.Run(() => Set(filePath));
+        }
+
+        public void Set(string filePath)
+        {
+            try
+            {
+                var pmd = Pmd.ReadFile(filePath);
+                Name = pmd.ModelName;
+                NameEnglish = pmd.EnglishName?.ModelName;
+                IKList = pmd.IKs;
+                FilePath = filePath;
+                CreateBones(null, pmd.Bones);
+                IsInitialized = true;
+            }
+            catch (Exception e)
+            {
+                _logger.Error("Model Load Error", e);
+            }
+            ;
+        }
 
         public async Task Set(PmmStruct.ModelData modelData)
         {
@@ -117,25 +185,30 @@ namespace PMMEditor.Models
 
             var data = Pmd.ReadFile(modelData.Path);
             IKList = data.IKs;
-            await CreateBones(modelData, data.Bones);
+            await CreateBonesAsync(modelData, data.Bones);
         }
 
-        private async Task CreateBones(PmmStruct.ModelData modelData, IList<PmdStruct.Bone> bones)
+        private Task CreateBonesAsync(PmmStruct.ModelData modelData, IList<PmdStruct.Bone> bones)
+        {
+            return Task.Run(() => CreateBones(modelData, bones));
+        }
+
+        private void CreateBones(PmmStruct.ModelData modelData, IList<PmdStruct.Bone> bones)
         {
             var keyFrame =
-                await KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>
-                .CreateKeyFrameArray(modelData.BoneKeyFrames);
+                KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>
+                    .CreateKeyFrameArray(modelData?.BoneKeyFrames).Result;
             _BoneKeyList.Clear();
 
-            var res = await Task.WhenAll(bones.Select(
+            var res = Task.WhenAll(bones.Select(
                 async (item, id) =>
                     await Task.Run(() =>
                     {
                         var boneInitFrame =
-                            modelData.BoneInitFrames.Zip(modelData.BoneName, (x, y) => (bone: x, name: y))
-                                     .First(t => t.name == item.Name).bone;
+                            modelData?.BoneInitFrames.Zip(modelData?.BoneName, (x, y) => (bone: x, name: y))
+                                      .First(t => t.name == item.Name).bone;
                         return CreateBone(item, id, bones, keyFrame, boneInitFrame);
-                    })));
+                    }))).Result;
             foreach (var item in res)
             {
                 BoneKeyList.Add(item);
@@ -189,23 +262,38 @@ namespace PMMEditor.Models
             var list = new KeyFrameList<BoneKeyFrame, KeyInterpolationMethod>(item.Name);
             outputBone.KeyFrameList = list;
             Func<sbyte[], int[]> createArray4 = _ => new int[] { _[0], _[1], _[2], _[3] };
-            list.CreateKeyFrame(keyFrame, boneInitFrame, listBone =>
+            if (boneInitFrame == null)
             {
-                var res = new BoneKeyFrame
+                list.Add(0, new BoneKeyFrame
                 {
-                    Position = new Vector3(listBone.Translation[0], listBone.Translation[1], listBone.Translation[2]),
-                    Quaternion =
-                        new Quaternion(listBone.Quaternion[0], listBone.Quaternion[1], listBone.Quaternion[2],
-                                       listBone.Quaternion[3]),
-                    InterpolationX = createArray4(listBone.InterpolationX),
-                    InterpolationY = createArray4(listBone.InterpolationY),
-                    InterpolationZ = createArray4(listBone.InterpolationZ),
-                    InterpolationRotation = createArray4(listBone.InterpolationRotation),
-                    IsPhysicsDisabled = listBone.IsPhysicsDisabled,
-                    IsSelected = listBone.IsSelected
-                };
-                return res;
-            });
+                    FrameNumber = 0,
+                    Position = new Vector3(0, 0, 0),
+                    Quaternion = new Quaternion(),
+                    IsPhysicsDisabled = false,
+                    IsSelected = false
+                });
+            }
+            else
+            {
+                list.CreateKeyFrame(keyFrame, boneInitFrame, listBone =>
+                {
+                    var res = new BoneKeyFrame
+                    {
+                        Position =
+                            new Vector3(listBone.Translation[0], listBone.Translation[1], listBone.Translation[2]),
+                        Quaternion =
+                            new Quaternion(listBone.Quaternion[0], listBone.Quaternion[1], listBone.Quaternion[2],
+                                           listBone.Quaternion[3]),
+                        InterpolationX = createArray4(listBone.InterpolationX),
+                        InterpolationY = createArray4(listBone.InterpolationY),
+                        InterpolationZ = createArray4(listBone.InterpolationZ),
+                        InterpolationRotation = createArray4(listBone.InterpolationRotation),
+                        IsPhysicsDisabled = listBone.IsPhysicsDisabled,
+                        IsSelected = listBone.IsSelected
+                    };
+                    return res;
+                });
+            }
 
             return outputBone;
         }

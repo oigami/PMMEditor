@@ -53,7 +53,7 @@ namespace PMMEditor.Models
             {
                 var list = new KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>(Name);
 
-                await list.CreateKeyFrame(keyFrame, accessoryData.InitFrame, i =>
+                await list.CreateKeyFrameAsync(keyFrame, accessoryData.InitFrame, i =>
                 {
                     var res = new BoneKeyFrame
                     {

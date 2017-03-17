@@ -36,7 +36,9 @@
       <GridSplitter
         Grid.Column="1"
         HorizontalAlignment="Stretch" />
-      <local:RenderView DataContext="{Binding RendererViewModel}" Grid.Column="2" />
+      <local:RenderView
+        Grid.Column="2"
+        DataContext="{Binding RendererViewModel}" />
     </Grid>
 
   </DockPanel>

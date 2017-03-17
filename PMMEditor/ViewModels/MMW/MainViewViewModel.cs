@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Livet.Commands;
 using Microsoft.Win32;
+using PMMEditor.Log;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models;
 using PMMEditor.MVVM;
@@ -19,10 +20,12 @@ namespace PMMEditor.ViewModels.MMW
     public class MainViewViewModel : BindableDisposableBase
     {
         private readonly Model _model;
+        private readonly ILogger _logger;
 
         public MainViewViewModel()
         {
-            _model = new Model().AddTo(CompositeDisposable);
+            _logger = new LogMessageNotifier();
+            _model = new Model(_logger).AddTo(CompositeDisposable);
             SwitchPlayAndStopCommand = new ViewModelCommand(SwitchPlayAndStop);
             NextFrameCommand = new ViewModelCommand(NextFrame);
             PrevFrameCommand = new ViewModelCommand(PrevFrame);
@@ -48,7 +51,7 @@ namespace PMMEditor.ViewModels.MMW
             AddPane(() => new CameraViewModel(_model).AddTo(CompositeDisposable));
             AddPane(() => new AccessoryViewModel(_model).AddTo(CompositeDisposable));
 
-            await AddDocument(async () => new MainRenderViewModel(_model), "test");
+            await AddDocument(async () => await Task.Run(() => new MainRenderViewModel(_model)), "test");
         }
 
         #region PmmStruct変更通知プロパティ
@@ -141,7 +144,7 @@ namespace PMMEditor.ViewModels.MMW
         public async void OpenCameraLightAccessoryTimeline()
         {
             await AddDocument(
-                async () => new CameraLightAccessoryViewModel(_model).AddTo(CompositeDisposable),
+                async () => await Task.Run(()=> new CameraLightAccessoryViewModel(_model).AddTo(CompositeDisposable)),
                 CameraLightAccessoryViewModel.GetContentId());
         }
 

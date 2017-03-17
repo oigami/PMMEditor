@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using PMMEditor.Log;
 using PMMEditor.Models;
 using PMMEditor.MVVM;
 using Reactive.Bindings.Extensions;
@@ -14,10 +15,12 @@ namespace PMMEditor.ViewModels
     internal class MainWindowViewModel : BindableDisposableBase
     {
         private readonly Model _model;
+        private readonly LogMessageNotifier _logger;
         public MainWindowViewModel()
         {
-            _model = new Model().AddTo(CompositeDisposable);
-            WindowViewModel = new MMD.MainViewViewModel(_model);
+            _logger = new LogMessageNotifier();
+            _model = new Model(_logger).AddTo(CompositeDisposable);
+            WindowViewModel = new MMD.MainViewViewModel(_model, _logger);
         }
 
         public async void Initialize()

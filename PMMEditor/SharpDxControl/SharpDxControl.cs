@@ -307,7 +307,10 @@ namespace PMMEditor.SharpDxControl
             {
                 return;
             }
-
+            if (IsInDesignMode)
+            {
+                return;
+            }
             var width = Math.Max((int) ActualWidth, 100);
             var height = Math.Max((int) ActualHeight, 100);
             if (!double.IsNaN(D3DWidth))

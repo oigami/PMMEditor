@@ -65,8 +65,9 @@
         <TextBox Margin="2" />
       </DockPanel>
     </Grid>
-    <DockPanel DockPanel.Dock="Bottom"
-               HorizontalAlignment="Center">
+    <DockPanel
+      HorizontalAlignment="Center"
+      DockPanel.Dock="Bottom">
       <Grid DockPanel.Dock="Top">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="20*" />
