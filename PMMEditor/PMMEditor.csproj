@@ -167,6 +167,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Log\Logger.cs" />
     <Compile Include="MMDFileParser\MMDFileReaderBase.cs" />
     <Compile Include="MMDFileParser\Pmd.cs" />
     <Compile Include="MMDFileParser\PmdReader.cs" />
