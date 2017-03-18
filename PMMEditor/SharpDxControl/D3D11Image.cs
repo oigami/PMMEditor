@@ -16,6 +16,12 @@ namespace PMMEditor.SharpDxControl
         private readonly CompositeDisposable CompositeDisposable = new CompositeDisposable();
         private Texture _renderTarget;
 
+        public D3D11Image()
+        {
+            IsFrontBufferAvailableChanged += OnDeviceLostCheck;
+            CompositeDisposable.Add(Disposable.Create(() => IsFrontBufferAvailableChanged -= OnDeviceLostCheck));
+        }
+
         private void OnDeviceLostCheck(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (IsFrontBufferAvailable == false)
@@ -38,9 +44,6 @@ namespace PMMEditor.SharpDxControl
 
         public void InvalidateD3DImage()
         {
-            IsFrontBufferAvailableChanged += OnDeviceLostCheck;
-            CompositeDisposable.Add(Disposable.Create(() => IsFrontBufferAvailableChanged -= OnDeviceLostCheck));
-
             if (_renderTarget == null)
             {
                 return;
