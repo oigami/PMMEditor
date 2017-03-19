@@ -183,6 +183,7 @@
     <Compile Include="Models\MmdModelModel.cs" />
     <Compile Include="MMDFileParser\Pmm.cs" />
     <Compile Include="MMDFileParser\PmmWriter.cs" />
+    <Compile Include="Models\MMDModel\BoneFrameControlModel.cs" />
     <Compile Include="Models\MMDModel\MathUtil.cs" />
     <Compile Include="Models\MMDModel\MmdBoneCalculator.cs" />
     <Compile Include="MVVM\BindableBase.cs" />

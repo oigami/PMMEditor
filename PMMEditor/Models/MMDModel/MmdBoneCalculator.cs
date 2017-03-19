@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,9 @@ namespace PMMEditor.Models.MMDModel
         public MmdModelBoneCalculator(MmdModelModel model)
         {
             _model = model;
+            var bones = _model.BoneKeyList;
+            ModelLocalBones = Enumerable.Range(0, bones.Count).Select(_ => Matrix.Identity).ToArray();
+            WorldBones = Enumerable.Range(0, bones.Count).Select(_ => Matrix.Identity).ToArray();
         }
 
         private readonly MmdModelModel _model;
@@ -52,21 +56,20 @@ namespace PMMEditor.Models.MMDModel
         }
 
 
-        public void Update(int frameIndex)
+        public void Update(IList<MmdModelModel.BoneKeyFrame> nowBoneKeyFrame)
         {
             var bones = _model.BoneKeyList;
-            UpdateForwardKinematics(frameIndex);
+            UpdateForwardKinematics(nowBoneKeyFrame);
             UpdateInverseKinematics();
-            ModelLocalBones = Enumerable.Range(0, bones.Count).Select(_ => Matrix.Identity).ToArray();
-            WorldBones = Enumerable.Range(0, bones.Count).Select(_ => Matrix.Identity).ToArray();
             CalcBoneModelLocalMatrix(bones[0], Matrix.Identity, ref _ModelLocalBones);
             ModelLocalBones.CopyTo(WorldBones, 0);
             CalcBoneWorld(bones[0], Matrix.Identity, ref _worldBones);
             RaisePropertyChanged(nameof(WorldBones));
         }
 
-        private void UpdateForwardKinematics(int index)
+        private void UpdateForwardKinematics(IList<MmdModelModel.BoneKeyFrame> nowBoneKeyFrame)
         {
+            Debug.Assert(_model.BoneKeyList.Count == nowBoneKeyFrame.Count);
             var bones = _model.BoneKeyList;
             foreach (var i in Enumerable.Range(0, bones.Count))
             {
@@ -76,9 +79,7 @@ namespace PMMEditor.Models.MMDModel
                     continue;
                 }
 
-                var boneKeyFrames = _model.BoneKeyList.First(_ => _.Name == bones[i].Name);
-
-                var data = boneKeyFrames.KeyFrameList.GetInterpolationData(index);
+                var data = nowBoneKeyFrame[i];
                 var pos = data.Position;
                 var q = data.Quaternion;
 

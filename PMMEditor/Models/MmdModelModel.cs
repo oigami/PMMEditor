@@ -24,19 +24,17 @@ namespace PMMEditor.Models
         public bool IsInitialized
         {
             get { return _isInitialized; }
-            set { SetProperty(ref _isInitialized, value); }
+            private set { SetProperty(ref _isInitialized, value); }
         }
 
         public MmdModelModel(ILogger logger)
         {
             _logger = logger;
-            BoneCalculator = new MmdModelBoneCalculator(this);
         }
 
         private PmmStruct.ModelData _modelData;
-        /*
-         * NotificationObjectはプロパティ変更通知の仕組みを実装したオブジェクトです。
-         */
+
+        #region ボーン構造体
 
         public class BoneKeyFrame : KeyFrameBase
         {
@@ -53,6 +51,13 @@ namespace PMMEditor.Models
             public int[] InterpolationRotation { get; set; }
 
             public bool IsPhysicsDisabled { get; set; }
+
+            public void CopyTo(BoneKeyFrame notNullFrame)
+            {
+                notNullFrame.Position = Position;
+                notNullFrame.Quaternion = Quaternion;
+            }
+
         }
 
         public class KeyInterpolationMethod : IKeyFrameInterpolationMethod<BoneKeyFrame>
@@ -99,16 +104,11 @@ namespace PMMEditor.Models
             public KeyFrameList<BoneKeyFrame, KeyInterpolationMethod> KeyFrameList;
         }
 
+        #endregion
+
         #region BonekeyListプロパティ
 
-        private ObservableCollection<Bone> _BoneKeyList = new ObservableCollection<Bone>();
-
-
-        public ObservableCollection<Bone> BoneKeyList
-        {
-            get { return _BoneKeyList; }
-            set { SetProperty(ref _BoneKeyList, value); }
-        }
+        public ObservableCollection<Bone> BoneKeyList { get; } = new ObservableCollection<Bone>();
 
         #endregion
 
@@ -148,8 +148,6 @@ namespace PMMEditor.Models
 
         #endregion
 
-        public MmdModelBoneCalculator BoneCalculator { get; }
-
         public List<PmdStruct.IK> IKList { get; private set; }
 
         public Task SetAsync(string filePath)
@@ -173,7 +171,6 @@ namespace PMMEditor.Models
             {
                 _logger.Error("Model Load Error", e);
             }
-            ;
         }
 
         public async Task Set(PmmStruct.ModelData modelData)
@@ -198,7 +195,7 @@ namespace PMMEditor.Models
             var keyFrame =
                 KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>
                     .CreateKeyFrameArray(modelData?.BoneKeyFrames).Result;
-            _BoneKeyList.Clear();
+            BoneKeyList.Clear();
 
             var res = Task.WhenAll(bones.Select(
                 async (item, id) =>
@@ -213,8 +210,6 @@ namespace PMMEditor.Models
             {
                 BoneKeyList.Add(item);
             }
-            BoneCalculator.InitBoneCalc();
-            BoneCalculator.Update(0);
         }
 
         private Bone CreateBone(

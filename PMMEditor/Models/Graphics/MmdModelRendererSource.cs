@@ -32,8 +32,6 @@ namespace PMMEditor.Models.Graphics
             });
         }
 
-        public MmdModelBoneCalculator BoneCalculator => Model.BoneCalculator;
-
         public int BoneCount { get; private set; }
 
         private CompositeDisposable D3DObjectCompositeDisposable = new CompositeDisposable();

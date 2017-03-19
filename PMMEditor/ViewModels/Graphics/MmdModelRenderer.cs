@@ -12,6 +12,7 @@ using SharpDX.DXGI;
 using Direct3D11 = SharpDX.Direct3D11;
 using Direct3D = SharpDX.Direct3D;
 using PMMEditor.Models.Graphics;
+using PMMEditor.Models.MMDModel;
 using PMMEditor.MVVM;
 
 namespace PMMEditor.ViewModels.Graphics
@@ -33,13 +34,15 @@ namespace PMMEditor.ViewModels.Graphics
         private readonly Direct3D11.Device _device;
         private Direct3D11.Texture2D _boneTexture2D;
         private Matrix[] _outputArr;
+        private readonly BoneFrameControlModel _controller;
 
         public Direct3D11.ShaderResourceView BoneSrv { get; private set; }
 
-        public MmdModelBoneCalculatorSRV(MmdModelRendererSource model, Direct3D11.Device device)
+        public MmdModelBoneCalculatorSRV(MmdModelRendererSource model, BoneFrameControlModel controller, Direct3D11.Device device)
         {
             _device = device;
             _model = model;
+            _controller = controller;
             CreateData(model);
         }
 
@@ -68,8 +71,7 @@ namespace PMMEditor.ViewModels.Graphics
 
         public void Update(Direct3D11.DeviceContext context, int nowFrame)
         {
-            var calclator = _model.BoneCalculator;
-            calclator.Update(nowFrame);
+            var calclator = _controller.BoneCalculator;
             calclator.WorldBones.CopyTo(_outputArr, 0);
             calclator.ModelLocalBones.CopyTo(_outputArr, calclator.WorldBones.Length);
             context.UpdateSubresource(_outputArr, _boneTexture2D, 0, 16 * 1024, 16 * 1024, new Direct3D11.ResourceRegion
@@ -99,6 +101,7 @@ namespace PMMEditor.ViewModels.Graphics
 
         private readonly ReadOnlyReactiveProperty<int> _nowFrame;
         private readonly ReactiveProperty<bool> _isInternalInitialized = new ReactiveProperty<bool>(false);
+        private BoneFrameControlModel _boneFrameController;
 
         public MmdModelRenderer(Model model, MmdModelRendererSource sourceModel)
         {
@@ -117,7 +120,8 @@ namespace PMMEditor.ViewModels.Graphics
 
         private void InitializeInternal()
         {
-            boneCalculator = new MmdModelBoneCalculatorSRV(ModelSource, _device)
+            _boneFrameController = new BoneFrameControlModel(_model.FrameControlModel, ModelSource.Model);
+            boneCalculator = new MmdModelBoneCalculatorSRV(ModelSource, _boneFrameController, _device)
                 .AddTo(CompositeDisposable);
             BoneRenderer = new BoneRenderer(ModelSource, _device).AddTo(CompositeDisposable);
 
