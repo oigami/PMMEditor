@@ -6,6 +6,8 @@
   xmlns:graphics="clr-namespace:PMMEditor.Views.Graphics"
   xmlns:local="clr-namespace:PMMEditor.Views.MMD"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:mmd="clr-namespace:PMMEditor.ViewModels.MMD"
+  d:DataContext="{d:DesignInstance mmd:MainViewViewModel}"
   d:DesignHeight="500"
   d:DesignWidth="500"
   mc:Ignorable="d">
@@ -74,7 +76,8 @@
       <Button
         Margin="2"
         VerticalAlignment="Center"
-        Content="ToModel" />
+        Content="ToModel"
+        Command="{Binding ChangeModelCameraModeCommand}"/>
       <WrapPanel>
         <DockPanel>
           <Label Content="camera" />
@@ -106,6 +109,6 @@
 
       </WrapPanel>
     </DockPanel>
-    <graphics:MainCameraView DataContext="{Binding Mode=OneWay}" />
+    <graphics:MainCameraView DataContext="{Binding RendererViewModel, Mode=OneWay}" />
   </DockPanel>
 </UserControl>

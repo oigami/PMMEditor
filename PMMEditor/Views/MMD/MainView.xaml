@@ -38,7 +38,7 @@
         HorizontalAlignment="Stretch" />
       <local:RenderView
         Grid.Column="2"
-        DataContext="{Binding RendererViewModel}" />
+        DataContext="{Binding}" />
     </Grid>
 
   </DockPanel>

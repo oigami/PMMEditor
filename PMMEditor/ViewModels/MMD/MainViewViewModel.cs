@@ -22,10 +22,7 @@ namespace PMMEditor.ViewModels.MMD
         public MainViewViewModel(Model model, LogMessageNotifier logger)
         {
             _model = model;
-            logger.Subscribe(log =>
-            {
-                MessageBox.Show(log.ToString());
-            });
+            logger.Subscribe(log => { MessageBox.Show(log.ToString()); });
             TimelineViewModel = new CameraLightAccessoryViewModel(_model);
             RendererViewModel = new MainRenderViewModel(_model);
 
@@ -47,6 +44,11 @@ namespace PMMEditor.ViewModels.MMD
                     return;
                 }
                 _model.MmdModelList.Add(path);
+            });
+
+            ChangeModelCameraModeCommand = new ViewModelCommand(() =>
+            {
+                TimelineViewModel = new BoneTimelineViewModel(model, SelectedModel);
             });
         }
 
@@ -80,5 +82,10 @@ namespace PMMEditor.ViewModels.MMD
         }
 
         public ViewModelCommand ModelLoadCommand { get; }
+
+        public ViewModelCommand ChangeModelCameraModeCommand
+        {
+            get;
+        }
     }
 }

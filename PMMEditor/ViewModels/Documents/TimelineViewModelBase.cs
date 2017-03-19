@@ -105,7 +105,7 @@ namespace PMMEditor.ViewModels.Documents
 
         #region ListOfKeyFrameList変更通知プロパティ
 
-        public ReadOnlyMultiCollection<TimelineKeyFrameList> ListOfKeyFrameList { get; set; }
+        public IList<TimelineKeyFrameList> ListOfKeyFrameList { get; set; }
 
         #endregion
 
