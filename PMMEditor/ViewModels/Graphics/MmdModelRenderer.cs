@@ -107,9 +107,10 @@ namespace PMMEditor.ViewModels.Graphics
             _nowFrame = model.FrameControlModel.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty()
                              .AddTo(CompositeDisposable);
             IsInitialized =
-                ModelSource.ObserveProperty(_ => _.IsInitialized)
-                           .CombineLatest(_isInternalInitialized.AsObservable(), (a, b) => a && b)
-                           .ToReadOnlyReactiveProperty(false).AddTo(CompositeDisposable);
+                new[] { ModelSource.ObserveProperty(_ => _.IsInitialized), _isInternalInitialized }
+                    .CombineLatestValuesAreAllTrue()
+                    .ToReadOnlyReactiveProperty()
+                    .AddTo(CompositeDisposable);
         }
 
         public ReadOnlyReactiveProperty<bool> IsInitialized { get; }
