@@ -212,7 +212,7 @@
           SnapsToDevicePixels="true">
           <ContentPresenter
             x:Name="PART_Header"
-            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+            HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
             ContentSource="Header"
             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
         </Border>
