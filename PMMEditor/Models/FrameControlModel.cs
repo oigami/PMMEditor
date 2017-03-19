@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,12 @@ using PMMEditor.MVVM;
 
 namespace PMMEditor.Models
 {
-    public class FrameControlModel : BindableBase
+    public interface IFrameControlModel : INotifyPropertyChanged
+    {
+        int NowFrame { get; }
+    }
+
+    public class FrameControlModel : BindableBase, IFrameControlModel
     {
         public FrameControlModel()
         {

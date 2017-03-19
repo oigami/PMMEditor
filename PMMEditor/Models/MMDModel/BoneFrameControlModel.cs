@@ -21,7 +21,7 @@ namespace PMMEditor.Models.MMDModel
 
         public MmdModelBoneCalculator BoneCalculator { get; }
 
-        public BoneFrameControlModel(FrameControlModel nowFrame, MmdModelModel model)
+        public BoneFrameControlModel(IFrameControlModel nowFrame, MmdModelModel model)
         {
             _boneList = model.BoneKeyList;
             CompositeDisposable.Add(Disposable.Create(() => _boneList = null));
