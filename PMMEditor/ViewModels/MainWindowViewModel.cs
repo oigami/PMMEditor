@@ -23,7 +23,8 @@ namespace PMMEditor.ViewModels
             ReactivePropertyScheduler.SetDefault(CurrentThreadScheduler.Instance);
             _logger = new LogMessageNotifier();
             _model = new Model(_logger).AddTo(CompositeDisposable);
-            WindowViewModel = new MMD.MainViewViewModel(_model, _logger);
+            WindowViewModel = new MMD.MainViewViewModel(_model, _logger)
+                .AddTo(CompositeDisposable);
         }
 
         public async void Initialize()

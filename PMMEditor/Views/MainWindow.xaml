@@ -26,6 +26,9 @@
         MethodName="Initialize"
         MethodTarget="{Binding}" />
     </i:EventTrigger>
+     <i:EventTrigger EventName="Closed">
+      <behaviors:DataContextDisposeAction/>
+    </i:EventTrigger>
   </i:Interaction.Triggers>
   <Window.Resources>
     <DataTemplate DataType="{x:Type mmd:MainViewViewModel}">
