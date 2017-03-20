@@ -402,8 +402,8 @@
                 </timeline:TimelineControl.ItemsPanel>
                 <timeline:TimelineControl.ItemContainerStyle>
                   <Style TargetType="timeline:TimelineItem">
-                    <Setter Property="Index" Value="{Binding FrameNumber}" />
-                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Setter Property="Index" Value="{Binding FrameNumber.Value}" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected.Value, Mode=TwoWay}" />
                     <Setter Property="Template">
                       <Setter.Value>
                         <ControlTemplate TargetType="timeline:TimelineItem">
@@ -415,7 +415,7 @@
                                 <Setter Property="Template" Value="{Binding UnselectedContainerTemplate, RelativeSource={RelativeSource AncestorType=timeline:TimelineView}}" />
                                 <Style.Triggers>
                                   <DataTrigger
-                                    Binding="{Binding IsSelected}"
+                                    Binding="{Binding IsSelected.Value}"
                                     Value="True">
                                     <Setter Property="Template" Value="{Binding SelectedContainerTemplate, RelativeSource={RelativeSource AncestorType=timeline:TimelineView}}" />
                                   </DataTrigger>

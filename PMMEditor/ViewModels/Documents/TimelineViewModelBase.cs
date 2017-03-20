@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 using PMMEditor.Models;
 using Livet.Commands;
 using PMMEditor.MVVM;
@@ -19,34 +22,20 @@ namespace PMMEditor.ViewModels.Documents
         {
             _keyFrameBase = keyFrameBase;
 
-            _keyFrameBase.ObserveProperty(x => x.FrameNumber)
-                         .Subscribe(x => RaisePropertyChanged(nameof(FrameNumber)))
-                         .AddTo(CompositeDisposable);
+            FrameNumber = _keyFrameBase.ObserveProperty(x => x.FrameNumber).ToReactiveProperty()
+                                       .AddTo(CompositeDisposable);
 
-            _keyFrameBase.ObserveProperty(x => x.IsSelected)
-                         .Subscribe(x => RaisePropertyChanged(nameof(IsSelected)))
-                         .AddTo(CompositeDisposable);
+            IsSelected = _keyFrameBase.ToReactivePropertyAsSynchronized(x => x.IsSelected)
+                                      .AddTo(CompositeDisposable);
         }
 
         #region FrameNumber変更通知プロパティ
 
-        public int FrameNumber => _keyFrameBase.FrameNumber;
+        public ReactiveProperty<int> FrameNumber { get; }
 
         #endregion
 
-        public bool IsSelected
-        {
-            get { return _keyFrameBase.IsSelected; }
-            set
-            {
-                if (_keyFrameBase.IsSelected == value)
-                {
-                    return;
-                }
-                _keyFrameBase.IsSelected = value;
-                RaisePropertyChanged();
-            }
-        }
+        public ReactiveProperty<bool> IsSelected { get; }
     }
 
     public class TimelineKeyFrameList : BindableDisposableBase

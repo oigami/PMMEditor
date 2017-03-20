@@ -18,7 +18,7 @@ namespace PMMEditor.ViewModels.Graphics
             Device = _model.Device;
             NowFrame = model.FrameControlModel.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty()
                             .AddTo(CompositeDisposable);
-            Items = _model.MmdModelSource.ToReadOnlyReactiveCollection(_ => (IRenderer) new MmdModelRenderer(model, _))
+            Items = _model.MmdModelSource.ToReadOnlyReactiveCollection(_ => (IRenderer) new MmdModelRenderer(model, _), UIDispatcherScheduler.Default)
                           .AddTo(CompositeDisposable);
         }
 

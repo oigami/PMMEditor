@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using PMMEditor.Log;
 using PMMEditor.Models;
 using PMMEditor.MVVM;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 
 namespace PMMEditor.ViewModels
@@ -18,6 +20,7 @@ namespace PMMEditor.ViewModels
         private readonly LogMessageNotifier _logger;
         public MainWindowViewModel()
         {
+            ReactivePropertyScheduler.SetDefault(CurrentThreadScheduler.Instance);
             _logger = new LogMessageNotifier();
             _model = new Model(_logger).AddTo(CompositeDisposable);
             WindowViewModel = new MMD.MainViewViewModel(_model, _logger);

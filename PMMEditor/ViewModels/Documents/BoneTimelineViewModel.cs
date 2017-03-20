@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Text;
 using System.Threading.Tasks;
 using Livet.Commands;
@@ -13,11 +14,13 @@ namespace PMMEditor.ViewModels.Documents
 {
     public class BoneTimelineViewModel : TimelineViewModelBase
     {
+        public MmdModelModel Model { get; }
+
         public BoneTimelineViewModel(Model model, MmdModelModel modelModel) : base(model)
         {
+            Model = modelModel;
             ListOfKeyFrameList = modelModel.BoneKeyList.ToReadOnlyReactiveCollection(
-                modelModel.BoneKeyList.ToCollectionChanged(),
-                _=>TimelineKeyFrameList.Create(_.KeyFrameList)).AddTo(CompositeDisposable);
+                _ => TimelineKeyFrameList.Create(_.KeyFrameList)).AddTo(CompositeDisposable);
 
             Title = modelModel.Name;
             ContentId = typeof(CameraLightAccessoryViewModel).FullName + modelModel.NameEnglish;

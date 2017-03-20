@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +15,7 @@ using PMMEditor.MVVM;
 using PMMEditor.ViewModels.Documents;
 using PMMEditor.ViewModels.Graphics;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 
 namespace PMMEditor.ViewModels.MMD
 {
@@ -27,8 +31,22 @@ namespace PMMEditor.ViewModels.MMD
             RendererViewModel = new MainRenderViewModel(_model);
 
             // モデル操作のためのデータ
-            ModelAndCameraList = _model.MmdModelList.List.ToReadOnlyReactiveCollection();
-            ModelDeleteCommand = new ViewModelCommand(() => _model.MmdModelList.Delete(SelectedModel));
+            var modelList = _model.MmdModelList.List
+                             .ToReadOnlyReactiveCollection(
+                                 _ => (TimelineViewModelBase) new BoneTimelineViewModel(model, _))
+                                 .AddTo(CompositeDisposable);
+            ModelAndCameraList =
+                new ObservableCollection<TimelineViewModelBase> { new CameraLightAccessoryViewModel(_model) }.MultiMerge(modelList)
+                .AddTo(CompositeDisposable);
+            SelectedModel = ModelAndCameraList[0];
+
+            ModelDeleteCommand = this.ObserveProperty(_ => _.SelectedModel).ToReactiveProperty()
+                                     .Select(_ => _ is BoneTimelineViewModel)
+                                     .ToReactiveCommand().AddTo(CompositeDisposable);
+
+            ModelDeleteCommand.Subscribe(_ => _model.MmdModelList.Delete(((BoneTimelineViewModel) SelectedModel).Model))
+                              .AddTo(CompositeDisposable);
+
             ModelLoadCommand = new ViewModelCommand(() =>
             {
                 var message = new OpeningFileSelectionMessage("Open")
@@ -46,11 +64,11 @@ namespace PMMEditor.ViewModels.MMD
                 _model.MmdModelList.Add(path);
             });
 
-            ChangeModelCameraModeCommand = new ViewModelCommand(() =>
-            {
-                TimelineViewModel = new BoneTimelineViewModel(model, SelectedModel);
-            });
+            ChangeModelCameraModeCommand =
+                new ViewModelCommand(() => { TimelineViewModel = SelectedModel; });
         }
+
+        public IList<TimelineViewModelBase> ModelAndCameraList { get; }
 
         private TimelineViewModelBase _timelineViewModel;
 
@@ -69,13 +87,11 @@ namespace PMMEditor.ViewModels.MMD
             set { SetProperty(ref _rendererViewModel, value); }
         }
 
-        public ReadOnlyReactiveCollection<MmdModelModel> ModelAndCameraList { get; }
+        public ReactiveCommand ModelDeleteCommand { get; }
 
-        public ViewModelCommand ModelDeleteCommand { get; }
+        private TimelineViewModelBase _selectedModel;
 
-        private MmdModelModel _selectedModel;
-
-        public MmdModelModel SelectedModel
+        public TimelineViewModelBase SelectedModel
         {
             get { return _selectedModel; }
             set { SetProperty(ref _selectedModel, value); }
@@ -83,9 +99,6 @@ namespace PMMEditor.ViewModels.MMD
 
         public ViewModelCommand ModelLoadCommand { get; }
 
-        public ViewModelCommand ChangeModelCameraModeCommand
-        {
-            get;
-        }
+        public ViewModelCommand ChangeModelCameraModeCommand { get; }
     }
 }
