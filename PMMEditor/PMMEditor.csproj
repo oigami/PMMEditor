@@ -197,6 +197,7 @@
     <Compile Include="SharpDxControl\SharpDxControl.cs" />
     <Compile Include="ViewModels\Documents\BoneTimelineViewModel.cs" />
     <Compile Include="ViewModels\Documents\CameraLightAccessoryViewModel.cs" />
+    <Compile Include="ViewModels\Documents\ReadOnlyMultiCollection.cs" />
     <Compile Include="ViewModels\Graphics\BoneRenderer.cs" />
     <Compile Include="ViewModels\Graphics\MainRenderViewModel.cs" />
     <Compile Include="ViewModels\Documents\TimelineViewModelBase.cs" />
