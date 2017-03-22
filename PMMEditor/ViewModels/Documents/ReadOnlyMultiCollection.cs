@@ -247,11 +247,11 @@ namespace PMMEditor.ViewModels.Documents
         {
             get
             {
-                if (_countList[0] < index)
+                if (index < _countList[0])
                 {
-                    return _other[index - _countList[0]];
+                    return _self[index];
                 }
-                return _self[index];
+                return _other[index - _countList[0]];
             }
             set { throw new NotImplementedException(); }
         }
