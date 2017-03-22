@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,21 +14,29 @@ namespace PMMEditor.Views.Behaviors
      * https://days-of-programming.blogspot.jp/2015/01/wpfscrollviewerscrollbar.html
      */
 
-    public class ScrollSyncronizingBehavior : Behavior<Control>
+    public class ScrollSyncronizingBehavior : BehaviorBase<Control>
     {
         private static readonly Dictionary<string, List<Control>> SyncGroups = new Dictionary<string, List<Control>>();
 
-        protected override void OnAttached()
+        private void AddEvent<T>(DependencyProperty prop, EventHandler handler)
         {
-            base.OnAttached();
+            DependencyPropertyDescriptor.FromProperty(prop, typeof(T))
+                                        .AddValueChanged(AssociatedObject, handler);
+        }
 
+        private void RemoveEvent<T>(DependencyProperty prop, EventHandler handler)
+        {
+            DependencyPropertyDescriptor.FromProperty(prop, typeof(T))
+                                        .RemoveValueChanged(AssociatedObject, handler);
+        }
+
+        protected override void OnSetup()
+        {
             AddSyncGroup(ScrollGroup);
         }
 
-        protected override void OnDetaching()
+        protected override void OnCleanup()
         {
-            base.OnDetaching();
-
             RemoveSyncGroup(ScrollGroup);
         }
 
@@ -90,11 +100,12 @@ namespace PMMEditor.Views.Behaviors
 
             if (sv != null)
             {
-                sv.ScrollChanged += ScrollViewerScrolled;
+                AddEvent<ScrollViewer>(ScrollViewer.HorizontalOffsetProperty, ScrollViewerScrolled);
+                AddEvent<ScrollViewer>(ScrollViewer.VerticalOffsetProperty, ScrollViewerScrolled);
             }
             else if (sb != null)
             {
-                sb.ValueChanged += ScrollBarScrolled;
+                AddEvent<ScrollBar>(RangeBase.ValueProperty, ScrollBarScrolled);
             }
             else
             {
@@ -120,11 +131,12 @@ namespace PMMEditor.Views.Behaviors
 
             if (sv != null)
             {
-                sv.ScrollChanged -= ScrollViewerScrolled;
+                RemoveEvent<ScrollViewer>(ScrollViewer.HorizontalOffsetProperty, ScrollViewerScrolled);
+                RemoveEvent<ScrollViewer>(ScrollViewer.VerticalOffsetProperty, ScrollViewerScrolled);
             }
             else if (sb != null)
             {
-                sb.ValueChanged -= ScrollBarScrolled;
+                RemoveEvent<ScrollBar>(RangeBase.ValueProperty, ScrollBarScrolled);
             }
             else
             {
@@ -145,19 +157,21 @@ namespace PMMEditor.Views.Behaviors
         /// </summary>
         /// <param name = "sender"> </param>
         /// <param name = "e"> </param>
-        private void ScrollViewerScrolled(object sender, ScrollChangedEventArgs e)
+        private void ScrollViewerScrolled(object sender, EventArgs e)
         {
-            UpdateScrollValue(sender, Orientation == Orientation.Horizontal ? e.HorizontalOffset : e.VerticalOffset);
+            var sv = (ScrollViewer) sender;
+            UpdateScrollValue(sender, Orientation == Orientation.Horizontal ? sv.HorizontalOffset : sv.VerticalOffset);
         }
+
 
         /// <summary>
         /// ScrollBarの場合の変更通知イベントハンドラ
         /// </summary>
         /// <param name = "sender"> </param>
         /// <param name = "e"> </param>
-        private void ScrollBarScrolled(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void ScrollBarScrolled(object sender, EventArgs e)
         {
-            UpdateScrollValue(sender, e.NewValue);
+            UpdateScrollValue(sender, ((ScrollBar) sender).Value);
         }
 
         /// <summary>

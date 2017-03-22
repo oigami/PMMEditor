@@ -377,6 +377,7 @@
                   <behaviors:ScrollSyncronizingBehavior
                     Orientation="Vertical"
                     ScrollGroup="Group2" />
+                  <behaviors:ScrollViewportSyncronizingBehavior />
                 </i:Interaction.Behaviors>
                 <StackPanel
                   HorizontalAlignment="Left"
@@ -387,48 +388,29 @@
           </ItemsControl.Template>
           <ItemsControl.ItemTemplate>
             <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-              <timeline:TimelineControl
-                x:Name="TimelineControl"
-                HorizontalAlignment="Stretch"
-                ItemsSource="{Binding Frame}">
-                <timeline:TimelineControl.ItemsPanel>
-                  <ItemsPanelTemplate>
-                    <timeline:TimelinePanel
-                      Alignment="Center"
-                      IndexWidth="14"
-                      MaxIndex="{Binding DataContext.MaxFrameIndex.Value, RelativeSource={RelativeSource AncestorType=timeline:TimelineView}}"
-                      Style="{Binding Path=TimelinePanelStyle, RelativeSource={RelativeSource AncestorType=timeline:TimelineView}}" />
-                  </ItemsPanelTemplate>
-                </timeline:TimelineControl.ItemsPanel>
-                <timeline:TimelineControl.ItemContainerStyle>
-                  <Style TargetType="timeline:TimelineItem">
-                    <Setter Property="Index" Value="{Binding FrameNumber.Value}" />
-                    <Setter Property="IsSelected" Value="{Binding IsSelected.Value, Mode=TwoWay}" />
-                    <Setter Property="Template">
-                      <Setter.Value>
-                        <ControlTemplate TargetType="timeline:TimelineItem">
-                          <Thumb>
-                            <Thumb.Style>
-                              <Style
-                                BasedOn="{StaticResource TimelineThumbBaseStyle}"
-                                TargetType="{x:Type Thumb}">
-                                <Setter Property="Template" Value="{Binding UnselectedContainerTemplate, RelativeSource={RelativeSource AncestorType=timeline:TimelineView}}" />
-                                <Style.Triggers>
-                                  <DataTrigger
-                                    Binding="{Binding IsSelected.Value}"
-                                    Value="True">
-                                    <Setter Property="Template" Value="{Binding SelectedContainerTemplate, RelativeSource={RelativeSource AncestorType=timeline:TimelineView}}" />
-                                  </DataTrigger>
-                                </Style.Triggers>
-                              </Style>
-                            </Thumb.Style>
-                          </Thumb>
-                        </ControlTemplate>
-                      </Setter.Value>
-                    </Setter>
-                  </Style>
-                </timeline:TimelineControl.ItemContainerStyle>
-              </timeline:TimelineControl>
+
+              <timeline:TimelinePanel
+                Alignment="Center"
+                IndexWidth="14"
+                KeyChildren="{Binding Frame}"
+                MaxIndex="{Binding DataContext.MaxFrameIndex.Value, RelativeSource={RelativeSource AncestorType=timeline:TimelineView}}"
+                Style="{Binding Path=TimelinePanelStyle, RelativeSource={RelativeSource AncestorType=timeline:TimelineView}}">
+                <i:Interaction.Behaviors>
+                  <behaviors:ScrollViewportSyncronizingBehavior />
+                </i:Interaction.Behaviors>
+                <timeline:TimelinePanel.SelectedItemVisual>
+                  <Thumb
+                    Style="{StaticResource TimelineThumbBaseStyle}"
+                    Template="{StaticResource SelectedKeyFrameTemplate}" />
+                </timeline:TimelinePanel.SelectedItemVisual>
+                <timeline:TimelinePanel.UnselectedItemVisual>
+                  <Thumb
+                    Style="{StaticResource TimelineThumbBaseStyle}"
+                    Template="{StaticResource UnselectedKeyFrameTemplate}" />
+                </timeline:TimelinePanel.UnselectedItemVisual>
+
+              </timeline:TimelinePanel>
+
             </HierarchicalDataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>

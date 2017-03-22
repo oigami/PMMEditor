@@ -32,7 +32,7 @@
       </Grid.ColumnDefinitions>
       <local:Timeline
         Grid.Column="0"
-        DataContext="{Binding TimelineViewModel, Mode=OneWay}" />
+        DataContext="{Binding SelectedModel, Mode=OneWay}" />
       <GridSplitter
         Grid.Column="1"
         HorizontalAlignment="Stretch" />

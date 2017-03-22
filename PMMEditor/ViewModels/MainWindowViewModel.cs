@@ -29,7 +29,7 @@ namespace PMMEditor.ViewModels
 
         public async void Initialize()
         {
-#if DEBUG
+#if true
             try
             {
                 await _model.OpenPmm(File.ReadAllBytes("C:/tool/MikuMikuDance_v926x64/UserFile/サンプル（きしめんAllStar).pmm"));

@@ -21,21 +21,21 @@ namespace PMMEditor.ViewModels.Documents
         public TimelineFrameData(KeyFrameBase keyFrameBase)
         {
             _keyFrameBase = keyFrameBase;
-
-            FrameNumber = _keyFrameBase.ObserveProperty(x => x.FrameNumber).ToReactiveProperty()
-                                       .AddTo(CompositeDisposable);
-
-            IsSelected = _keyFrameBase.ToReactivePropertyAsSynchronized(x => x.IsSelected)
-                                      .AddTo(CompositeDisposable);
+            _keyFrameBase.PropertyChangedAsObservable().Subscribe(_ => RaisePropertyChanged(_.PropertyName))
+                .AddTo(CompositeDisposable);
         }
 
         #region FrameNumber変更通知プロパティ
 
-        public ReactiveProperty<int> FrameNumber { get; }
+        public int FrameNumber => _keyFrameBase.FrameNumber;
 
         #endregion
 
-        public ReactiveProperty<bool> IsSelected { get; }
+        public bool IsSelected
+        {
+            get { return _keyFrameBase.IsSelected; }
+            set { _keyFrameBase.IsSelected = value; }
+        }
     }
 
     public class TimelineKeyFrameList : BindableDisposableBase

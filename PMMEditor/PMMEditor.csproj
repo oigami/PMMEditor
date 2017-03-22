@@ -205,6 +205,8 @@
     <Compile Include="ViewModels\ExpressionConverter.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\MMD\MainViewViewModel.cs" />
+    <Compile Include="Views\Behaviors\BehaviorBase.cs" />
+    <Compile Include="Views\Behaviors\ScrollViewportSyncronizingBehavior.cs" />
     <Compile Include="Views\Graphics\MmdModelItemsControl.cs" />
     <Compile Include="ViewModels\Graphics\MmdModelRenderer.cs" />
     <Compile Include="ViewModels\Panes\AccessoryViewModel.cs" />

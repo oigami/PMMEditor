@@ -27,17 +27,17 @@ namespace PMMEditor.ViewModels.MMD
         {
             _model = model;
             logger.Subscribe(log => { MessageBox.Show(log.ToString()); });
-            TimelineViewModel = new CameraLightAccessoryViewModel(_model);
             RendererViewModel = new MainRenderViewModel(_model);
 
             // モデル操作のためのデータ
             var modelList = _model.MmdModelList.List
-                             .ToReadOnlyReactiveCollection(
-                                 _ => (TimelineViewModelBase) new BoneTimelineViewModel(model, _))
-                                 .AddTo(CompositeDisposable);
+                                  .ToReadOnlyReactiveCollection(
+                                      _ => (TimelineViewModelBase) new BoneTimelineViewModel(model, _))
+                                  .AddTo(CompositeDisposable);
             ModelAndCameraList =
-                new ObservableCollection<TimelineViewModelBase> { new CameraLightAccessoryViewModel(_model) }.MultiMerge(modelList)
-                .AddTo(CompositeDisposable);
+                new ObservableCollection<TimelineViewModelBase> { new CameraLightAccessoryViewModel(_model) }
+                    .MultiMerge(modelList).AddTo(CompositeDisposable);
+
             SelectedModel = ModelAndCameraList[0];
 
             ModelDeleteCommand = this.ObserveProperty(_ => _.SelectedModel).ToReactiveProperty()
@@ -65,18 +65,10 @@ namespace PMMEditor.ViewModels.MMD
             });
 
             ChangeModelCameraModeCommand =
-                new ViewModelCommand(() => { TimelineViewModel = SelectedModel; });
+                new ViewModelCommand(() => { SelectedModel = ModelAndCameraList[0]; });
         }
 
         public IList<TimelineViewModelBase> ModelAndCameraList { get; }
-
-        private TimelineViewModelBase _timelineViewModel;
-
-        public TimelineViewModelBase TimelineViewModel
-        {
-            get { return _timelineViewModel; }
-            set { SetProperty(ref _timelineViewModel, value); }
-        }
 
         private MainRenderViewModel _rendererViewModel;
 
