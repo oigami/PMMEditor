@@ -29,9 +29,7 @@
   </UserControl.Resources>
   <DockPanel>
     <Grid DockPanel.Dock="Top">
-      <Label
-        HorizontalAlignment="Left"
-        Content="Camera Light Accessory" />
+      <Label HorizontalAlignment="Left" Content="Camera Light Accessory" />
       <DockPanel HorizontalAlignment="Right">
         <DockPanel Margin="0,0,10,0">
           <Button
@@ -76,8 +74,26 @@
       <Button
         Margin="2"
         VerticalAlignment="Center"
-        Content="ToModel"
-        Command="{Binding ChangeModelCameraModeCommand}"/>
+        Command="{Binding ChangeModelCameraModeCommand}">
+        <Button.Style>
+          <Style TargetType="{x:Type Button}">
+            <Setter
+              Property="Content"
+              Value="ToModel" />
+            <Style.Triggers>
+              <DataTrigger
+                Binding="{Binding IsCharacterModelMode.Value}"
+                Value="True">
+                <Setter
+                  Property="Content"
+                  Value="ToCamera" />
+              </DataTrigger>
+        
+
+            </Style.Triggers>
+          </Style>
+        </Button.Style>
+      </Button>
       <WrapPanel>
         <DockPanel>
           <Label Content="camera" />

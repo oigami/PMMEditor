@@ -40,9 +40,10 @@ namespace PMMEditor.ViewModels.MMD
 
             SelectedModel = ModelAndCameraList[0];
 
-            ModelDeleteCommand = this.ObserveProperty(_ => _.SelectedModel).ToReactiveProperty()
-                                     .Select(_ => _ is BoneTimelineViewModel)
-                                     .ToReactiveCommand().AddTo(CompositeDisposable);
+            IsCharacterModelMode =
+                this.ObserveProperty(_ => _.SelectedModel).Select(_ => _ is BoneTimelineViewModel)
+                    .ToReactiveProperty().AddTo(CompositeDisposable);
+            ModelDeleteCommand = IsCharacterModelMode.ToReactiveCommand().AddTo(CompositeDisposable);
 
             ModelDeleteCommand.Subscribe(_ => _model.MmdModelList.Delete(((BoneTimelineViewModel) SelectedModel).Model))
                               .AddTo(CompositeDisposable);
@@ -65,8 +66,37 @@ namespace PMMEditor.ViewModels.MMD
             });
 
             ChangeModelCameraModeCommand =
-                new ViewModelCommand(() => { SelectedModel = ModelAndCameraList[0]; });
+                new ViewModelCommand(() =>
+                {
+                    if (IsCharacterModelMode.Value)
+                    {
+                        // キャラモードのときはカメラモードにする
+                        _prevSelectedModel = (BoneTimelineViewModel) SelectedModel;
+                        SelectedModel = ModelAndCameraList[0];
+                    }
+                    else if (_prevSelectedModel != null)
+                    {
+                        // 前回選択してたキャラに戻す
+                        SelectedModel = _prevSelectedModel;
+                    }
+                    else
+                    {
+                        if (ModelAndCameraList.Count > 1)
+                        {
+                            // 前回選択してなかったときは最初のキャラをセットする
+                            _prevSelectedModel = (BoneTimelineViewModel) ModelAndCameraList[1];
+                            SelectedModel = _prevSelectedModel;
+                        }
+                        else
+                        {
+                            // キャラを読み込んでないときは読み込み処理に移行
+                            ModelLoadCommand.Execute();
+                        }
+                    }
+                });
         }
+
+        public ReactiveProperty<bool> IsCharacterModelMode { get; }
 
         public IList<TimelineViewModelBase> ModelAndCameraList { get; }
 
@@ -88,6 +118,8 @@ namespace PMMEditor.ViewModels.MMD
             get { return _selectedModel; }
             set { SetProperty(ref _selectedModel, value); }
         }
+
+        private BoneTimelineViewModel _prevSelectedModel;
 
         public ViewModelCommand ModelLoadCommand { get; }
 
