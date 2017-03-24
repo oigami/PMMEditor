@@ -17,8 +17,8 @@ namespace PMMEditor.Models.MMDModel
         {
             _model = model;
             var bones = _model.BoneKeyList;
-            ModelLocalBones = Enumerable.Range(0, bones.Count).Select(_ => Matrix.Identity).ToArray();
-            WorldBones = Enumerable.Range(0, bones.Count).Select(_ => Matrix.Identity).ToArray();
+            _ModelLocalBones = Enumerable.Range(0, bones.Count).Select(_ => Matrix.Identity).ToArray();
+            _worldBones = Enumerable.Range(0, bones.Count).Select(_ => Matrix.Identity).ToArray();
         }
 
         private readonly MmdModelModel _model;
@@ -46,12 +46,11 @@ namespace PMMEditor.Models.MMDModel
                 {
                     CalcBoneModelLocalMatrix(_model.BoneKeyList[me.FirstChildIndex], m, ref resultModelLocalMatrix);
                 }
-                if (me.SiblingIndex != -1)
+                if (me.SiblingIndex == -1)
                 {
-                    me = _model.BoneKeyList[me.SiblingIndex];
-                    continue;
+                    break;
                 }
-                break;
+                me = _model.BoneKeyList[me.SiblingIndex];
             }
         }
 
@@ -64,7 +63,6 @@ namespace PMMEditor.Models.MMDModel
             CalcBoneModelLocalMatrix(bones[0], Matrix.Identity, ref _ModelLocalBones);
             ModelLocalBones.CopyTo(WorldBones, 0);
             CalcBoneWorld(bones[0], Matrix.Identity, ref _worldBones);
-            RaisePropertyChanged(nameof(WorldBones));
         }
 
         private void UpdateForwardKinematics(IList<MmdModelModel.BoneKeyFrame> nowBoneKeyFrame)
@@ -182,11 +180,7 @@ namespace PMMEditor.Models.MMDModel
 
         private Matrix[] _worldBones;
 
-        public Matrix[] WorldBones
-        {
-            get { return _worldBones; }
-            set { SetProperty(ref _worldBones, value); }
-        }
+        public Matrix[] WorldBones => _worldBones;
 
         #endregion
 
@@ -194,11 +188,7 @@ namespace PMMEditor.Models.MMDModel
 
         private Matrix[] _ModelLocalBones;
 
-        public Matrix[] ModelLocalBones
-        {
-            get { return _ModelLocalBones; }
-            set { SetProperty(ref _ModelLocalBones, value); }
-        }
+        public Matrix[] ModelLocalBones => _ModelLocalBones;
 
         #endregion
 
@@ -213,15 +203,20 @@ namespace PMMEditor.Models.MMDModel
 
         private void InitBoneCalc(MmdModelModel.Bone me, Matrix parentoffsetMat)
         {
-            if (me.FirstChildIndex != -1)
+            while (true)
             {
-                InitBoneCalc(_model.BoneKeyList[me.FirstChildIndex], me.InverseInitMatModelLocal);
+                me.InitMatBoneLocal = me.InitMatModelLocal * parentoffsetMat;
+                if (me.SiblingIndex != -1)
+                {
+                    InitBoneCalc(_model.BoneKeyList[me.SiblingIndex], parentoffsetMat);
+                }
+                if (me.FirstChildIndex == -1)
+                {
+                    break;
+                }
+                parentoffsetMat = me.InverseInitMatModelLocal;
+                me = _model.BoneKeyList[me.FirstChildIndex];
             }
-            if (me.SiblingIndex != -1)
-            {
-                InitBoneCalc(_model.BoneKeyList[me.SiblingIndex], parentoffsetMat);
-            }
-            me.InitMatBoneLocal = me.InitMatModelLocal * parentoffsetMat;
         }
     }
 }

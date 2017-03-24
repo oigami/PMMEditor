@@ -57,7 +57,6 @@ namespace PMMEditor.Models
                 notNullFrame.Position = Position;
                 notNullFrame.Quaternion = Quaternion;
             }
-
         }
 
         public class KeyInterpolationMethod : IKeyFrameInterpolationMethod<BoneKeyFrame>
@@ -246,7 +245,7 @@ namespace PMMEditor.Models
             outputBone.TailChildIndex = item.TailBoneIndex ?? -1;
             var modelLocalInitMat = Matrix.Translation(item.Position.X, item.Position.Y, item.Position.Z);
             outputBone.InitMatModelLocal =
-                outputBone.BoneMatModelLocal = outputBone.InitMatBoneLocal = modelLocalInitMat; // モデルローカル座標系
+                outputBone.BoneMatModelLocal = modelLocalInitMat; // モデルローカル座標系
             outputBone.InverseInitMatModelLocal = Matrix.Invert(modelLocalInitMat);
 
             var list = new KeyFrameList<BoneKeyFrame, KeyInterpolationMethod>(item.Name);
@@ -257,8 +256,8 @@ namespace PMMEditor.Models
                 list.Add(0, new BoneKeyFrame
                 {
                     FrameNumber = 0,
-                    Position = new Vector3(0, 0, 0),
-                    Quaternion = new Quaternion(),
+                    Position = Vector3.Zero,
+                    Quaternion = Quaternion.Identity,
                     IsPhysicsDisabled = false,
                     IsSelected = false
                 });
