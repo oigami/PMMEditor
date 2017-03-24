@@ -17,19 +17,19 @@ namespace PMMEditor.ViewModels.Documents
 
         public CameraLightAccessoryViewModel(Model model) : base(model)
         {
-            _timelineModel = new CameraLightAccessoryTimelineModel(model).AddTo(CompositeDisposable);
+            _timelineModel = new CameraLightAccessoryTimelineModel(model).AddTo(CompositeDisposables);
 
             _cameraKeyList =
                 _timelineModel.CamerakeyFrameLists.ToReadOnlyReactiveCollection(
-                    i => TimelineKeyFrameList.Create(i, "Camera")).AddTo(CompositeDisposable);
+                    i => TimelineKeyFrameList.Create(i, "Camera")).AddTo(CompositeDisposables);
 
             _lightKeyList =
                 _timelineModel.LightkeyFrameLists.ToReadOnlyReactiveCollection(
-                    i => TimelineKeyFrameList.Create(i, "Light")).AddTo(CompositeDisposable);
+                    i => TimelineKeyFrameList.Create(i, "Light")).AddTo(CompositeDisposables);
 
             MaxFrameIndex =
-                _timelineModel.ObserveProperty(m => m.MaxFrameIndex).ToReactiveProperty().AddTo(CompositeDisposable);
-            MaxFrameIndex.Subscribe(i => GridFrameNumberList.Resize(i)).AddTo(CompositeDisposable);
+                _timelineModel.ObserveProperty(m => m.MaxFrameIndex).ToReactiveProperty().AddTo(CompositeDisposables);
+            MaxFrameIndex.Subscribe(i => GridFrameNumberList.Resize(i)).AddTo(CompositeDisposables);
 
             KeyFrameMoveDeltaCommand = new ListenerCommand<KeyFrameMoveEventArgs>(
                 args => _timelineModel.Move(args.DiffFrame));
@@ -37,7 +37,7 @@ namespace PMMEditor.ViewModels.Documents
                _cameraKeyList,
                _lightKeyList,
                _timelineModel.AccessoryKeyFrameLists
-                             .ToReadOnlyReactiveCollection(TimelineKeyFrameList.Create)).AddTo(CompositeDisposable);
+                             .ToReadOnlyReactiveCollection(TimelineKeyFrameList.Create)).AddTo(CompositeDisposables);
         }
 
         public static string GetTitle() => "Camera, Light, Accessory Timeline";

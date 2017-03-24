@@ -23,8 +23,8 @@ namespace PMMEditor.Models
             Logger = logger;
             FrameControlModel = new FrameControlModel();
             MmdModelList = new MmdModelList(Logger);
-            GraphicsModel = new GraphicsModel(MmdModelList).AddTo(CompositeDisposable);
-            Camera = new CameraControlModel(this).AddTo(CompositeDisposable);
+            GraphicsModel = new GraphicsModel(MmdModelList).AddTo(CompositeDisposables);
+            Camera = new CameraControlModel(this).AddTo(CompositeDisposables);
         }
 
         #region ReadWriteFile
@@ -189,12 +189,12 @@ namespace PMMEditor.Models
 
         #region PmmStruct変更通知プロパティ
 
-        private PmmStruct _PmmStruct;
+        private PmmStruct _pmmStruct;
 
         public PmmStruct PmmStruct
         {
-            get { return _PmmStruct; }
-            private set { SetProperty(ref _PmmStruct, value); }
+            get { return _pmmStruct; }
+            private set { SetProperty(ref _pmmStruct, value); }
         }
 
         #endregion

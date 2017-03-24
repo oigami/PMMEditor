@@ -77,7 +77,7 @@ namespace PMMEditor.ViewModels.Graphics
                 SizeInBytes = Utilities.SizeOf<Vertex>() * _numVertex,
                 StructureByteStride = Utilities.SizeOf<Vertex>(),
                 Usage = Direct3D11.ResourceUsage.Immutable
-            }).AddTo(CompositeDisposable);
+            }).AddTo(CompositeDisposables);
             _vertexBufferBinding = new Direct3D11.VertexBufferBinding(_vertexBuffer, Utilities.SizeOf<Vertex>(),
                                                                       0);
             _boneRenderDepthState = new Direct3D11.DepthStencilState(

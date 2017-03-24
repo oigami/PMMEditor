@@ -15,24 +15,24 @@ namespace PMMEditor.Models
     {
         #region IsSelected変更通知プロパティ
 
-        private bool _IsSelected;
+        private bool _isSelected;
 
         public bool IsSelected
         {
-            get { return _IsSelected; }
-            set { SetProperty(ref _IsSelected, value); }
+            get { return _isSelected; }
+            set { SetProperty(ref _isSelected, value); }
         }
 
         #endregion
 
         #region FrameNumber変更通知プロパティ
 
-        private int _FrameNumber;
+        private int _frameNumber;
 
         public int FrameNumber
         {
-            get { return _FrameNumber; }
-            set { SetProperty(ref _FrameNumber, value); }
+            get { return _frameNumber; }
+            set { SetProperty(ref _frameNumber, value); }
         }
 
         #endregion
@@ -76,18 +76,18 @@ namespace PMMEditor.Models
 
         #region MaxFrame変更通知プロパティ
 
-        private int _MaxFrame;
+        private int _maxFrame;
 
         public int MaxFrame
         {
-            get { return _MaxFrame; }
+            get { return _maxFrame; }
             set
             {
-                if (_MaxFrame == value)
+                if (_maxFrame == value)
                 {
                     return;
                 }
-                _MaxFrame = value;
+                _maxFrame = value;
                 RaisePropertyChanged();
             }
         }
@@ -385,8 +385,7 @@ namespace PMMEditor.Models
         /// </exception>
         public bool Remove(int key)
         {
-            T val;
-            if (!_item.TryGetValue(key, out val))
+            if (!_item.TryGetValue(key, out T val))
             {
                 return false;
             }

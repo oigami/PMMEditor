@@ -21,12 +21,12 @@ namespace PMMEditor.ViewModels.Panes
 
         #region Width変更通知プロパティ
 
-        private double _Width;
+        private double _width;
 
         public double Width
         {
-            get { return _Width; }
-            set { SetProperty(ref _Width, value); }
+            get { return _width; }
+            set { SetProperty(ref _width, value); }
         }
 
         #endregion

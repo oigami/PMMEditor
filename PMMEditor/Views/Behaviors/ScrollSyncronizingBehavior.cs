@@ -16,7 +16,7 @@ namespace PMMEditor.Views.Behaviors
 
     public class ScrollSyncronizingBehavior : BehaviorBase<Control>
     {
-        private static readonly Dictionary<string, List<Control>> SyncGroups = new Dictionary<string, List<Control>>();
+        private static readonly Dictionary<string, List<Control>> _syncGroups = new Dictionary<string, List<Control>>();
 
         private void AddEvent<T>(DependencyProperty prop, EventHandler handler)
         {
@@ -45,11 +45,11 @@ namespace PMMEditor.Views.Behaviors
         /// </summary>
         public string ScrollGroup
         {
-            get { return (string) GetValue(ScrollGroupProperty); }
-            set { SetValue(ScrollGroupProperty, value); }
+            get { return (string) GetValue(_scrollGroupProperty); }
+            set { SetValue(_scrollGroupProperty, value); }
         }
 
-        private static readonly DependencyProperty ScrollGroupProperty
+        private static readonly DependencyProperty _scrollGroupProperty
             = DependencyProperty.Register("ScrollGroup",
                                           typeof(string),
                                           typeof(ScrollSyncronizingBehavior),
@@ -67,11 +67,11 @@ namespace PMMEditor.Views.Behaviors
         /// </summary>
         public Orientation Orientation
         {
-            get { return (Orientation) GetValue(OrientationProperty); }
-            set { SetValue(OrientationProperty, value); }
+            get { return (Orientation) GetValue(_orientationProperty); }
+            set { SetValue(_orientationProperty, value); }
         }
 
-        private static readonly DependencyProperty OrientationProperty
+        private static readonly DependencyProperty _orientationProperty
             = DependencyProperty.Register("Orientation",
                                           typeof(Orientation),
                                           typeof(ScrollSyncronizingBehavior),
@@ -89,11 +89,11 @@ namespace PMMEditor.Views.Behaviors
             {
                 return false;
             }
-            if (SyncGroups.ContainsKey(groupName) == false)
+            if (_syncGroups.ContainsKey(groupName) == false)
             {
-                SyncGroups.Add(groupName, new List<Control>());
+                _syncGroups.Add(groupName, new List<Control>());
             }
-            SyncGroups[groupName].Add(AssociatedObject);
+            _syncGroups[groupName].Add(AssociatedObject);
 
             var sv = AssociatedObject as ScrollViewer;
             var sb = AssociatedObject as ScrollBar;
@@ -143,10 +143,10 @@ namespace PMMEditor.Views.Behaviors
                 return false;
             }
 
-            SyncGroups[groupName].Remove(AssociatedObject);
-            if (SyncGroups[groupName].Count == 0)
+            _syncGroups[groupName].Remove(AssociatedObject);
+            if (_syncGroups[groupName].Count == 0)
             {
-                SyncGroups.Remove(groupName);
+                _syncGroups.Remove(groupName);
             }
 
             return true;
@@ -181,7 +181,7 @@ namespace PMMEditor.Views.Behaviors
         /// <param name = "newValue"> 新しいスクロール値 </param>
         private void UpdateScrollValue(object sender, double newValue)
         {
-            IEnumerable<Control> others = SyncGroups[ScrollGroup].Where(p => !Equals(p, sender));
+            IEnumerable<Control> others = _syncGroups[ScrollGroup].Where(p => !Equals(p, sender));
 
             foreach (var sb in others.OfType<ScrollBar>().Where(p => p.Orientation == Orientation))
             {

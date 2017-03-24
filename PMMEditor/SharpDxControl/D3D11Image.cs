@@ -13,13 +13,13 @@ namespace PMMEditor.SharpDxControl
 {
     public class D3D11Image : D3DImage, IDisposable
     {
-        private readonly CompositeDisposable CompositeDisposable = new CompositeDisposable();
+        private readonly CompositeDisposable _compositeDisposable = new CompositeDisposable();
         private Texture _renderTarget;
 
         public D3D11Image()
         {
             IsFrontBufferAvailableChanged += OnDeviceLostCheck;
-            CompositeDisposable.Add(Disposable.Create(() => IsFrontBufferAvailableChanged -= OnDeviceLostCheck));
+            _compositeDisposable.Add(Disposable.Create(() => IsFrontBufferAvailableChanged -= OnDeviceLostCheck));
         }
 
         private void OnDeviceLostCheck(object sender, DependencyPropertyChangedEventArgs e)
@@ -66,7 +66,7 @@ namespace PMMEditor.SharpDxControl
         private void SetBackBuffer(IntPtr surfacePtr)
         {
             Lock();
-            SetBackBuffer(D3DResourceType.IDirect3DSurface9, surfacePtr);
+            SetBackBuffer(D3DResourceType.IDirect3DSurface9, surfacePtr, true);
             Unlock();
         }
 
@@ -138,7 +138,7 @@ namespace PMMEditor.SharpDxControl
             _disposed = true;
             if (disposing)
             {
-                CompositeDisposable.Dispose();
+                _compositeDisposable.Dispose();
                 _renderTarget?.Dispose();
             }
         }

@@ -35,7 +35,7 @@ namespace PMMEditor.Models
                 Distance = -data.Distance;
                 Rotate = data.Rotation;
                 LookAt = data.Translation;
-            }).AddTo(CompositeDisposable);
+            }).AddTo(CompositeDisposables);
         }
 
         public Matrix CreateProjection()

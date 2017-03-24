@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace PMMEditor.MMDFileParser
 {
-    public class Pmm
+    public static class Pmm
     {
         public static PmmStruct Read(byte[] data)
         {

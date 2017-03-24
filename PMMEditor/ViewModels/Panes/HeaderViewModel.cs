@@ -13,7 +13,7 @@ namespace PMMEditor.ViewModels.Panes
         {
             this._model = _model;
             _model.ObserveProperty(_ => _.PmmStruct).Subscribe(_ => RaisePropertyChanged(nameof(PmmStruct)))
-                  .AddTo(CompositeDisposable);
+                  .AddTo(CompositeDisposables);
         }
 
         public override string Title { get; } = "Header";

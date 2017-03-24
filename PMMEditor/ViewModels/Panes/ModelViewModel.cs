@@ -19,7 +19,7 @@ namespace PMMEditor.ViewModels.Panes
                 {
                     RaisePropertyChanged(nameof(PmmStruct));
                     RaisePropertyChanged(nameof(ModelList));
-                }).AddTo(CompositeDisposable);
+                }).AddTo(CompositeDisposables);
         }
 
         public override string Title { get; } = "Model";
@@ -36,12 +36,12 @@ namespace PMMEditor.ViewModels.Panes
 
         #region SelectedModel変更通知プロパティ
 
-        private PmmStruct.ModelData _SelectedModel;
+        private PmmStruct.ModelData _selectedModel;
 
         public PmmStruct.ModelData SelectedModel
         {
-            get { return _SelectedModel; }
-            set { SetProperty(ref _SelectedModel, value); }
+            get { return _selectedModel; }
+            set { SetProperty(ref _selectedModel, value); }
         }
 
         #endregion SelectedModel変更通知プロパティ

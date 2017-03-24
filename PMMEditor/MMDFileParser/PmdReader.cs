@@ -326,42 +326,43 @@ namespace PMMEditor.MMDFileParser
         public PmdStruct Read()
         {
             _stream = new MemoryStream(_binaryData);
-            var o = new PmdStruct();
-
-            #region ヘッダ
-
-            o.Magic = ReadFixedString(3);
-            o.Version = ReadFloat();
-            o.ModelName = ReadFixedStringTerminationChar(20);
-            o.Comment = ReadFixedStringTerminationChar(256);
-
-            #endregion
-
-            #region 頂点
-
-            o.Vertices = ReadVList(ReadVertex);
-            o.VertexIndex = ReadVList(ReadUInt16);
-
-            #endregion
-
-            o.Materials = ReadVList(ReadMaterial);
-
-            o.Bones = ReadList(ReadUInt16(), ReadBone);
-
-            o.IKs = ReadList(ReadUInt16(), ReadIK);
-
-            o.Skins = ReadList(ReadUInt16(), ReadSkin);
-
-            o.SkinIndices = ReadList(ReadByte(), ReadUInt16);
-
-            o.BoneDispNames = ReadList(ReadByte(), () => ReadFixedStringTerminationChar(50));
-
-            o.BoneDisps = ReadVList(() => new PmdStruct.BoneDisp
+            var o = new PmdStruct
             {
-                BoneIndex = ReadUInt16(),
-                BoneDispFrameIndex = ReadByte()
-            });
 
+                #region ヘッダ
+
+                Magic = ReadFixedString(3),
+                Version = ReadFloat(),
+                ModelName = ReadFixedStringTerminationChar(20),
+                Comment = ReadFixedStringTerminationChar(256),
+
+                #endregion
+
+                #region 頂点
+
+                Vertices = ReadVList(ReadVertex),
+                VertexIndex = ReadVList(ReadUInt16),
+
+                #endregion
+
+                Materials = ReadVList(ReadMaterial),
+
+                Bones = ReadList(ReadUInt16(), ReadBone),
+
+                IKs = ReadList(ReadUInt16(), ReadIK),
+
+                Skins = ReadList(ReadUInt16(), ReadSkin),
+
+                SkinIndices = ReadList(ReadByte(), ReadUInt16),
+
+                BoneDispNames = ReadList(ReadByte(), () => ReadFixedStringTerminationChar(50)),
+
+                BoneDisps = ReadVList(() => new PmdStruct.BoneDisp
+                {
+                    BoneIndex = ReadUInt16(),
+                    BoneDispFrameIndex = ReadByte()
+                })
+            };
             var hasEnglishName = ReadByte() == 1;
             if (hasEnglishName)
             {

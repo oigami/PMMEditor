@@ -22,7 +22,7 @@ namespace PMMEditor.ViewModels.Documents
         {
             _keyFrameBase = keyFrameBase;
             _keyFrameBase.PropertyChangedAsObservable().Subscribe(_ => RaisePropertyChanged(_.PropertyName))
-                .AddTo(CompositeDisposable);
+                .AddTo(CompositeDisposables);
         }
 
         #region FrameNumber変更通知プロパティ
@@ -42,12 +42,12 @@ namespace PMMEditor.ViewModels.Documents
     {
         #region IsExpanded変更通知プロパティ
 
-        private bool _IsExpanded;
+        private bool _isExpanded;
 
         public bool IsExpanded
         {
-            get { return _IsExpanded; }
-            set { SetProperty(ref _IsExpanded, value); }
+            get { return _isExpanded; }
+            set { SetProperty(ref _isExpanded, value); }
         }
 
         #endregion
@@ -69,7 +69,7 @@ namespace PMMEditor.ViewModels.Documents
                     v => new TimelineFrameData(v.Value)),
                 Name = name
             };
-            res.CompositeDisposable.Add(res.Frame);
+            res.CompositeDisposables.Add(res.Frame);
             return res;
         }
 
@@ -89,7 +89,7 @@ namespace PMMEditor.ViewModels.Documents
         {
             _model = model;
             NowFrame = _model.FrameControlModel.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty()
-                             .AddTo(CompositeDisposable);
+                             .AddTo(CompositeDisposables);
         }
 
         #region ListOfKeyFrameList変更通知プロパティ
@@ -139,12 +139,12 @@ namespace PMMEditor.ViewModels.Documents
 
         #region GridFrameNumberList変更通知プロパティ
 
-        private GridNumberList _GridFrameNumberList = new GridNumberList();
+        private GridNumberList _gridFrameNumberList = new GridNumberList();
 
         public GridNumberList GridFrameNumberList
         {
-            get { return _GridFrameNumberList; }
-            set { SetProperty(ref _GridFrameNumberList, value); }
+            get { return _gridFrameNumberList; }
+            set { SetProperty(ref _gridFrameNumberList, value); }
         }
 
         #endregion

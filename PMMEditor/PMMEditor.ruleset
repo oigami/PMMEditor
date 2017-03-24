@@ -94,6 +94,7 @@
     <Rule Id="RCS1061" Action="Info" />
     <Rule Id="RCS1062" Action="Error" />
     <Rule Id="RCS1066" Action="Warning" />
+    <Rule Id="RCS1067" Action="Error" />
     <Rule Id="RCS1073" Action="Info" />
     <Rule Id="RCS1074" Action="Info" />
     <Rule Id="RCS1075" Action="Error" />
@@ -105,6 +106,8 @@
     <Rule Id="RCS1120" Action="Warning" />
     <Rule Id="RCS1128" Action="Error" />
     <Rule Id="RCS1143" Action="Warning" />
+    <Rule Id="RCS1165" Action="Hidden" />
+    <Rule Id="RCS1168" Action="Hidden" />
     <Rule Id="RCS1176" Action="None" />
     <Rule Id="RCS1177" Action="None" />
   </Rules>

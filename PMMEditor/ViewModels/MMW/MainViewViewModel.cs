@@ -25,7 +25,7 @@ namespace PMMEditor.ViewModels.MMW
         public MainViewViewModel()
         {
             _logger = new LogMessageNotifier();
-            _model = new Model(_logger).AddTo(CompositeDisposable);
+            _model = new Model(_logger).AddTo(CompositeDisposables);
             SwitchPlayAndStopCommand = new ViewModelCommand(SwitchPlayAndStop);
             NextFrameCommand = new ViewModelCommand(NextFrame);
             PrevFrameCommand = new ViewModelCommand(PrevFrame);
@@ -34,7 +34,7 @@ namespace PMMEditor.ViewModels.MMW
         public async void Initialize()
         {
             _model.ObserveProperty(_ => _.PmmStruct).Subscribe(_ => RaisePropertyChanged(nameof(PmmStruct)))
-                  .AddTo(CompositeDisposable);
+                  .AddTo(CompositeDisposables);
 #if DEBUG
             try
             {
@@ -46,10 +46,10 @@ namespace PMMEditor.ViewModels.MMW
             }
 #endif
 
-            AddPane(() => new HeaderViewModel(_model).AddTo(CompositeDisposable));
-            AddPane(() => new ModelViewModel(_model).AddTo(CompositeDisposable));
-            AddPane(() => new CameraViewModel(_model).AddTo(CompositeDisposable));
-            AddPane(() => new AccessoryViewModel(_model).AddTo(CompositeDisposable));
+            AddPane(() => new HeaderViewModel(_model).AddTo(CompositeDisposables));
+            AddPane(() => new ModelViewModel(_model).AddTo(CompositeDisposables));
+            AddPane(() => new CameraViewModel(_model).AddTo(CompositeDisposables));
+            AddPane(() => new AccessoryViewModel(_model).AddTo(CompositeDisposables));
 
             await AddDocument(async () => await Task.Run(() => new MainRenderViewModel(_model)), "test");
         }
@@ -62,9 +62,9 @@ namespace PMMEditor.ViewModels.MMW
 
         #region OpenPmmCommand
 
-        private ViewModelCommand _OpenPmmCommand;
+        private ViewModelCommand _openPmmCommand;
 
-        public ViewModelCommand OpenPmmCommand => _OpenPmmCommand ?? (_OpenPmmCommand = new ViewModelCommand(OpenPmm));
+        public ViewModelCommand OpenPmmCommand => _openPmmCommand ?? (_openPmmCommand = new ViewModelCommand(OpenPmm));
 
         private async void OpenPmm()
         {
@@ -84,9 +84,9 @@ namespace PMMEditor.ViewModels.MMW
 
         #region SavePmmCommand
 
-        private ViewModelCommand _SavePmmCommand;
+        private ViewModelCommand _savePmmCommand;
 
-        public ViewModelCommand SavePmmCommand => _SavePmmCommand ?? (_SavePmmCommand = new ViewModelCommand(SavePmm));
+        public ViewModelCommand SavePmmCommand => _savePmmCommand ?? (_savePmmCommand = new ViewModelCommand(SavePmm));
 
         private async void SavePmm()
         {
@@ -120,10 +120,10 @@ namespace PMMEditor.ViewModels.MMW
 
         #region AllTimelineTranslateCommand
 
-        private ViewModelCommand _AllTimelineTranslateCommand;
+        private ViewModelCommand _allTimelineTranslateCommand;
 
         public ViewModelCommand AllTimelineTranslateCommand =>
-            _AllTimelineTranslateCommand ?? (_AllTimelineTranslateCommand = new ViewModelCommand(AllTimelineTranslate));
+            _allTimelineTranslateCommand ?? (_allTimelineTranslateCommand = new ViewModelCommand(AllTimelineTranslate));
 
         private void AllTimelineTranslate()
         {
@@ -134,17 +134,17 @@ namespace PMMEditor.ViewModels.MMW
 
         #region OpenCameraLightAccessoryTimelineCommand
 
-        private ViewModelCommand _OpenCameraLightAccessoryTimelineCommand;
+        private ViewModelCommand _openCameraLightAccessoryTimelineCommand;
 
         public ViewModelCommand OpenCameraLightAccessoryTimelineCommand =>
-            _OpenCameraLightAccessoryTimelineCommand
-            ?? (_OpenCameraLightAccessoryTimelineCommand =
+            _openCameraLightAccessoryTimelineCommand
+            ?? (_openCameraLightAccessoryTimelineCommand =
                 new ViewModelCommand(OpenCameraLightAccessoryTimeline));
 
         public async void OpenCameraLightAccessoryTimeline()
         {
             await AddDocument(
-                async () => await Task.Run(()=> new CameraLightAccessoryViewModel(_model).AddTo(CompositeDisposable)),
+                async () => await Task.Run(()=> new CameraLightAccessoryViewModel(_model).AddTo(CompositeDisposables)),
                 CameraLightAccessoryViewModel.GetContentId());
         }
 

@@ -18,24 +18,24 @@ namespace PMMEditor.ViewModels.Documents
 
         #region IsSelected変更通知プロパティ
 
-        private bool _IsSelected;
+        private bool _isSelected;
 
         public bool IsSelected
         {
-            get { return _IsSelected; }
-            set { SetProperty(ref _IsSelected, value); }
+            get { return _isSelected; }
+            set { SetProperty(ref _isSelected, value); }
         }
 
         #endregion
 
         #region IsAcitive変更通知プロパティ
 
-        private bool _IsAcitive;
+        private bool _isAcitive;
 
         public bool IsAcitive
         {
-            get { return _IsAcitive; }
-            set { SetProperty(ref _IsAcitive, value); }
+            get { return _isAcitive; }
+            set { SetProperty(ref _isAcitive, value); }
         }
 
         #endregion

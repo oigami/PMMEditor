@@ -24,7 +24,7 @@ namespace PMMEditor.Models.MMDModel
         public BoneFrameControlModel(IFrameControlModel nowFrame, MmdModelModel model)
         {
             _boneList = model.BoneKeyList;
-            CompositeDisposable.Add(Disposable.Create(() => _boneList = null));
+            CompositeDisposables.Add(Disposable.Create(() => _boneList = null));
 
             BoneCalculator = new MmdModelBoneCalculator(model);
             BoneCalculator.InitBoneCalc();
@@ -37,7 +37,7 @@ namespace PMMEditor.Models.MMDModel
                     _boneList[i].KeyFrameList.GetInterpolationData(_).CopyTo(NowBoneKeyFrame[i]);
                 }
                 BoneCalculator.Update(NowBoneKeyFrame);
-            }).AddTo(CompositeDisposable);
+            }).AddTo(CompositeDisposables);
 
             BoneCalculator.Update(NowBoneKeyFrame);
         }

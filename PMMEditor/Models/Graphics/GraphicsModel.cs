@@ -11,7 +11,7 @@ namespace PMMEditor.Models.Graphics
         public GraphicsModel(MmdModelList mmdModelList)
         {
             MmdModelSource = mmdModelList.List.ToReadOnlyReactiveCollection(_ => new MmdModelRendererSource(_, Device))
-                                         .AddTo(CompositeDisposable);
+                                         .AddTo(CompositeDisposables);
         }
 
         public Direct3D11.Device Device { get; } = new Direct3D11.Device(DriverType.Hardware,

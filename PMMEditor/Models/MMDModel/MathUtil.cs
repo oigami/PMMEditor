@@ -38,7 +38,7 @@ namespace PMMEditor.Models.MMDModel
             Y = (float) -Math.Asin(tmp);
             X = (float) Math.Atan2(rot.M23, (rot.M33));
             Z = (float) Math.Atan2(rot.M12, (rot.M11));
-            type = Type.XYZ;
+            _type = Type.XYZ;
             return true;
         }
 
@@ -53,7 +53,7 @@ namespace PMMEditor.Models.MMDModel
             Z = (float) -Math.Asin(tmp);
             X = (float) Math.Atan2(rot.M23, rot.M22);
             Y = (float) Math.Atan2(rot.M31, rot.M11);
-            type = Type.YZX;
+            _type = Type.YZX;
             return true;
         }
 
@@ -68,7 +68,7 @@ namespace PMMEditor.Models.MMDModel
             X = (float) -Math.Asin(tmp);
             Y = (float) Math.Atan2(rot.M31, rot.M33);
             Z = (float) Math.Atan2(rot.M12, rot.M22);
-            type = Type.ZXY;
+            _type = Type.ZXY;
             return true;
         }
 
@@ -87,7 +87,7 @@ namespace PMMEditor.Models.MMDModel
             return Matrix.RotationZ(Z);
         }
 
-        Type type;
+        private Type _type;
 
         public float X { get; set; }
 
@@ -112,7 +112,7 @@ namespace PMMEditor.Models.MMDModel
 
         public Matrix CreateMatrix()
         {
-            switch (type)
+            switch (_type)
             {
                 case Type.XYZ:
                     return CreateX() * CreateY() * CreateZ();

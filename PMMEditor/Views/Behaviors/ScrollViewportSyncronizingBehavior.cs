@@ -18,10 +18,10 @@ namespace PMMEditor.Views.Behaviors
 
     public class ScrollViewportSyncronizingBehavior : BehaviorBase<FrameworkElement>
     {
-        private static readonly Dictionary<string, List<IVirtualizingPanel>> SyncGroups =
+        private static readonly Dictionary<string, List<IVirtualizingPanel>> _syncGroups =
             new Dictionary<string, List<IVirtualizingPanel>>();
 
-        private static readonly Dictionary<string, ScrollViewer> ScrollViewers = new Dictionary<string, ScrollViewer>();
+        private static readonly Dictionary<string, ScrollViewer> _scrollViewers = new Dictionary<string, ScrollViewer>();
 
         private void AddEvent(DependencyProperty prop)
         {
@@ -39,7 +39,7 @@ namespace PMMEditor.Views.Behaviors
         {
             var sv = (ScrollViewer) sender;
 
-            foreach (var panel in SyncGroups[""])
+            foreach (var panel in _syncGroups[""])
             {
                 panel.Viewport = new Rect(sv.HorizontalOffset,
                                           sv.VerticalOffset,
@@ -50,13 +50,13 @@ namespace PMMEditor.Views.Behaviors
 
         protected override void OnSetup()
         {
-            if (!SyncGroups.ContainsKey(""))
+            if (!_syncGroups.ContainsKey(""))
             {
-                SyncGroups.Add("", new List<IVirtualizingPanel>());
+                _syncGroups.Add("", new List<IVirtualizingPanel>());
             }
             if (AssociatedObject is ScrollViewer sv)
             {
-                ScrollViewers[""] = sv;
+                _scrollViewers[""] = sv;
                 AddEvent(ScrollViewer.HorizontalOffsetProperty);
                 AddEvent(ScrollViewer.VerticalOffsetProperty);
                 AddEvent(ScrollViewer.ViewportHeightProperty);
@@ -64,12 +64,12 @@ namespace PMMEditor.Views.Behaviors
             }
             else if (AssociatedObject is IVirtualizingPanel panel)
             {
-                SyncGroups[""].Add(panel);
-                if (ScrollViewers[""] == null)
+                _syncGroups[""].Add(panel);
+                if (_scrollViewers[""] == null)
                 {
                     return;
                 }
-                sv = ScrollViewers[""];
+                sv = _scrollViewers[""];
                 panel.Viewport = new Rect(sv.HorizontalOffset,
                                           sv.VerticalOffset,
                                           sv.ViewportWidth,
@@ -88,7 +88,7 @@ namespace PMMEditor.Views.Behaviors
             }
             else
             {
-                SyncGroups[""].Remove((IVirtualizingPanel) AssociatedObject);
+                _syncGroups[""].Remove((IVirtualizingPanel) AssociatedObject);
             }
         }
     }

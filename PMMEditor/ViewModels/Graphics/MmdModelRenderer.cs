@@ -64,9 +64,9 @@ namespace PMMEditor.ViewModels.Graphics
                     Usage = Direct3D11.ResourceUsage.Default,
                     SampleDescription = new SampleDescription(1, 0),
                     Format = Format.R32G32B32A32_Float
-                }).AddTo(CompositeDisposable);
+                }).AddTo(CompositeDisposables);
             BoneSrv = new Direct3D11.ShaderResourceView(_device, _boneTexture2D)
-                .AddTo(CompositeDisposable);
+                .AddTo(CompositeDisposables);
         }
 
         public void Update(Direct3D11.DeviceContext context, int nowFrame)
@@ -91,7 +91,7 @@ namespace PMMEditor.ViewModels.Graphics
         public MmdModelRendererSource ModelSource { get; }
 
         private readonly Model _model;
-        private MmdModelBoneCalculatorSRV boneCalculator;
+        private MmdModelBoneCalculatorSRV _boneCalculator;
         private Direct3D11.Device _device;
 
         private Direct3D11.InputLayout _inputLayout;
@@ -108,12 +108,12 @@ namespace PMMEditor.ViewModels.Graphics
             _model = model;
             ModelSource = sourceModel;
             _nowFrame = model.FrameControlModel.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty()
-                             .AddTo(CompositeDisposable);
+                             .AddTo(CompositeDisposables);
             IsInitialized =
                 new[] { ModelSource.ObserveProperty(_ => _.IsInitialized), _isInternalInitialized }
                     .CombineLatestValuesAreAllTrue()
                     .ToReadOnlyReactiveProperty()
-                    .AddTo(CompositeDisposable);
+                    .AddTo(CompositeDisposables);
         }
 
         public ReadOnlyReactiveProperty<bool> IsInitialized { get; }
@@ -121,9 +121,9 @@ namespace PMMEditor.ViewModels.Graphics
         private void InitializeInternal()
         {
             _boneFrameController = new BoneFrameControlModel(_model.FrameControlModel, ModelSource.Model);
-            boneCalculator = new MmdModelBoneCalculatorSRV(ModelSource, _boneFrameController, _device)
-                .AddTo(CompositeDisposable);
-            BoneRenderer = new BoneRenderer(ModelSource, _device).AddTo(CompositeDisposable);
+            _boneCalculator = new MmdModelBoneCalculatorSRV(ModelSource, _boneFrameController, _device)
+                .AddTo(CompositeDisposables);
+            BoneRenderer = new BoneRenderer(ModelSource, _device).AddTo(CompositeDisposables);
 
             // 頂点シェーダ生成
             var shaderSource = Resource1.TestShader;
@@ -166,7 +166,7 @@ namespace PMMEditor.ViewModels.Graphics
             m *= Matrix.PerspectiveFovLH((float) Math.PI / 3, 1.4f, 0.1f, 10000000f);
             m.Transpose();
             _viewProjConstantBuffer =
-                Direct3D11.Buffer.Create(_device, Direct3D11.BindFlags.ConstantBuffer, ref m).AddTo(CompositeDisposable);
+                Direct3D11.Buffer.Create(_device, Direct3D11.BindFlags.ConstantBuffer, ref m).AddTo(CompositeDisposables);
 
             _isInternalInitialized.Value = true;
         }
@@ -181,7 +181,7 @@ namespace PMMEditor.ViewModels.Graphics
 
         public void Render(Direct3D11.DeviceContext target)
         {
-            if (IsInitialized.Value == false)
+            if (!IsInitialized.Value)
             {
                 return;
             }
@@ -202,8 +202,8 @@ namespace PMMEditor.ViewModels.Graphics
             target.PixelShader.Set(_pixelShader);
 
             target.InputAssembler.PrimitiveTopology = Direct3D.PrimitiveTopology.TriangleList;
-            boneCalculator.Update(target, _nowFrame.Value);
-            target.VertexShader.SetShaderResource(0, boneCalculator.BoneSrv);
+            _boneCalculator.Update(target, _nowFrame.Value);
+            target.VertexShader.SetShaderResource(0, _boneCalculator.BoneSrv);
             foreach (var material in ModelSource.Materials)
             {
                 target.PixelShader.SetConstantBuffer(0, material.PixelConstantBuffer0);

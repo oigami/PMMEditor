@@ -19,60 +19,60 @@ namespace PMMEditor.ViewModels.Panes
 
         #region IsSelected変更通知プロパティ
 
-        private bool _IsSelected;
+        private bool _isSelected;
 
         public bool IsSelected
         {
-            get { return _IsSelected; }
-            set { SetProperty(ref _IsSelected, value); }
+            get { return _isSelected; }
+            set { SetProperty(ref _isSelected, value); }
         }
 
         #endregion
 
         #region IsActive変更通知プロパティ
 
-        private bool _IsActive;
+        private bool _isActive;
 
         public bool IsActive
         {
-            get { return _IsActive; }
-            set { SetProperty(ref _IsActive, value); }
+            get { return _isActive; }
+            set { SetProperty(ref _isActive, value); }
         }
 
         #endregion
 
         #region CanHide変更通知プロパティ
 
-        private bool _CanHide = true;
+        private bool _canHide = true;
 
         public bool CanHide
         {
-            get { return _CanHide; }
-            set { SetProperty(ref _CanHide, value); }
+            get { return _canHide; }
+            set { SetProperty(ref _canHide, value); }
         }
 
         #endregion
 
         #region CanClose変更通知プロパティ
 
-        private bool _CanClose;
+        private bool _canClose;
 
         public bool CanClose
         {
-            get { return _CanClose; }
-            set { SetProperty(ref _CanClose, value); }
+            get { return _canClose; }
+            set { SetProperty(ref _canClose, value); }
         }
 
         #endregion
 
         #region Visibility変更通知プロパティ
 
-        private Visibility _Visibility;
+        private Visibility _visibility;
 
         public Visibility Visibility
         {
-            get { return _Visibility; }
-            set { SetProperty(ref _Visibility, value); }
+            get { return _visibility; }
+            set { SetProperty(ref _visibility, value); }
         }
 
         #endregion

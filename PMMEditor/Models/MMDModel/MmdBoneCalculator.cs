@@ -17,7 +17,7 @@ namespace PMMEditor.Models.MMDModel
         {
             _model = model;
             var bones = _model.BoneKeyList;
-            _ModelLocalBones = Enumerable.Range(0, bones.Count).Select(_ => Matrix.Identity).ToArray();
+            _modelLocalBones2 = Enumerable.Range(0, bones.Count).Select(_ => Matrix.Identity).ToArray();
             _worldBones = Enumerable.Range(0, bones.Count).Select(_ => Matrix.Identity).ToArray();
         }
 
@@ -60,7 +60,7 @@ namespace PMMEditor.Models.MMDModel
             var bones = _model.BoneKeyList;
             UpdateForwardKinematics(nowBoneKeyFrame);
             UpdateInverseKinematics();
-            CalcBoneModelLocalMatrix(bones[0], Matrix.Identity, ref _ModelLocalBones);
+            CalcBoneModelLocalMatrix(bones[0], Matrix.Identity, ref _modelLocalBones2);
             ModelLocalBones.CopyTo(WorldBones, 0);
             CalcBoneWorld(bones[0], Matrix.Identity, ref _worldBones);
         }
@@ -186,9 +186,9 @@ namespace PMMEditor.Models.MMDModel
 
         #region ModelLocalBonesプロパティ
 
-        private Matrix[] _ModelLocalBones;
+        private Matrix[] _modelLocalBones2;
 
-        public Matrix[] ModelLocalBones => _ModelLocalBones;
+        public Matrix[] ModelLocalBones => _modelLocalBones2;
 
         #endregion
 

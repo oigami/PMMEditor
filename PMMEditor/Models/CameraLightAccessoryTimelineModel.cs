@@ -24,7 +24,7 @@ namespace PMMEditor.Models
             where Method : IKeyFrameInterpolationMethod<T>, new()
         {
             list.ObserveElementProperty(i => i.MaxFrame)
-                .Subscribe(i => MaxFrameIndex = Math.Max(MaxFrameIndex, i.Value)).AddTo(CompositeDisposable);
+                .Subscribe(i => MaxFrameIndex = Math.Max(MaxFrameIndex, i.Value)).AddTo(CompositeDisposables);
             foreach (var item in list)
             {
                 MaxFrameIndex = Math.Max(MaxFrameIndex, item.MaxFrame);
@@ -34,19 +34,19 @@ namespace PMMEditor.Models
                 .Subscribe(item =>
                 {
                     item.ObserveProperty(i => i.MaxFrame).Subscribe(i => MaxFrameIndex = Math.Max(MaxFrameIndex, i))
-                        .AddTo(CompositeDisposable);
+                        .AddTo(CompositeDisposables);
                     foreach (var boneKeyFrame in item)
                     {
                         MaxFrameIndex = Math.Max(boneKeyFrame.Key, MaxFrameIndex);
                     }
-                }).AddTo(CompositeDisposable);
+                }).AddTo(CompositeDisposables);
         }
 
         public CameraLightAccessoryTimelineModel(Model model)
         {
             AccessoryKeyFrameLists =
                 model.MmdAccessoryList.List.ToReadOnlyReactiveCollection(i => i.BoneKeyList[0])
-                     .AddTo(CompositeDisposable);
+                     .AddTo(CompositeDisposables);
             MaxFrameEventSubscribe(AccessoryKeyFrameLists);
 
             CamerakeyFrameLists = model.Camera.BoneKeyList.ToReadOnlyReactiveCollection();
@@ -89,12 +89,12 @@ namespace PMMEditor.Models
 
         #region MaxFrameIndex変更通知プロパティ
 
-        private int _MaxFrameIndex;
+        private int _maxFrameIndex;
 
         public int MaxFrameIndex
         {
-            get { return _MaxFrameIndex; }
-            set { SetProperty(ref _MaxFrameIndex, value); }
+            get { return _maxFrameIndex; }
+            set { SetProperty(ref _maxFrameIndex, value); }
         }
 
         #endregion

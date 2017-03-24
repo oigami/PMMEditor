@@ -778,25 +778,26 @@ namespace PMMEditor.MMDFileParser
 
         private PmmStruct.ModelData ReadModelData()
         {
-            var o = new PmmStruct.ModelData();
-            o.Number = ReadByte();
-            o.Name = ReadVString();
-            o.NameEn = ReadVString();
-            o.Path = ReadFixedStringTerminationChar(256);
-            o.KeyFrameEditorTopLevelRows = ReadByte();
-            o.BoneName = ReadVList(ReadVString);
-            o.MorphName = ReadVList(ReadVString);
-            o.IkIndex = ReadVList(ReadInt);
-            o.OpIndex = ReadVList(ReadInt);
+            var o = new PmmStruct.ModelData
+            {
+                Number = ReadByte(),
+                Name = ReadVString(),
+                NameEn = ReadVString(),
+                Path = ReadFixedStringTerminationChar(256),
+                KeyFrameEditorTopLevelRows = ReadByte(),
+                BoneName = ReadVList(ReadVString),
+                MorphName = ReadVList(ReadVString),
+                IkIndex = ReadVList(ReadInt),
+                OpIndex = ReadVList(ReadInt),
 
-            o.DrawOrder = ReadByte();
-            o.EditIsDisplay = ReadBool();
-            o.EditSelectedBone = ReadInt();
-            o.SkinPanel = ReadArray(4, ReadInt);
-            o.IsFrameOpen = ReadList(ReadByte(), ReadBool);
-            o.VScroll = ReadInt();
-            o.LastFrame = ReadInt();
-
+                DrawOrder = ReadByte(),
+                EditIsDisplay = ReadBool(),
+                EditSelectedBone = ReadInt(),
+                SkinPanel = ReadArray(4, ReadInt),
+                IsFrameOpen = ReadList(ReadByte(), ReadBool),
+                VScroll = ReadInt(),
+                LastFrame = ReadInt()
+            };
             o.BoneInitFrames = ReadList(o.BoneName.Count, () => ReadBoneFrame(true));
             o.BoneKeyFrames = ReadVList(() => ReadBoneFrame(false));
 
@@ -837,11 +838,13 @@ namespace PMMEditor.MMDFileParser
 
         private PmmStruct.AccessoryData.KeyFrame ReadAccessoryKeyFrame(bool isInit)
         {
-            var o = new PmmStruct.AccessoryData.KeyFrame();
-            o.DataIndex = isInit ? -1 : ReadInt();
-            o.FrameNumber = ReadInt();
-            o.PreIndex = ReadInt();
-            o.NextIndex = ReadInt();
+            var o = new PmmStruct.AccessoryData.KeyFrame
+            {
+                DataIndex = isInit ? -1 : ReadInt(),
+                FrameNumber = ReadInt(),
+                PreIndex = ReadInt(),
+                NextIndex = ReadInt()
+            };
             ReadAccessoryDataBody(ref o);
             o.IsSelected = ReadBool();
             return o;
@@ -849,13 +852,15 @@ namespace PMMEditor.MMDFileParser
 
         private PmmStruct.AccessoryData ReadAccessory()
         {
-            var o = new PmmStruct.AccessoryData();
-            o.Index = ReadByte();
-            o.Name = ReadFixedStringTerminationChar(100);
-            o.Path = ReadFixedStringTerminationChar(256);
-            o.DrawOrder = ReadByte();
-            o.InitFrame = ReadAccessoryKeyFrame(true);
-            o.KeyFrames = ReadVList(() => ReadAccessoryKeyFrame(false));
+            var o = new PmmStruct.AccessoryData
+            {
+                Index = ReadByte(),
+                Name = ReadFixedStringTerminationChar(100),
+                Path = ReadFixedStringTerminationChar(256),
+                DrawOrder = ReadByte(),
+                InitFrame = ReadAccessoryKeyFrame(true),
+                KeyFrames = ReadVList(() => ReadAccessoryKeyFrame(false))
+            };
             var tmp = new PmmStruct.AccessoryData.DataBody();
             ReadAccessoryDataBody(ref tmp);
             o.CurrentData = tmp;

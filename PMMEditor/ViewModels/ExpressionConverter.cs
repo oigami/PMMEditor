@@ -9,7 +9,7 @@ namespace PMMEditor.ViewModels
 {
     public class ExpressionConverter : IValueConverter
     {
-        private static readonly string source =
+        private static readonly string _source =
             @"package TestPackage
         {
             class Test
@@ -21,14 +21,16 @@ namespace PMMEditor.ViewModels
             }
         }";
 
-        private static readonly Type EvalType;
+        private static readonly Type _evalType;
 
         static ExpressionConverter()
         {
             var provider = new JScriptCodeProvider();
-            var parameters = new CompilerParameters();
-            parameters.GenerateInMemory = true;
-            CompilerResults results = provider.CompileAssemblyFromSource(parameters, source);
+            var parameters = new CompilerParameters
+            {
+                GenerateInMemory = true
+            };
+            CompilerResults results = provider.CompileAssemblyFromSource(parameters, _source);
             if (results.Errors.Count > 0)
             {
                 string tmp = "コンパイルエラー\n\n";
@@ -39,7 +41,7 @@ namespace PMMEditor.ViewModels
                 Console.WriteLine(tmp);
             }
             Assembly assembly = results.CompiledAssembly;
-            EvalType = assembly.GetType("TestPackage.Test");
+            _evalType = assembly.GetType("TestPackage.Test");
         }
 
         public object Convert(object value, Type t, object parameter, CultureInfo culture)
@@ -49,12 +51,10 @@ namespace PMMEditor.ViewModels
             string exp = "var x=" + v + ";" + (string) parameter;
 
 
-            object evaluator = Activator.CreateInstance(EvalType);
+            object evaluator = Activator.CreateInstance(_evalType);
 
-            string output = (string) EvalType.InvokeMember("Eval", BindingFlags.InvokeMethod, null, evaluator,
+            return (string) _evalType.InvokeMember("Eval", BindingFlags.InvokeMethod, null, evaluator,
                                                            new object[] { exp });
-
-            return output;
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)

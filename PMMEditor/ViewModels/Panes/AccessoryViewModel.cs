@@ -13,7 +13,7 @@ namespace PMMEditor.ViewModels.Panes
         {
             this._model = _model;
             _model.ObserveProperty(_ => _.PmmStruct).Subscribe(_ => RaisePropertyChanged(nameof(PmmStruct)))
-                  .AddTo(CompositeDisposable);
+                  .AddTo(CompositeDisposables);
         }
 
         public override string Title { get; } = "Accessory";
@@ -24,12 +24,12 @@ namespace PMMEditor.ViewModels.Panes
 
         #region SelectedAccessory変更通知プロパティ
 
-        private PmmStruct.AccessoryData _SelectedAccessory;
+        private PmmStruct.AccessoryData _selectedAccessory;
 
         public PmmStruct.AccessoryData SelectedAccessory
         {
-            get { return _SelectedAccessory; }
-            set { SetProperty(ref _SelectedAccessory, value); }
+            get { return _selectedAccessory; }
+            set { SetProperty(ref _selectedAccessory, value); }
         }
 
         #endregion

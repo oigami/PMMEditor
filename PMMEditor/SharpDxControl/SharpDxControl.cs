@@ -53,8 +53,7 @@ namespace PMMEditor.SharpDxControl
 
         public bool Remove(string key)
         {
-            T res;
-            if (!Resources.TryGetValue(key, out res))
+            if (!Resources.TryGetValue(key, out T res))
             {
                 return false;
             }
@@ -93,8 +92,7 @@ namespace PMMEditor.SharpDxControl
             {
                 var key = factory.Key;
 
-                T resOld;
-                if (Resources.TryGetValue(key, out resOld))
+                if (Resources.TryGetValue(key, out T resOld))
                 {
                     SafeDispose(ref resOld);
                     Resources.Remove(key);
@@ -147,7 +145,7 @@ namespace PMMEditor.SharpDxControl
 
     public abstract class SharpDxControl : Image, IDisposable
     {
-        private CompositeDisposable D3DRenderTargetCompositeDisposable = new CompositeDisposable();
+        private CompositeDisposable _d3DRenderTargetCompositeDisposable = new CompositeDisposable();
         protected readonly CompositeDisposable AllCompositeDisposable = new CompositeDisposable();
 
         #region Device
@@ -329,8 +327,8 @@ namespace PMMEditor.SharpDxControl
             }
 
             _d3DSurface.ClearRenderTarget();
-            D3DRenderTargetCompositeDisposable.Dispose();
-            D3DRenderTargetCompositeDisposable = new CompositeDisposable();
+            _d3DRenderTargetCompositeDisposable.Dispose();
+            _d3DRenderTargetCompositeDisposable = new CompositeDisposable();
 
             var renderDesc = new Texture2DDescription
             {
@@ -346,12 +344,12 @@ namespace PMMEditor.SharpDxControl
                 ArraySize = 1
             };
 
-            _renderTarget2D = new Texture2D(Device, renderDesc).AddTo(D3DRenderTargetCompositeDisposable);
+            _renderTarget2D = new Texture2D(Device, renderDesc).AddTo(_d3DRenderTargetCompositeDisposable);
 
             var surface = _renderTarget2D.QueryInterface<Surface>();
 
             var rtp = new RenderTargetProperties(new PixelFormat(Format.Unknown, AlphaMode.Premultiplied));
-            D2DRenderTarget = new RenderTarget(_d2DFactory, surface, rtp).AddTo(D3DRenderTargetCompositeDisposable);
+            D2DRenderTarget = new RenderTarget(_d2DFactory, surface, rtp).AddTo(_d3DRenderTargetCompositeDisposable);
             BrushManager.UpdateRenderTarget(D2DRenderTarget);
 
             _d3DSurface.SetRenderTarget(_renderTarget2D);
@@ -374,7 +372,7 @@ namespace PMMEditor.SharpDxControl
             using (var zBufferTexture = new Texture2D(Device, zBufferTextureDescription))
             {
                 _depthStencilView =
-                    new DepthStencilView(Device, zBufferTexture).AddTo(D3DRenderTargetCompositeDisposable);
+                    new DepthStencilView(Device, zBufferTexture).AddTo(_d3DRenderTargetCompositeDisposable);
             }
 
             _depthStencilState
@@ -384,8 +382,8 @@ namespace PMMEditor.SharpDxControl
                     DepthComparison = Comparison.Less,
                     IsStencilEnabled = false,
                     DepthWriteMask = DepthWriteMask.All
-                }).AddTo(D3DRenderTargetCompositeDisposable);
-            _renderTarget = new RenderTargetView(Device, _renderTarget2D).AddTo(D3DRenderTargetCompositeDisposable);
+                }).AddTo(_d3DRenderTargetCompositeDisposable);
+            _renderTarget = new RenderTargetView(Device, _renderTarget2D).AddTo(_d3DRenderTargetCompositeDisposable);
 
             Device.ImmediateContext.Rasterizer.SetViewport(0, 0, width, height);
 
@@ -440,7 +438,7 @@ namespace PMMEditor.SharpDxControl
             if (disposing)
             {
                 Source = null;
-                D3DRenderTargetCompositeDisposable.Dispose();
+                _d3DRenderTargetCompositeDisposable.Dispose();
                 AllCompositeDisposable.Dispose();
             }
         }

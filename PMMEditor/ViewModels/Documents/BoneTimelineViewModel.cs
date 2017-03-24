@@ -20,7 +20,7 @@ namespace PMMEditor.ViewModels.Documents
         {
             Model = modelModel;
             ListOfKeyFrameList = modelModel.BoneKeyList.ToReadOnlyReactiveCollection(
-                _ => TimelineKeyFrameList.Create(_.KeyFrameList)).AddTo(CompositeDisposable);
+                _ => TimelineKeyFrameList.Create(_.KeyFrameList)).AddTo(CompositeDisposables);
 
             Title = modelModel.Name;
             ContentId = typeof(CameraLightAccessoryViewModel).FullName + modelModel.NameEnglish;

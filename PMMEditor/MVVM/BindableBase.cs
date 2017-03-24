@@ -33,26 +33,26 @@ namespace PMMEditor.MVVM
     }
     public class BindableDisposableBase : BindableBase, IDisposable
     {
-        protected CompositeDisposable CompositeDisposable = new CompositeDisposable();
+        protected readonly CompositeDisposable CompositeDisposables = new CompositeDisposable();
 
         #region IDisposable Support
 
-        private bool disposedValue; // 重複する呼び出しを検出するには
+        private bool _disposedValue; // 重複する呼び出しを検出するには
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
-                    CompositeDisposable.Dispose();
+                    CompositeDisposables.Dispose();
                 }
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 
-        public void Dispose() 
+        public void Dispose()
         {
             Dispose(true);
         }

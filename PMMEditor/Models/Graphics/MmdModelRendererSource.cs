@@ -34,8 +34,7 @@ namespace PMMEditor.Models.Graphics
 
         public int BoneCount { get; private set; }
 
-        private CompositeDisposable D3DObjectCompositeDisposable = new CompositeDisposable();
-        private bool disposedValue;
+        private CompositeDisposable _d3DObjectCompositeDisposable2 = new CompositeDisposable();
         private readonly Direct3D11.Device _device;
 
         #region IsInitialized変更通知プロパティ
@@ -110,8 +109,8 @@ namespace PMMEditor.Models.Graphics
 
         private void OnUnload()
         {
-            D3DObjectCompositeDisposable.Dispose();
-            D3DObjectCompositeDisposable = new CompositeDisposable();
+            _d3DObjectCompositeDisposable2.Dispose();
+            _d3DObjectCompositeDisposable2 = new CompositeDisposable();
             IsInitialized = false;
             VertexBufferBinding = new Direct3D11.VertexBufferBinding();
             IndexBuffer = null;
@@ -141,7 +140,7 @@ namespace PMMEditor.Models.Graphics
                     IndexStart = preIndex,
                     PixelConstantBuffer0 =
                         Direct3D11.Buffer.Create(_device, Direct3D11.BindFlags.ConstantBuffer, ref diffuse, 0,
-                                                 Direct3D11.ResourceUsage.Immutable).AddTo(D3DObjectCompositeDisposable)
+                                                 Direct3D11.ResourceUsage.Immutable).AddTo(_d3DObjectCompositeDisposable2)
                 });
                 preIndex += (int) material.FaceVertexCount;
             }
@@ -168,7 +167,7 @@ namespace PMMEditor.Models.Graphics
                         Usage = Direct3D11.ResourceUsage.Immutable,
                         BindFlags = Direct3D11.BindFlags.VertexBuffer,
                         StructureByteStride = typeSize
-                    }).AddTo(D3DObjectCompositeDisposable);
+                    }).AddTo(_d3DObjectCompositeDisposable2);
                 VertexBufferBinding = new Direct3D11.VertexBufferBinding(_verteBuffer, typeSize, 0);
 
                 // 頂点インデックス生成
@@ -181,7 +180,7 @@ namespace PMMEditor.Models.Graphics
                         Usage = Direct3D11.ResourceUsage.Immutable,
                         BindFlags = Direct3D11.BindFlags.IndexBuffer,
                         StructureByteStride = Utilities.SizeOf<ushort>()
-                    }).AddTo(D3DObjectCompositeDisposable);
+                    }).AddTo(_d3DObjectCompositeDisposable2);
             }
 
             OnLoad();
@@ -189,16 +188,17 @@ namespace PMMEditor.Models.Graphics
 
         #region IDisposable Support
 
+        private bool _disposedValue;
         private void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
-                    D3DObjectCompositeDisposable.Dispose();
-                    D3DObjectCompositeDisposable = null;
+                    _d3DObjectCompositeDisposable2.Dispose();
+                    _d3DObjectCompositeDisposable2 = null;
                 }
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 
