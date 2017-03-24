@@ -22,6 +22,7 @@ namespace PMMEditor.Views.MMD
         public MainWindow()
         {
             InitializeComponent();
+            Loaded += (s, e) => Keyboard.Focus(this);
         }
     }
 }

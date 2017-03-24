@@ -26,6 +26,10 @@ namespace PMMEditor.ViewModels.MMD
         public MainViewViewModel(Model model, LogMessageNotifier logger)
         {
             _model = model;
+            PrevFrameCommand = new ViewModelCommand(() => _model.FrameControlModel.PrevFrame());
+            NextFrameCommand = new ViewModelCommand(() => _model.FrameControlModel.NextFrame());
+            SwitchPlayAndStopCommand = new ViewModelCommand(() => _model.FrameControlModel.SwitchPlayAndStop());
+
             logger.Subscribe(log => { MessageBox.Show(log.ToString()); });
             RendererViewModel = new MainRenderViewModel(_model);
 
@@ -124,5 +128,11 @@ namespace PMMEditor.ViewModels.MMD
         public ViewModelCommand ModelLoadCommand { get; }
 
         public ViewModelCommand ChangeModelCameraModeCommand { get; }
+
+        public ViewModelCommand NextFrameCommand { get; }
+
+        public ViewModelCommand PrevFrameCommand { get; }
+
+        public ViewModelCommand SwitchPlayAndStopCommand { get; }
     }
 }
