@@ -73,11 +73,6 @@ namespace PMMEditor.Models.MMDModel
             var bones = _model.BoneKeyList;
             foreach (var i in Enumerable.Range(0, bones.Count))
             {
-                if (bones[i].Type == PmdStruct.BoneKind.IKAffected
-                    || bones[i].Type == PmdStruct.BoneKind.IKTarget)
-                {
-                    continue;
-                }
 
                 var data = nowBoneKeyFrame[i];
                 var pos = data.Position;
@@ -111,11 +106,13 @@ namespace PMMEditor.Models.MMDModel
 
                         localEffectorDir.Normalize();
                         localTargetDir.Normalize();
-
+                        var cosAngle = Vector3.Dot(localEffectorDir, localTargetDir);
+                        if (1.0f <= cosAngle)
+                        {
+                            continue;
+                        }
                         var angle =
-                            Math.Min((float) Math.Acos(Clamp(Vector3.Dot(localEffectorDir, localTargetDir),
-                                                             -1.0, 1.0f)),
-                                     ik.LimitAngle * (float) Math.PI);
+                            Math.Min((float) Math.Acos(Math.Max(cosAngle, -1.0)), ik.LimitAngle * (float) Math.PI);
                         Debug.Assert(float.IsNaN(angle) == false && float.IsInfinity(angle) == false);
                         if (Math.Abs(angle) < 1e-7f)
                         {

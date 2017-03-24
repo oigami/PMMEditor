@@ -219,21 +219,16 @@ namespace PMMEditor.Models
         {
             var outputBone = new Bone();
             var size = inputBone.Count;
-            if (item.ParentBoneIndex != null)
+            //自分と同じ親で自分よりあとのボーンが兄弟になる
+            for (int j = i + 1; j < size; ++j)
             {
-                ushort parentBoneIndex = (ushort) item.ParentBoneIndex;
-
-                //自分と同じ親で自分よりあとのボーンが兄弟になる
-                for (int j = i + 1; j < size; ++j)
+                if (item.ParentBoneIndex == inputBone[j].ParentBoneIndex)
                 {
-                    if (parentBoneIndex == inputBone[j].ParentBoneIndex)
-                    {
-                        outputBone.SiblingIndex = j;
-                        break;
-                    }
+                    outputBone.SiblingIndex = j;
+                    break;
                 }
-                outputBone.ParentIndex = parentBoneIndex;
             }
+            outputBone.ParentIndex = item.ParentBoneIndex ?? -1;
 
             //自分が親になっていて一番早く現れるボーンが子になる
             foreach (int j in Enumerable.Range(0, size))
