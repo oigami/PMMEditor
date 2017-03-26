@@ -7,6 +7,7 @@ using PMMEditor.MVVM;
 
 namespace PMMEditor.Models
 {
+    using MmdAccessoryKeyFrameList = KeyFrameList<MmdAccessoryModel.BoneKeyFrame, DefaultKeyFrameInterpolationMethod<MmdAccessoryModel.BoneKeyFrame>>;
     public class MmdAccessoryModel : BindableBase
     {
         public class BoneKeyFrame : KeyFrameBase
@@ -29,9 +30,8 @@ namespace PMMEditor.Models
         #region BonekeyListプロパティ
 
 
-        public ObservableCollection<KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>>
-            BoneKeyList { get; } =
-            new ObservableCollection<KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>>();
+        public ObservableCollection<MmdAccessoryKeyFrameList> BoneKeyList { get; } =
+            new ObservableCollection<MmdAccessoryKeyFrameList>();
 
         #endregion
 
@@ -48,10 +48,10 @@ namespace PMMEditor.Models
             Name = accessoryData.Name;
             NameEnglish = Name;
             BoneKeyList.Clear();
-            var keyFrame = KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>.CreateKeyFrameArray(accessoryData.KeyFrames);
+            var keyFrame = MmdAccessoryKeyFrameList.CreateKeyFrameArray(accessoryData.KeyFrames);
             BoneKeyList.Add(await Task.Run(() =>
             {
-                var list = new KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>(Name);
+                var list = new MmdAccessoryKeyFrameList(Name);
 
                 list.CreateKeyFrame(keyFrame, accessoryData.InitFrame, i =>
                 {
