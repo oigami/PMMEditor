@@ -120,14 +120,14 @@ namespace PMMEditor.Models
         {
             BoneKeyList.Clear();
             var keyFrame =
-                await KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>
+                KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>
                     .CreateKeyFrameArray(cameraData);
-            BoneKeyList.Add(await Task.Run(async () =>
+            BoneKeyList.Add(await Task.Run(() =>
             {
                 var list = new KeyFrameList<BoneKeyFrame, BoneInterpolationMethod>("");
                 Func<sbyte[], int[]> createArray4 = i => new int[] { i[0], i[1], i[2], i[3] };
 
-                await list.CreateKeyFrameAsync(keyFrame, cameraInitFrame, i =>
+                list.CreateKeyFrame(keyFrame, cameraInitFrame, i =>
                 {
                     var res = new BoneKeyFrame
                     {

@@ -51,7 +51,7 @@ namespace PMMEditor.ViewModels.MMW
             AddPane(() => new CameraViewModel(_model).AddTo(CompositeDisposables));
             AddPane(() => new AccessoryViewModel(_model).AddTo(CompositeDisposables));
 
-            await AddDocument(async () => await Task.Run(() => new MainRenderViewModel(_model)), "test");
+            await AddDocument(() => Task.Run(() => new MainRenderViewModel(_model)), "test");
         }
 
         #region PmmStruct変更通知プロパティ
@@ -144,7 +144,7 @@ namespace PMMEditor.ViewModels.MMW
         public async void OpenCameraLightAccessoryTimeline()
         {
             await AddDocument(
-                async () => await Task.Run(()=> new CameraLightAccessoryViewModel(_model).AddTo(CompositeDisposables)),
+                () => Task.Run(()=> new CameraLightAccessoryViewModel(_model).AddTo(CompositeDisposables)),
                 CameraLightAccessoryViewModel.GetContentId());
         }
 

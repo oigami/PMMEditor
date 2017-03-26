@@ -15,14 +15,14 @@ namespace PMMEditor.MMDFileParser
             return Read(File.ReadAllBytes(path));
         }
 
-        public static async Task<PmdStruct> ReadFileAsync(string path)
+        public static Task<PmdStruct> ReadFileAsync(string path)
         {
-            return await Task.Run(() => ReadFile(path));
+            return Task.Run(() => ReadFile(path));
         }
 
-        public static async Task<PmdStruct> ReadAsync(byte[] data)
+        public static Task<PmdStruct> ReadAsync(byte[] data)
         {
-            return await Task.Run(() => Read(data));
+            return Task.Run(() => Read(data));
         }
     }
 }

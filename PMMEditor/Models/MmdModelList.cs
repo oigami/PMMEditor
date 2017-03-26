@@ -34,7 +34,7 @@ namespace PMMEditor.Models
 
         public void Delete(MmdModelModel model)
         {
-            DispatcherHelper.UIDispatcher.Invoke(() => List.Remove(model));
+            List.Remove(model);
         }
 
         public void Add(string path)
@@ -47,21 +47,21 @@ namespace PMMEditor.Models
                 {
                     List.Add(model);
                 }
-            }).ContinueWith(t => _logger.Fatal("Unknown", t.Exception.InnerException),
-                            TaskContinuationOptions.OnlyOnFaulted);
+            }).ContinueOnlyOnFaultedErrorLog(_logger);
         }
 
 
-        public async Task Set(IEnumerable<PmmStruct.ModelData> list)
+        public void Set(IEnumerable<PmmStruct.ModelData> list)
         {
-            await Task.Run(() =>
+
+            Task.Run(async () =>
             {
                 var order = new SortedDictionary<int, int>();
                 List.Clear();
                 foreach (var item in list.Select((data, i) => new { data, i }))
                 {
                     var model = new MmdModelModel(_logger);
-                    model.Set(item.data).Wait();
+                    await model.SetAsync(item.data).ConfigureAwait(false);
                     List.Add(model);
                     order.Add(item.data.DrawOrder, item.i);
                 }
@@ -69,7 +69,7 @@ namespace PMMEditor.Models
                 {
                     _drawOrder.Add(i.Value);
                 }
-            });
+            }).ContinueOnlyOnFaultedErrorLog(_logger, "Charactor List Set error", () => List.Clear());
         }
     }
 }

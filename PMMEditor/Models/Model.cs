@@ -32,10 +32,10 @@ namespace PMMEditor.Models
         public async Task OpenPmm(byte[] pmmData)
         {
             PmmStruct = await Pmm.ReadAsync(pmmData);
+            MmdModelList.Set(PmmStruct.ModelDatas);
             await Camera.Set(PmmStruct.CameraKeyFrames, PmmStruct.CameraInitFrame);
             await Light.Set(PmmStruct.LightKeyFrames, PmmStruct.LightInitFrame);
             await MmdAccessoryList.Set(PmmStruct.AccessoryDatas);
-            await MmdModelList.Set(PmmStruct.ModelDatas);
         }
 
 

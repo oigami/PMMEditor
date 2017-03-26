@@ -90,8 +90,8 @@ namespace PMMEditor.Log
 
     public class LogMessageNotifier : ScheduledNotifier<LogMessage>, ILogger
     {
-        public LogMessageNotifier(IScheduler scheduler) : base(scheduler) {}
-        public LogMessageNotifier() {}
+        public LogMessageNotifier(IScheduler scheduler) : base(scheduler) { }
+        public LogMessageNotifier() { }
 
         public void Trace(string message, Exception e = null) => Report(LogMessage.CreateTrace(message, e));
         public void Debug(string message, Exception e = null) => Report(LogMessage.CreateDebug(message, e));
@@ -109,5 +109,41 @@ namespace PMMEditor.Log
         void Warn(string message, Exception e);
         void Error(string message, Exception e);
         void Fatal(string message, Exception e);
+    }
+
+    public static class LoggerOnTaskExtensions
+    {
+        public static Task ContinueOnlyOnFaultedErrorLog(
+            this Task self, ILogger logger, string errorMessage, Action<Task> func)
+        {
+            return self.ContinueWith(t =>
+            {
+                logger.Error(errorMessage, t.Exception.InnerException);
+                func?.Invoke(t);
+            }, TaskContinuationOptions.OnlyOnFaulted);
+        }
+
+        public static Task ContinueOnlyOnFaultedErrorLog(
+            this Task self, ILogger logger, string errorMessage = "Unknown", Action func = null)
+        {
+            return ContinueOnlyOnFaultedErrorLog(self, logger, errorMessage, t => func?.Invoke());
+        }
+
+
+        public static Task<U> ContinueOnlyOnFaultedErrorLog<T, U>(
+            this Task<T> self, ILogger logger, string errorMessage, Func<Task<T>, U> func)
+        {
+            return self.ContinueWith(t =>
+            {
+                logger.Error(errorMessage, t.Exception.InnerException);
+                return func.Invoke(t);
+            }, TaskContinuationOptions.OnlyOnFaulted);
+        }
+
+        public static Task<U> ContinueOnlyOnFaultedErrorLog<T, U>(
+            this Task<T> self, ILogger logger, string errorMessage, Func<U> func)
+        {
+            return ContinueOnlyOnFaultedErrorLog(self, logger, errorMessage, t => func());
+        }
     }
 }

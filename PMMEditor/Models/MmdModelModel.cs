@@ -172,16 +172,16 @@ namespace PMMEditor.Models
             }
         }
 
-        public async Task Set(PmmStruct.ModelData modelData)
+        public async Task SetAsync(PmmStruct.ModelData modelData)
         {
             _modelData = modelData;
             Name = modelData.Name;
             NameEnglish = modelData.NameEn;
             FilePath = modelData.Path;
 
-            var data = Pmd.ReadFile(modelData.Path);
+            var data = await Pmd.ReadFileAsync(modelData.Path).ConfigureAwait(false);
             IKList = data.IKs;
-            await CreateBonesAsync(modelData, data.Bones);
+            await CreateBonesAsync(modelData, data.Bones).ConfigureAwait(false);
         }
 
         private Task CreateBonesAsync(PmmStruct.ModelData modelData, IList<PmdStruct.Bone> bones)
@@ -193,21 +193,20 @@ namespace PMMEditor.Models
         {
             var keyFrame =
                 KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>
-                    .CreateKeyFrameArray(modelData?.BoneKeyFrames).Result;
+                    .CreateKeyFrameArray(modelData?.BoneKeyFrames);
             BoneKeyList.Clear();
 
-            var res = Task.WhenAll(bones.Select(
-                async (item, id) =>
-                    await Task.Run(() =>
-                    {
-                        var boneInitFrame =
-                            modelData?.BoneInitFrames.Zip(modelData?.BoneName, (x, y) => (bone: x, name: y))
-                                      .First(t => t.name == item.Name).bone;
-                        return CreateBone(item, id, bones, keyFrame, boneInitFrame);
-                    }))).Result;
+            var res = bones.Select(
+                (item, id) => Task.Run(() =>
+                {
+                    var boneInitFrame =
+                        modelData?.BoneInitFrames.Zip(modelData?.BoneName, (x, y) => (bone: x, name: y))
+                                  .First(t => t.name == item.Name).bone;
+                    return CreateBone(item, id, bones, keyFrame, boneInitFrame);
+                }));
             foreach (var item in res)
             {
-                BoneKeyList.Add(item);
+                BoneKeyList.Add(item.Result);
             }
         }
 

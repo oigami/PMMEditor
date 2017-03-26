@@ -176,14 +176,6 @@ namespace PMMEditor.Models
             return preData;
         }
 
-        public async Task CreateKeyFrameAsync<TIn>(
-            TIn[] frame,
-            TIn initFrame,
-            Func<TIn, T> createFunc) where TIn : PmmStruct.IKeyFrame
-        {
-            await Task.Run(() => CreateKeyFrame(frame, initFrame, createFunc));
-        }
-
         public void CreateKeyFrame<TIn>(
             TIn[] frame,
             TIn initFrame,
@@ -201,27 +193,24 @@ namespace PMMEditor.Models
         }
 
 
-        public static async Task<TKeyFrame[]> CreateKeyFrameArray<TKeyFrame>(List<TKeyFrame> boneKeyFrames)
+        public static TKeyFrame[] CreateKeyFrameArray<TKeyFrame>(List<TKeyFrame> boneKeyFrames)
             where TKeyFrame : PmmStruct.IKeyFrame
         {
-            return await Task.Run(() =>
+            if (boneKeyFrames == null)
             {
-                if (boneKeyFrames == null)
-                {
-                    return null;
-                }
-                int maxDataIndex = 0;
-                foreach (var item in boneKeyFrames)
-                {
-                    maxDataIndex = Math.Max(maxDataIndex, item.DataIndex);
-                }
-                var res = new TKeyFrame[maxDataIndex + 1];
-                foreach (var item in boneKeyFrames)
-                {
-                    res[item.DataIndex] = item;
-                }
-                return res;
-            });
+                return null;
+            }
+            int maxDataIndex = 0;
+            foreach (var item in boneKeyFrames)
+            {
+                maxDataIndex = Math.Max(maxDataIndex, item.DataIndex);
+            }
+            var res = new TKeyFrame[maxDataIndex + 1];
+            foreach (var item in boneKeyFrames)
+            {
+                res[item.DataIndex] = item;
+            }
+            return res;
         }
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;

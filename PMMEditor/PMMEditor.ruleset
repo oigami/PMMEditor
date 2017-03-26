@@ -108,6 +108,7 @@
     <Rule Id="RCS1143" Action="Warning" />
     <Rule Id="RCS1165" Action="Hidden" />
     <Rule Id="RCS1168" Action="Hidden" />
+    <Rule Id="RCS1174" Action="Warning" />
     <Rule Id="RCS1176" Action="None" />
     <Rule Id="RCS1177" Action="None" />
   </Rules>
