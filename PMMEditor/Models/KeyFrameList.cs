@@ -292,6 +292,7 @@ namespace PMMEditor.Models
         /// ソース内の要素の数 <see cref = "T:System.Collections.Generic.ICollection`1" />
         /// から使用可能な領域よりも大きい <paramref name = "arrayIndex" /> 変換先の末尾に <paramref name = "array" />します。
         /// </exception>
+        /// <exception cref="NotImplementedException"></exception>
         public void CopyTo(KeyValuePair<int, T>[] array, int arrayIndex)
         {
             throw new NotImplementedException();
@@ -470,6 +471,7 @@ namespace PMMEditor.Models
         /// <paramref name = "index" /> 変換先の末尾に <paramref name = "array" />します。またはコピー元の
         /// <see cref = "T:System.Collections.ICollection" /> の型をコピー先の <paramref name = "array" /> の型に自動的にキャストすることはできません。
         /// </exception>
+        /// <exception cref="NotImplementedException"></exception>
         public void CopyTo(Array array, int index)
         {
             throw new NotImplementedException();
@@ -505,6 +507,7 @@ namespace PMMEditor.Models
         /// <exception cref = "T:System.ArgumentNullException">
         /// <paramref name = "key" /> は null です。
         /// </exception>
+        /// <exception cref="NotImplementedException"></exception>
         public bool Contains(object key)
         {
             throw new NotImplementedException();
@@ -524,6 +527,7 @@ namespace PMMEditor.Models
         /// <see cref = "T:System.Collections.IDictionary" /> は読み取り専用です。-または- <see cref = "T:System.Collections.IDictionary" />
         /// のサイズが固定されています。
         /// </exception>
+        /// <exception cref="NotImplementedException"></exception>
         public void Add(object key, object value)
         {
             throw new NotImplementedException();
@@ -562,9 +566,10 @@ namespace PMMEditor.Models
         /// <see cref = "T:System.Collections.IDictionary" /> オブジェクトは読み取り専用です。または <see cref = "T:System.Collections.IDictionary" />
         /// のサイズが固定されています。
         /// </exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public void Remove(object key)
         {
-            throw new NotImplementedException();
+            throw new InvalidOperationException();
         }
 
         /// <summary> 指定したキーを持つ要素を取得または設定します。 </summary>
@@ -578,6 +583,7 @@ namespace PMMEditor.Models
         /// オブジェクトは読み取り専用です。または プロパティを設定すると、 <paramref name = "key" /> 、コレクションに存在しません、
         /// <see cref = "T:System.Collections.IDictionary" /> のサイズが固定されています。
         /// </exception>
+        /// <exception cref="NotImplementedException"></exception>
         object IDictionary.this[object key]
         {
             get { throw new NotImplementedException(); }

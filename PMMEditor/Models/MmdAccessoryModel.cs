@@ -55,7 +55,7 @@ namespace PMMEditor.Models
 
                 list.CreateKeyFrame(keyFrame, accessoryData.InitFrame, i =>
                 {
-                    var res = new BoneKeyFrame
+                    return new BoneKeyFrame
                     {
                         IsSelected = i.IsSelected,
                         IsShadowEnabled = i.IsShadowEnabled,
@@ -66,7 +66,6 @@ namespace PMMEditor.Models
                         Translation = new Point3D(i.Translation[0], i.Translation[1], i.Translation[2]),
                         Transparency = i.Transparency
                     };
-                    return res;
                 });
                 return list;
             }));

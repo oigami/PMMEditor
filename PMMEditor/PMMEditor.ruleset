@@ -80,17 +80,24 @@
     <Rule Id="RCS1010" Action="Error" />
     <Rule Id="RCS1015" Action="Error" />
     <Rule Id="RCS1015FadeOut" Action="None" />
+    <Rule Id="RCS1019" Action="Error" />
+    <Rule Id="RCS1020" Action="Warning" />
     <Rule Id="RCS1021FadeOut" Action="None" />
     <Rule Id="RCS1022" Action="Warning" />
+    <Rule Id="RCS1036" Action="None" />
     <Rule Id="RCS1037" Action="Error" />
     <Rule Id="RCS1038" Action="Error" />
     <Rule Id="RCS1039" Action="Error" />
     <Rule Id="RCS1040" Action="Error" />
+    <Rule Id="RCS1043" Action="Info" />
+    <Rule Id="RCS1044" Action="Error" />
     <Rule Id="RCS1045" Action="Warning" />
     <Rule Id="RCS1046" Action="Info" />
     <Rule Id="RCS1050" Action="Hidden" />
     <Rule Id="RCS1052" Action="Warning" />
-    <Rule Id="RCS1054" Action="Info" />
+    <Rule Id="RCS1054" Action="Warning" />
+    <Rule Id="RCS1057" Action="Warning" />
+    <Rule Id="RCS1059" Action="Info" />
     <Rule Id="RCS1061" Action="Info" />
     <Rule Id="RCS1062" Action="Error" />
     <Rule Id="RCS1066" Action="Warning" />
@@ -101,13 +108,25 @@
     <Rule Id="RCS1077" Action="Warning" />
     <Rule Id="RCS1084" Action="Error" />
     <Rule Id="RCS1087" Action="Error" />
+    <Rule Id="RCS1089FadeOut" Action="Info" />
+    <Rule Id="RCS1095" Action="Warning" />
     <Rule Id="RCS1097" Action="Error" />
     <Rule Id="RCS1106" Action="Error" />
     <Rule Id="RCS1120" Action="Warning" />
+    <Rule Id="RCS1124" Action="Info" />
+    <Rule Id="RCS1126" Action="Error" />
     <Rule Id="RCS1128" Action="Error" />
+    <Rule Id="RCS1134" Action="Warning" />
+    <Rule Id="RCS1137" Action="Warning" />
+    <Rule Id="RCS1140" Action="Error" />
     <Rule Id="RCS1143" Action="Warning" />
+    <Rule Id="RCS1145" Action="Error" />
+    <Rule Id="RCS1146" Action="Error" />
+    <Rule Id="RCS1151" Action="Error" />
+    <Rule Id="RCS1162" Action="Info" />
     <Rule Id="RCS1165" Action="Hidden" />
     <Rule Id="RCS1168" Action="Hidden" />
+    <Rule Id="RCS1173" Action="Error" />
     <Rule Id="RCS1174" Action="Warning" />
     <Rule Id="RCS1176" Action="None" />
     <Rule Id="RCS1177" Action="None" />

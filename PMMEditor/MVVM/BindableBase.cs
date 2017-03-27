@@ -18,6 +18,7 @@ namespace PMMEditor.MVVM
             return true;
         }
     }
+
     public class BindableViewModel : ViewModel
     {
         protected bool SetProperty<T>(ref T t, T val, [CallerMemberName] string propertyName = "")
@@ -31,6 +32,7 @@ namespace PMMEditor.MVVM
             return true;
         }
     }
+
     public class BindableDisposableBase : BindableBase, IDisposable
     {
         protected readonly CompositeDisposable CompositeDisposables = new CompositeDisposable();

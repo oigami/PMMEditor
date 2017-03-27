@@ -59,8 +59,7 @@ namespace PMMEditor.Views.Timeline
             var filterCallback = new HitTestFilterCallback(
                 element =>
                 {
-                    var item = element as TimelineItem;
-                    if (item != null)
+                    if (element is TimelineItem item)
                     {
                         _rangeSelectedElements.Add(item);
                         item.IsSelected = true;

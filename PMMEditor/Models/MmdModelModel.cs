@@ -265,7 +265,7 @@ namespace PMMEditor.Models
             {
                 list.CreateKeyFrame(keyFrame, boneInitFrame, listBone =>
                 {
-                    var res = new BoneKeyFrame
+                    return new BoneKeyFrame
                     {
                         Position =
                             new Vector3(listBone.Translation[0], listBone.Translation[1], listBone.Translation[2]),
@@ -279,7 +279,6 @@ namespace PMMEditor.Models
                         IsPhysicsDisabled = listBone.IsPhysicsDisabled,
                         IsSelected = listBone.IsSelected
                     };
-                    return res;
                 });
             }
 

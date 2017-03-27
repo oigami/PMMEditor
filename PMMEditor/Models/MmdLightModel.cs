@@ -38,7 +38,7 @@ namespace PMMEditor.Models
 
                 list.CreateKeyFrame(keyFrame, lightInitFrame, i =>
                 {
-                    var res = new BoneKeyFrame
+                    return new BoneKeyFrame
                     {
                         IsSelected = i.IsSelected,
                         Translation = new Point3D(i.X, i.Y, i.Z),
@@ -50,7 +50,6 @@ namespace PMMEditor.Models
                             ScA = 1.0f
                         }
                     };
-                    return res;
                 });
                 return list;
             }));

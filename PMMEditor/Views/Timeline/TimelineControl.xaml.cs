@@ -97,7 +97,7 @@ namespace PMMEditor.Views.Timeline
             return res;
         }
 
-        public new void UnselectAll()
+        new public void UnselectAll()
         {
             var list = SelectedItems.Cast<TimelineItem>().ToList();
             foreach (var timelineItem in list)

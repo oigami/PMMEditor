@@ -129,7 +129,7 @@ namespace PMMEditor.Models
 
                 list.CreateKeyFrame(keyFrame, cameraInitFrame, i =>
                 {
-                    var res = new BoneKeyFrame
+                    return new BoneKeyFrame
                     {
                         IsSelected = i.IsSelected,
                         IsParse = i.IsParse,
@@ -146,7 +146,6 @@ namespace PMMEditor.Models
                         InterpolationDistance = createArray4(i.InterpolationDistance),
                         InterpolationRotaiton = createArray4(i.InterpolationRotation)
                     };
-                    return res;
                 });
                 return list;
             }));

@@ -87,8 +87,7 @@ namespace PMMEditor.Views.Graphics
         private void OnItemsSourceChanged(DependencyPropertyChangedEventArgs args)
         {
             {
-                var oldChanged = args.OldValue as INotifyCollectionChanged;
-                if (oldChanged != null)
+                if (args.OldValue is INotifyCollectionChanged oldChanged)
                 {
                     oldChanged.CollectionChanged -= ChangedOnCollectionChanged;
                 }
@@ -97,8 +96,7 @@ namespace PMMEditor.Views.Graphics
             }
 
 
-            var changed = args.NewValue as INotifyCollectionChanged;
-            if (changed != null)
+            if (args.NewValue is INotifyCollectionChanged changed)
             {
                 changed.CollectionChanged += ChangedOnCollectionChanged;
             }

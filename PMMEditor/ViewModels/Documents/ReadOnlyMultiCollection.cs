@@ -104,9 +104,10 @@ namespace PMMEditor.ViewModels.Documents
         /// <exception cref = "T:System.NotSupportedException">
         /// <see cref = "T:System.Collections.Generic.ICollection`1" /> は読み取り専用です。
         /// </exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public void Add(T item)
         {
-            throw new NotImplementedException();
+            throw new InvalidOperationException();
         }
 
         /// <summary>
@@ -115,9 +116,10 @@ namespace PMMEditor.ViewModels.Documents
         /// <exception cref = "T:System.NotSupportedException">
         /// <see cref = "T:System.Collections.Generic.ICollection`1" /> は読み取り専用です。
         /// </exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public void Clear()
         {
-            throw new NotImplementedException();
+            throw new InvalidOperationException();
         }
 
         /// <summary>
@@ -130,6 +132,7 @@ namespace PMMEditor.ViewModels.Documents
         /// true が <paramref name = "item" /> に存在する場合は <see cref = "T:System.Collections.Generic.ICollection`1" />
         /// 。それ以外の場合は false。
         /// </returns>
+        /// <exception cref="NotImplementedException"></exception>
         public bool Contains(T item)
         {
             throw new NotImplementedException();
@@ -154,6 +157,7 @@ namespace PMMEditor.ViewModels.Documents
         /// ソース内の要素の数 <see cref = "T:System.Collections.Generic.ICollection`1" />
         /// から使用可能な領域よりも大きい <paramref name = "arrayIndex" /> 変換先の末尾に <paramref name = "array" />します。
         /// </exception>
+        /// <exception cref="NotImplementedException"></exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
             throw new NotImplementedException();
@@ -171,9 +175,10 @@ namespace PMMEditor.ViewModels.Documents
         /// <exception cref = "T:System.NotSupportedException">
         /// <see cref = "T:System.Collections.Generic.ICollection`1" /> は読み取り専用です。
         /// </exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public bool Remove(T item)
         {
-            throw new NotImplementedException();
+            throw new InvalidOperationException();
         }
 
         /// <summary>
@@ -197,6 +202,7 @@ namespace PMMEditor.ViewModels.Documents
         /// <see cref = "T:System.Collections.Generic.IList`1" /> 内で検索するオブジェクト。
         /// </param>
         /// <returns> リストに存在する場合は <paramref name = "item" /> のインデックス。それ以外の場合は -1。 </returns>
+        /// <exception cref="NotImplementedException"></exception>
         public int IndexOf(T item)
         {
             throw new NotImplementedException();
@@ -215,9 +221,10 @@ namespace PMMEditor.ViewModels.Documents
         /// <exception cref = "T:System.NotSupportedException">
         /// <see cref = "T:System.Collections.Generic.IList`1" /> は読み取り専用です。
         /// </exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public void Insert(int index, T item)
         {
-            throw new NotImplementedException();
+            throw new InvalidOperationException();
         }
 
         /// <summary> 指定したインデックスにある <see cref = "T:System.Collections.Generic.IList`1" /> 項目を削除します。 </summary>
@@ -228,9 +235,10 @@ namespace PMMEditor.ViewModels.Documents
         /// <exception cref = "T:System.NotSupportedException">
         /// <see cref = "T:System.Collections.Generic.IList`1" /> は読み取り専用です。
         /// </exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public void RemoveAt(int index)
         {
-            throw new NotImplementedException();
+            throw new InvalidOperationException();
         }
 
         /// <summary> 指定したインデックスにある要素を取得または設定します。 </summary>
@@ -243,6 +251,7 @@ namespace PMMEditor.ViewModels.Documents
         /// このプロパティが設定されていますが、
         /// <see cref = "T:System.Collections.Generic.IList`1" /> が読み取り専用です。
         /// </exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public T this[int index]
         {
             get
@@ -253,7 +262,7 @@ namespace PMMEditor.ViewModels.Documents
                 }
                 return _other[index - _countList[0]];
             }
-            set { throw new NotImplementedException(); }
+            set { throw new InvalidOperationException(); }
         }
     }
 

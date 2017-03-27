@@ -368,7 +368,7 @@ namespace PMMEditor.Views.Timeline
                 indexWidth = IndexWidth;
             }
 
-            var size = new Size
+            return new Size
             {
                 Width = Math.Min(availableSize.Width,
                                  GetPosition(double.IsNaN(MaxIndex) ? index : MaxIndex, indexWidth,
@@ -377,7 +377,6 @@ namespace PMMEditor.Views.Timeline
                 Height =
                     Math.Min(height + Margin.Top + Margin.Bottom, availableSize.Height)
             };
-            return size;
         }
 
         #endregion

@@ -887,7 +887,7 @@ namespace PMMEditor.MMDFileParser
 
         private PmmStruct.LightFrame ReadLightFrame(bool isInit)
         {
-            var o = new PmmStruct.LightFrame
+            return new PmmStruct.LightFrame
             {
                 DataIndex = isInit ? -1 : ReadInt(),
                 FrameNumber = ReadInt(),
@@ -901,7 +901,6 @@ namespace PMMEditor.MMDFileParser
                 Z = ReadFloat(),
                 IsSelected = ReadBool()
             };
-            return o;
         }
 
         #endregion LightingTypeRead
@@ -910,7 +909,7 @@ namespace PMMEditor.MMDFileParser
 
         private PmmStruct.ModelData.MorphFrame ReadMorphFrame(bool isInit)
         {
-            var o = new PmmStruct.ModelData.MorphFrame
+            return new PmmStruct.ModelData.MorphFrame
             {
                 DataIndex = isInit ? -1 : ReadInt(),
                 FrameNumber = ReadInt(),
@@ -919,7 +918,6 @@ namespace PMMEditor.MMDFileParser
                 Value = ReadFloat(),
                 IsSelected = ReadBool()
             };
-            return o;
         }
 
         #endregion MorphTypeRead
@@ -928,7 +926,7 @@ namespace PMMEditor.MMDFileParser
 
         private PmmStruct.ModelData.BoneInitFrame ReadBoneFrame(bool isInitFrame)
         {
-            var o = new PmmStruct.ModelData.BoneInitFrame
+            return new PmmStruct.ModelData.BoneInitFrame
             {
                 DataIndex = isInitFrame ? -1 : ReadInt(),
                 FrameNumber = ReadInt(),
@@ -943,7 +941,6 @@ namespace PMMEditor.MMDFileParser
                 IsSelected = ReadBool(),
                 IsPhysicsDisabled = ReadBool()
             };
-            return o;
         }
 
         private PmmStruct.ModelData.BoneCurrentData ReadBoneCurrentData()
@@ -989,14 +986,13 @@ namespace PMMEditor.MMDFileParser
 
         private PmmStruct.CCameraCurrentData ReadCameraCurrentData()
         {
-            var o = new PmmStruct.CCameraCurrentData
+            return new PmmStruct.CCameraCurrentData
             {
                 EyePosition = ReadArray(3, ReadFloat),
                 TargetPosition = ReadArray(3, ReadFloat),
                 Rotation = ReadArray(3, ReadFloat),
                 IsOrthro = ReadBool()
             };
-            return o;
         }
 
         #endregion CameraTypeRead
