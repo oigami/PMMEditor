@@ -21,24 +21,25 @@ namespace PMMEditor.Models.MMDModel
 
         public MmdModelBoneCalculator BoneCalculator { get; }
 
+        public readonly IFrameControlModel _frameControlModel;
+
         public BoneFrameControlModel(IFrameControlModel nowFrame, MmdModelModel model)
         {
+            _frameControlModel = nowFrame;
             _boneList = model.BoneKeyList;
             CompositeDisposables.Add(Disposable.Create(() => _boneList = null));
 
             BoneCalculator = new MmdModelBoneCalculator(model);
             BoneCalculator.InitBoneCalc();
+        }
 
-            nowFrame.ObserveProperty(_ => _.NowFrame).Subscribe(_ =>
+        public void Update()
+        {
+            ResizeList();
+            foreach (var i in Enumerable.Range(0, _boneList.Count))
             {
-                ResizeList();
-                foreach (var i in Enumerable.Range(0, _boneList.Count))
-                {
-                    _boneList[i].KeyFrameList.GetInterpolationData(_).CopyTo(NowBoneKeyFrame[i]);
-                }
-                BoneCalculator.Update(NowBoneKeyFrame);
-            }).AddTo(CompositeDisposables);
-
+                _boneList[i].KeyFrameList.GetInterpolationData(_frameControlModel.NowFrame).CopyTo(NowBoneKeyFrame[i]);
+            }
             BoneCalculator.Update(NowBoneKeyFrame);
         }
 

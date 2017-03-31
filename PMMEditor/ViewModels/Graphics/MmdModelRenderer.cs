@@ -24,6 +24,10 @@ namespace PMMEditor.ViewModels.Graphics
 
     public interface IRenderer : IInitializable
     {
+        void UpdateTask();
+
+        void Update();
+
         void Render(Direct3D11.DeviceContext context);
     }
 
@@ -38,7 +42,8 @@ namespace PMMEditor.ViewModels.Graphics
 
         public Direct3D11.ShaderResourceView BoneSrv { get; private set; }
 
-        public MmdModelBoneCalculatorSRV(MmdModelRendererSource model, BoneFrameControlModel controller, Direct3D11.Device device)
+        public MmdModelBoneCalculatorSRV(
+            MmdModelRendererSource model, BoneFrameControlModel controller, Direct3D11.Device device)
         {
             _device = device;
             _model = model;
@@ -67,6 +72,11 @@ namespace PMMEditor.ViewModels.Graphics
                 }).AddTo(CompositeDisposables);
             BoneSrv = new Direct3D11.ShaderResourceView(_device, _boneTexture2D)
                 .AddTo(CompositeDisposables);
+        }
+
+        public void UpdateBone()
+        {
+            _controller.Update();
         }
 
         public void Update(Direct3D11.DeviceContext context, int nowFrame)
@@ -212,5 +222,16 @@ namespace PMMEditor.ViewModels.Graphics
 
             BoneRenderer.Render(target);
         }
+
+        public void UpdateTask()
+        {
+            if (!IsInitialized.Value)
+            {
+                return;
+            }
+            _boneCalculator.UpdateBone();
+        }
+
+        public void Update() { }
     }
 }

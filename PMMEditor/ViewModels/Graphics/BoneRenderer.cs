@@ -135,7 +135,7 @@ namespace PMMEditor.ViewModels.Graphics
             Task.Run(() => InitializeInternal());
         }
 
-        public void Initialize(Direct3D11.Device device) {}
+        public void Initialize(Direct3D11.Device device) { }
 
         public void Render(Direct3D11.DeviceContext context)
         {
@@ -157,5 +157,8 @@ namespace PMMEditor.ViewModels.Graphics
             context.Draw(_numVertex, 0);
             context.OutputMerger.DepthStencilState = depthState;
         }
+
+        public void UpdateTask() { }
+        public void Update() { }
     }
 }
