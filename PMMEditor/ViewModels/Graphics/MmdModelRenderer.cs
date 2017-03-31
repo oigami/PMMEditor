@@ -22,13 +22,26 @@ namespace PMMEditor.ViewModels.Graphics
         void Initialize(Direct3D11.Device device);
     }
 
+    public struct RenderArgs
+    {
+        public RenderArgs(Direct3D11.DeviceContext context, Matrix viewProj)
+        {
+            Context = context;
+            ViewProj = viewProj;
+        }
+
+        public Direct3D11.DeviceContext Context { get; }
+
+        public Matrix ViewProj { get; }
+    }
+
     public interface IRenderer : IInitializable
     {
         void UpdateTask();
 
         void Update();
 
-        void Render(Direct3D11.DeviceContext context);
+        void Render(RenderArgs args);
     }
 
 
@@ -176,7 +189,7 @@ namespace PMMEditor.ViewModels.Graphics
             m *= Matrix.PerspectiveFovLH((float) Math.PI / 3, 1.4f, 0.1f, 10000000f);
             m.Transpose();
             _viewProjConstantBuffer =
-                Direct3D11.Buffer.Create(_device, Direct3D11.BindFlags.ConstantBuffer, ref m).AddTo(CompositeDisposables);
+                Direct3D11.Buffer.Create<Matrix>(_device, Direct3D11.BindFlags.ConstantBuffer, ref m).AddTo(CompositeDisposables);
 
             _isInternalInitialized.Value = true;
         }
@@ -189,16 +202,16 @@ namespace PMMEditor.ViewModels.Graphics
             Task.Run(() => InitializeInternal());
         }
 
-        public void Render(Direct3D11.DeviceContext target)
+        public void Render(RenderArgs args)
         {
             if (!IsInitialized.Value)
             {
                 return;
             }
-
-            // view,proj行列の設定
-            var m = _model.Camera.CreateWorldViewProj();
+            var target = args.Context;
+            var m = args.ViewProj;
             m.Transpose();
+            // view,proj行列の設定
             target.UpdateSubresource(ref m, _viewProjConstantBuffer);
 
             // シェーダの設定
@@ -220,7 +233,7 @@ namespace PMMEditor.ViewModels.Graphics
                 target.DrawIndexed(material.IndexNum, material.IndexStart, 0);
             }
 
-            BoneRenderer.Render(target);
+            BoneRenderer.Render(args);
         }
 
         public void UpdateTask()

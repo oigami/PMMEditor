@@ -137,12 +137,13 @@ namespace PMMEditor.ViewModels.Graphics
 
         public void Initialize(Direct3D11.Device device) { }
 
-        public void Render(Direct3D11.DeviceContext context)
+        public void Render(RenderArgs args)
         {
             if (IsInitialized.Value == false)
             {
                 return;
             }
+            var context = args.Context;
             context.InputAssembler.InputLayout = _inputLayout;
 
             var depthState = context.OutputMerger.DepthStencilState;

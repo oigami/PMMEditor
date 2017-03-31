@@ -14,17 +14,82 @@ namespace PMMEditor.Models
 {
     public class CameraControlModel : BindableDisposableBase
     {
-        public float Distance { get; set; } = 45;
+        private Matrix _view;
+        private float _distance = 45;
+        private Vector3 _rotate = new Vector3(0, 0, 0);
+        private bool _isUpdateRequired = true;
+        private Vector3 _lookAt = new Vector3(0, 10, 0);
 
-        public Vector3 Rotate { get; set; } = new Vector3(0, 0, 0);
+        public float Distance
+        {
+            get { return _distance; }
+            set
+            {
+                if (Math.Abs(_distance - value) < 1e-5f)
+                {
+                    return;
+                }
+                _distance = value;
+                _isUpdateRequired = true;
+            }
+        }
 
-        public Vector3 LookAt { get; set; } = new Vector3(0, 10, 0);
+        public Vector3 Rotate
+        {
+            get { return _rotate; }
+            set
+            {
+                if (_rotate == value)
+                {
+                    return;
+                }
+                _rotate = value;
+                _isUpdateRequired = true;
+            }
+        }
+
+        public Vector3 LookAt
+        {
+            get { return _lookAt; }
+            set
+            {
+                if (_lookAt == value)
+                {
+                    return;
+                }
+                _lookAt = value;
+                _isUpdateRequired = true;
+            }
+        }
 
         public Matrix Perspective { get; set; } = Matrix.PerspectiveFovLH((float) Math.PI / 3, 1.4f, 1f, 10000000f);
 
+        public Matrix View
+        {
+            get
+            {
+                if (_isUpdateRequired)
+                {
+                    _view = CreateView();
+                }
+                return _view;
+            }
+            set { SetProperty(ref _view, value); }
+        }
+
+        public void AddRotate(Vector3 addRot)
+        {
+            Rotate += addRot;
+        }
+
+        public void AddLookAt(Vector3 addLookAt)
+        {
+            LookAt += addLookAt;
+        }
 
         public CameraControlModel(Model model)
         {
+            View = CreateView();
             model.FrameControlModel.ObserveProperty(_ => _.NowFrame).Subscribe(_ =>
             {
                 if (BoneKeyList.Count == 0)
@@ -35,6 +100,7 @@ namespace PMMEditor.Models
                 Distance = -data.Distance;
                 Rotate = data.Rotation;
                 LookAt = data.Translation;
+                View = CreateView();
             }).AddTo(CompositeDisposables);
         }
 
@@ -43,22 +109,17 @@ namespace PMMEditor.Models
             return Perspective;
         }
 
-        public Matrix CreateView()
-        {
-            return Matrix.Translation(0, 0, Distance);
-        }
-
-        public Matrix CreateWorld()
+        private Matrix CreateView()
         {
             var w = Matrix.Translation(LookAt);
-            w *= Matrix.RotationY(-Rotate.Y) * Matrix.RotationX(-Rotate.X);
+            w *= Matrix.RotationX(-Rotate.X) * Matrix.RotationY(-Rotate.Y);
 
-            return Matrix.Invert(w);
+            return Matrix.Invert(w) * Matrix.Translation(0, 0, Distance);
         }
 
-        public Matrix CreateWorldViewProj()
+        public Matrix CreateViewProj()
         {
-            return CreateWorld() * CreateView() * CreateProjection();
+            return CreateView() * CreateProjection();
         }
 
         public class BoneKeyFrame : KeyFrameBase

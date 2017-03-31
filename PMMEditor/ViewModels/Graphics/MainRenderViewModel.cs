@@ -12,19 +12,23 @@ namespace PMMEditor.ViewModels.Graphics
     {
         private readonly GraphicsModel _model;
 
+        public CameraControlModel CameraControl { get; set; }
+
         public MainRenderViewModel(Model model)
         {
             _model = model.GraphicsModel;
+            CameraControl = model.Camera;
             Device = _model.Device;
             NowFrame = model.FrameControlModel.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty()
                             .AddTo(CompositeDisposables);
-            Items = _model.MmdModelSource.ToReadOnlyReactiveCollection(_ => (IRenderer) new MmdModelRenderer(model, _), UIDispatcherScheduler.Default)
+            Items = _model.MmdModelSource.ToReadOnlyReactiveCollection(_ => (IRenderer) new MmdModelRenderer(model, _),
+                                                                       UIDispatcherScheduler.Default)
                           .AddTo(CompositeDisposables);
         }
 
         public ReadOnlyReactiveProperty<int> NowFrame { get; }
 
-        public void Initialize() {}
+        public void Initialize() { }
 
         public static string GetTitle() => "Main Camera";
         public static string GetContentId() => typeof(MainRenderViewModel).FullName + GetTitle();
