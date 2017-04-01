@@ -17,7 +17,26 @@ namespace PMMEditor.Models
         private Matrix _view;
         private float _distance = 45;
         private Vector3 _rotate = new Vector3(0, 0, 0);
+
         private bool _isUpdateRequired = true;
+
+        private bool IsUpdateRequired
+        {
+            get { return _isUpdateRequired; }
+            set
+            {
+                if (_isUpdateRequired == value)
+                {
+                    return;
+                }
+                _isUpdateRequired = value;
+                if (value)
+                {
+                    RaisePropertyChanged(nameof(View));
+                }
+            }
+        }
+
         private Vector3 _lookAt = new Vector3(0, 10, 0);
 
         public float Distance
@@ -25,12 +44,10 @@ namespace PMMEditor.Models
             get { return _distance; }
             set
             {
-                if (Math.Abs(_distance - value) < 1e-5f)
+                if (SetProperty(ref _distance, value))
                 {
-                    return;
+                    IsUpdateRequired = true;
                 }
-                _distance = value;
-                _isUpdateRequired = true;
             }
         }
 
@@ -39,12 +56,10 @@ namespace PMMEditor.Models
             get { return _rotate; }
             set
             {
-                if (_rotate == value)
+                if (SetProperty(ref _rotate, value))
                 {
-                    return;
+                    IsUpdateRequired = true;
                 }
-                _rotate = value;
-                _isUpdateRequired = true;
             }
         }
 
@@ -53,12 +68,10 @@ namespace PMMEditor.Models
             get { return _lookAt; }
             set
             {
-                if (_lookAt == value)
+                if (SetProperty(ref _lookAt, value))
                 {
-                    return;
+                    IsUpdateRequired = true;
                 }
-                _lookAt = value;
-                _isUpdateRequired = true;
             }
         }
 
@@ -68,13 +81,13 @@ namespace PMMEditor.Models
         {
             get
             {
-                if (_isUpdateRequired)
+                if (IsUpdateRequired)
                 {
                     _view = CreateView();
+                    IsUpdateRequired = false;
                 }
                 return _view;
             }
-            set { SetProperty(ref _view, value); }
         }
 
         public void AddRotate(Vector3 addRot)
@@ -89,7 +102,6 @@ namespace PMMEditor.Models
 
         public CameraControlModel(Model model)
         {
-            View = CreateView();
             model.FrameControlModel.ObserveProperty(_ => _.NowFrame).Subscribe(_ =>
             {
                 if (BoneKeyList.Count == 0)
@@ -100,7 +112,6 @@ namespace PMMEditor.Models
                 Distance = -data.Distance;
                 Rotate = data.Rotation;
                 LookAt = data.Translation;
-                View = CreateView();
             }).AddTo(CompositeDisposables);
         }
 

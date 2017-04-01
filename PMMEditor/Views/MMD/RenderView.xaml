@@ -7,29 +7,43 @@
   xmlns:local="clr-namespace:PMMEditor.Views.MMD"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:mmd="clr-namespace:PMMEditor.ViewModels.MMD"
+  xmlns:system="clr-namespace:System;assembly=mscorlib"
   d:DataContext="{d:DesignInstance mmd:MainViewViewModel}"
   d:DesignHeight="500"
   d:DesignWidth="500"
   mc:Ignorable="d">
   <UserControl.Resources>
-    <DataTemplate x:Key="ButtonTextBox">
-      <DockPanel>
-        <Button
-          MinWidth="20"
-          Margin="2"
-          Padding="0"
-          VerticalAlignment="Center"
-          Content="{TemplateBinding Content}" />
-        <TextBox
-          MinWidth="60"
-          Margin="2"
-          VerticalAlignment="Center" />
-      </DockPanel>
-    </DataTemplate>
+    <system:Single x:Key="Zero">0</system:Single>
+    <system:Single x:Key="DefaultLookAtYValue">10</system:Single>
+    <system:Single x:Key="DefaultDistanceValue">45</system:Single>
+
+    <Style
+      x:Key="Button"
+      TargetType="{x:Type Button}">
+      <Style.Setters>
+        <Setter Property="MinWidth" Value="20" />
+        <Setter Property="MinHeight" Value="20" />
+        <Setter Property="Margin" Value="2" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+      </Style.Setters>
+    </Style>
+    <Style
+      x:Key="TextBox"
+      TargetType="{x:Type TextBox}">
+      <Style.Setters>
+        <Setter Property="Width" Value="60" />
+        <Setter Property="Margin" Value="2" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Padding" Value="0" />
+      </Style.Setters>
+    </Style>
   </UserControl.Resources>
   <DockPanel>
     <Grid DockPanel.Dock="Top">
-      <Label HorizontalAlignment="Left" Content="Camera Light Accessory" />
+      <Label
+        HorizontalAlignment="Left"
+        Content="Camera Light Accessory" />
       <DockPanel HorizontalAlignment="Right">
         <DockPanel Margin="0,0,10,0">
           <Button
@@ -77,19 +91,13 @@
         Command="{Binding ChangeModelCameraModeCommand}">
         <Button.Style>
           <Style TargetType="{x:Type Button}">
-            <Setter
-              Property="Content"
-              Value="ToModel" />
+            <Setter Property="Content" Value="ToModel" />
             <Style.Triggers>
               <DataTrigger
                 Binding="{Binding IsCharacterModelMode.Value}"
                 Value="True">
-                <Setter
-                  Property="Content"
-                  Value="ToCamera" />
+                <Setter Property="Content" Value="ToCamera" />
               </DataTrigger>
-        
-
             </Style.Triggers>
           </Style>
         </Button.Style>
@@ -97,32 +105,81 @@
       <WrapPanel>
         <DockPanel>
           <Label Content="camera" />
-          <ContentControl ContentTemplate="{StaticResource ButtonTextBox}">
-            x
-          </ContentControl>
-          <ContentControl ContentTemplate="{StaticResource ButtonTextBox}">
-            y
-          </ContentControl>
-          <ContentControl ContentTemplate="{StaticResource ButtonTextBox}">
-            z
-          </ContentControl>
+          <DockPanel>
+            <Button
+              Command="{Binding RendererViewModel.LookAtXResetCommand}"
+              CommandParameter="{StaticResource Zero}"
+              Content="x"
+              Style="{StaticResource Button}" />
+            <TextBox
+              Style="{StaticResource TextBox}"
+              Text="{Binding RendererViewModel.CameraControl.LookAtX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0:0.00}'}" />
+          </DockPanel>
+          <DockPanel>
+            <Button
+              Command="{Binding RendererViewModel.LookAtYResetCommand}"
+              CommandParameter="{StaticResource DefaultLookAtYValue}"
+              Content="y"
+              Style="{StaticResource Button}" />
+            <TextBox
+              Style="{StaticResource TextBox}"
+              Text="{Binding RendererViewModel.CameraControl.LookAtY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0:0.00}'}" />
+          </DockPanel>
+          <DockPanel>
+            <Button
+              Command="{Binding RendererViewModel.LookAtZResetCommand}"
+              CommandParameter="{StaticResource Zero}"
+              Content="z"
+              Style="{StaticResource Button}" />
+            <TextBox
+              Style="{StaticResource TextBox}"
+              Text="{Binding RendererViewModel.CameraControl.LookAtZ, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0:0.00}'}" />
+          </DockPanel>
         </DockPanel>
         <DockPanel>
           <Label Content="angle" />
-          <ContentControl ContentTemplate="{StaticResource ButtonTextBox}">
-            x
-          </ContentControl>
-          <ContentControl ContentTemplate="{StaticResource ButtonTextBox}">
-            y
-          </ContentControl>
-          <ContentControl ContentTemplate="{StaticResource ButtonTextBox}">
-            z
-          </ContentControl>
-        </DockPanel>
-        <ContentControl ContentTemplate="{StaticResource ButtonTextBox}">
-          dist
-        </ContentControl>
+          <DockPanel>
+            <Button
+              Command="{Binding RendererViewModel.RotateXResetCommand}"
+              CommandParameter="{StaticResource Zero}"
+              Content="x"
+              Style="{StaticResource Button}" />
+            <TextBox
+              Style="{StaticResource TextBox}"
+              Text="{Binding RendererViewModel.CameraControl.RotateX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0:0.00}'}" />
+          </DockPanel>
+          <DockPanel>
+            <Button
+              Command="{Binding RendererViewModel.RotateYResetCommand}"
+              CommandParameter="{StaticResource Zero}"
+              Content="y"
+              Style="{StaticResource Button}" />
+            <TextBox
+              Style="{StaticResource TextBox}"
+              Text="{Binding RendererViewModel.CameraControl.RotateY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0:0.00}'}" />
 
+          </DockPanel>
+          <DockPanel>
+            <Button
+              Command="{Binding RendererViewModel.RotateZResetCommand}"
+              CommandParameter="{StaticResource Zero}"
+              Content="z"
+              Style="{StaticResource Button}" />
+            <TextBox
+              Style="{StaticResource TextBox}"
+              Text="{Binding RendererViewModel.CameraControl.RotateZ, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0:0.00}'}" />
+          </DockPanel>
+        </DockPanel>
+        <DockPanel>
+          <Button
+            Command="{Binding RendererViewModel.DistanceResetCommand}"
+            CommandParameter="{StaticResource DefaultDistanceValue}"
+            Content="dist"
+            Style="{StaticResource Button}" />
+          <TextBox
+            Style="{StaticResource TextBox}"
+            Text="{Binding RendererViewModel.CameraControl.Distance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0:0.00}'}" />
+        </DockPanel>
       </WrapPanel>
     </DockPanel>
     <graphics:MainCameraView DataContext="{Binding RendererViewModel, Mode=OneWay}" />

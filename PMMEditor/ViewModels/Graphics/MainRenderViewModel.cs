@@ -1,4 +1,5 @@
 ﻿using System;
+using Livet.Commands;
 using PMMEditor.Models;
 using PMMEditor.Models.Graphics;
 using PMMEditor.ViewModels.Documents;
@@ -12,18 +13,26 @@ namespace PMMEditor.ViewModels.Graphics
     {
         private readonly GraphicsModel _model;
 
-        public CameraControlModel CameraControl { get; set; }
+        public CameraControlViewModel CameraControl { get; }
 
         public MainRenderViewModel(Model model)
         {
             _model = model.GraphicsModel;
-            CameraControl = model.Camera;
+            CameraControl = new CameraControlViewModel(model.Camera);
             Device = _model.Device;
             NowFrame = model.FrameControlModel.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty()
                             .AddTo(CompositeDisposables);
             Items = _model.MmdModelSource.ToReadOnlyReactiveCollection(_ => (IRenderer) new MmdModelRenderer(model, _),
                                                                        UIDispatcherScheduler.Default)
                           .AddTo(CompositeDisposables);
+            LookAtXResetCommand = new ListenerCommand<float>(_ => CameraControl.LookAtX = _);
+            LookAtYResetCommand = new ListenerCommand<float>(_ => CameraControl.LookAtY = _);
+            LookAtZResetCommand = new ListenerCommand<float>(_ => CameraControl.LookAtZ = _);
+
+            RotateXResetCommand = new ListenerCommand<float>(_ => CameraControl.RotateX = _);
+            RotateYResetCommand = new ListenerCommand<float>(_ => CameraControl.RotateY = _);
+            RotateZResetCommand = new ListenerCommand<float>(_ => CameraControl.RotateZ = _);
+            DistanceResetCommand = new ListenerCommand<float>(_ => CameraControl.Distance.Value = _);
         }
 
         public ReadOnlyReactiveProperty<int> NowFrame { get; }
@@ -40,5 +49,19 @@ namespace PMMEditor.ViewModels.Graphics
         public ReadOnlyReactiveCollection<IRenderer> Items { get; set; }
 
         public Device Device { get; private set; }
+
+        public ListenerCommand<float> LookAtXResetCommand { get; }
+
+        public ListenerCommand<float> LookAtYResetCommand { get; }
+
+        public ListenerCommand<float> LookAtZResetCommand { get; }
+
+        public ListenerCommand<float> RotateXResetCommand { get; }
+
+        public ListenerCommand<float> RotateYResetCommand { get; }
+
+        public ListenerCommand<float> RotateZResetCommand { get; }
+
+        public ListenerCommand<float> DistanceResetCommand { get; }
     }
 }

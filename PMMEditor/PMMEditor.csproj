@@ -98,6 +98,7 @@
     <Compile Include="SharpDxControl\D3D11Image.cs" />
     <Compile Include="SharpDxControl\D3D9Instance.cs" />
     <Compile Include="SharpDxControl\SharpDxControl.cs" />
+    <Compile Include="ViewModels\CameraControlViewModel.cs" />
     <Compile Include="ViewModels\Documents\BoneTimelineViewModel.cs" />
     <Compile Include="ViewModels\Documents\CameraLightAccessoryViewModel.cs" />
     <Compile Include="ViewModels\Documents\ReadOnlyMultiCollection.cs" />

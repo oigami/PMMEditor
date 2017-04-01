@@ -26,7 +26,7 @@
             D3DWidth="800"
             Stretch="Uniform">
             <i:Interaction.Behaviors>
-              <behaviors:DefaultCameraMouseControlBehavior CameraControl="{Binding CameraControl}" />
+              <behaviors:DefaultCameraMouseControlBehavior CameraControl="{Binding CameraControl.Model}" />
             </i:Interaction.Behaviors>
           </graphics1:MainRenderer>
         </ControlTemplate>
