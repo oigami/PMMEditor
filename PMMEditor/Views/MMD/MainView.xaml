@@ -4,6 +4,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:graphics="clr-namespace:PMMEditor.Views.Graphics"
+  xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+  xmlns:io="http://schemas.livet-mvvm.net/2011/wpf"
   xmlns:local="clr-namespace:PMMEditor.Views.MMD"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:mmd="clr-namespace:PMMEditor.ViewModels.MMD"
@@ -11,8 +13,8 @@
   d:DataContext="{d:DesignInstance mmd:MainViewViewModel}"
   d:DesignHeight="600"
   d:DesignWidth="800"
-  mc:Ignorable="d"
-  Focusable="True">
+  Focusable="True"
+  mc:Ignorable="d">
   <UserControl.InputBindings>
     <KeyBinding
       Command="{Binding NextFrameCommand}"
@@ -26,6 +28,23 @@
   </UserControl.InputBindings>
   <DockPanel>
     <Menu DockPanel.Dock="Top">
+      <MenuItem Header="File">
+        <MenuItem Header="Open">
+          <i:Interaction.Triggers>
+            <i:EventTrigger EventName="Click">
+              <io:OpenFileDialogInteractionMessageAction>
+                <io:DirectInteractionMessage
+                  CallbackMethodName="Open"
+                  CallbackMethodTarget="{Binding}">
+                  <io:OpeningFileSelectionMessage
+                    Title="ファイルを開く"
+                    Filter="すべてのファイル(*.*)|*.*" />
+                </io:DirectInteractionMessage>
+              </io:OpenFileDialogInteractionMessageAction>
+            </i:EventTrigger>
+          </i:Interaction.Triggers>
+        </MenuItem>
+      </MenuItem>
       <MenuItem Header="Help" />
     </Menu>
     <StackPanel
@@ -34,7 +53,7 @@
       <local:ModelManipulation />
       <local:BoneManipulation />
       <local:FacialManipulation />
-      <local:ViewAndPlay DataContext="{Binding RendererViewModel.CameraControl}"/>
+      <local:ViewAndPlay DataContext="{Binding RendererViewModel.CameraControl}" />
     </StackPanel>
     <Grid DockPanel.Dock="Top">
       <Grid.ColumnDefinitions>

@@ -100,6 +100,16 @@ namespace PMMEditor.ViewModels.MMD
                 });
         }
 
+        public async void Open(OpeningFileSelectionMessage m)
+        {
+            if (m.Response == null)
+            {
+                return;
+            }
+
+            await _model.OpenPmm(m.Response[0]);
+        }
+
         public ReactiveProperty<bool> IsCharacterModelMode { get; }
 
         public IList<TimelineViewModelBase> ModelAndCameraList { get; }

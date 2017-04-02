@@ -38,6 +38,11 @@ namespace PMMEditor.Models
             await MmdAccessoryList.Set(PmmStruct.AccessoryDatas);
         }
 
+        public async Task OpenPmm(string filepath)
+        {
+            await OpenPmm(await Task.Run(() => File.ReadAllBytes(filepath)));
+        }
+
 
         public async Task SavePmm(string filename)
         {
