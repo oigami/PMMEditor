@@ -12,6 +12,15 @@ using SharpDX;
 
 namespace PMMEditor.Models
 {
+    public static class MathUtil
+    {
+        public static Vector3 DegreesToRadians(Vector3 vec)
+        {
+            return new Vector3(SharpDX.MathUtil.DegreesToRadians(vec.X),
+                               SharpDX.MathUtil.DegreesToRadians(vec.Y),
+                               SharpDX.MathUtil.DegreesToRadians(vec.Z));
+        }
+    }
     public class CameraControlModel : BindableDisposableBase
     {
         private Matrix _view;
@@ -51,6 +60,9 @@ namespace PMMEditor.Models
             }
         }
 
+        /// <summary>
+        /// ラジアン角度
+        /// </summary>
         public Vector3 Rotate
         {
             get { return _rotate; }
@@ -95,9 +107,22 @@ namespace PMMEditor.Models
             Rotate += addRot;
         }
 
-        public void AddLookAt(Vector3 addLookAt)
+        public void Transform(Vector2 addLookAt)
         {
-            LookAt += addLookAt;
+            var w = Matrix.RotationX(-Rotate.X) * Matrix.RotationY(-Rotate.Y);
+            var add = Vector3.Transform(new Vector3(addLookAt.X, addLookAt.Y, 0), w);
+            LookAt += new Vector3(add.X, add.Y, add.Z);
+        }
+
+        public void SetView(Vector3 lookAt, Vector3 rotate, float distance)
+        {
+            _lookAt = lookAt;
+            _rotate = rotate;
+            _distance = distance;
+            RaisePropertyChanged(nameof(LookAt));
+            RaisePropertyChanged(nameof(Rotate));
+            RaisePropertyChanged(nameof(Distance));
+            IsUpdateRequired = true;
         }
 
         public CameraControlModel(Model model)
@@ -122,10 +147,10 @@ namespace PMMEditor.Models
 
         private Matrix CreateView()
         {
-            var w = Matrix.Translation(LookAt);
-            w *= Matrix.RotationX(-Rotate.X) * Matrix.RotationY(-Rotate.Y);
+            var w = Matrix.Translation(-LookAt);
+            w *= Matrix.RotationY(Rotate.Y) * Matrix.RotationX(Rotate.X);
 
-            return Matrix.Invert(w) * Matrix.Translation(0, 0, Distance);
+            return w * Matrix.Translation(0, 0, Distance);
         }
 
         public Matrix CreateViewProj()

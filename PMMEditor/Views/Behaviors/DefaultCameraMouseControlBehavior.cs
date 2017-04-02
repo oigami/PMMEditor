@@ -67,11 +67,10 @@ namespace PMMEditor.Views.Behaviors
             }
             else if (e.LeftButton == MouseButtonState.Pressed)
             {
-                var lookat = new Vector3(-(float) (pos.X - _startedPoint.X),
-                                         (float) (pos.Y - _startedPoint.Y),
-                                         0.0f);
+                var lookat = new Vector2(-(float) (pos.X - _startedPoint.X),
+                                         (float) (pos.Y - _startedPoint.Y));
                 lookat /= 10.0f;
-                CameraControl.AddLookAt(lookat);
+                CameraControl.Transform(lookat);
                 AssociatedObject.View = CameraControl.View;
             }
             _startedPoint = pos;
