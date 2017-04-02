@@ -17,6 +17,7 @@ namespace PMMEditor.Views.Behaviors
     internal class DefaultCameraMouseControlBehavior : BehaviorBase<RendererPanel>
     {
         private CompositeDisposable _compositeDisposable;
+
         protected override void OnSetup()
         {
             _compositeDisposable?.Dispose();
@@ -109,10 +110,14 @@ namespace PMMEditor.Views.Behaviors
 
         private void OnCameraControlChanged()
         {
+            if (AssociatedObject == null)
+            {
+                return;
+            }
             AssociatedObject.View = CameraControl.View;
             AssociatedObject.Projection = CameraControl.CreateProjection();
-            CameraControl.ObserveProperty(_ => _.View).Subscribe(view => AssociatedObject.View = view).AddTo(_compositeDisposable);
-
+            CameraControl.ObserveProperty(_ => _.View).Subscribe(view => AssociatedObject.View = view)
+                         .AddTo(_compositeDisposable);
         }
     }
 }

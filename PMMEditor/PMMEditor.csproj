@@ -112,6 +112,9 @@
     <Compile Include="Views\Behaviors\BehaviorBase.cs" />
     <Compile Include="Views\Behaviors\DefaultCameraMouseControlBehavior.cs" />
     <Compile Include="Views\Behaviors\ScrollViewportSyncronizingBehavior.cs" />
+    <Compile Include="Views\ExceptionDialog.xaml.cs">
+      <DependentUpon>ExceptionDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Graphics\MmdModelItemsControl.cs" />
     <Compile Include="ViewModels\Graphics\MmdModelRenderer.cs" />
     <Compile Include="ViewModels\Panes\AccessoryViewModel.cs" />
@@ -178,6 +181,10 @@
       <DependentUpon>TimelineControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Timeline\TimelinePanel.cs" />
+    <Page Include="Views\ExceptionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Graphics\MainCameraView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

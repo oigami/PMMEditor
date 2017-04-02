@@ -10,11 +10,21 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:mmd="clr-namespace:PMMEditor.ViewModels.MMD"
   xmlns:timeline="clr-namespace:PMMEditor.Views.Timeline"
+  xmlns:views="clr-namespace:PMMEditor.Views"
   d:DataContext="{d:DesignInstance mmd:MainViewViewModel}"
   d:DesignHeight="600"
   d:DesignWidth="800"
   Focusable="True"
   mc:Ignorable="d">
+  <i:Interaction.Triggers>
+    <io:InteractionMessageTrigger
+        MessageKey="Transition"
+        Messenger="{Binding Messenger, Mode=OneWay}">
+      <io:TransitionInteractionMessageAction
+          Mode="Modal"
+          WindowType="{x:Type views:ExceptionDialog}" />
+    </io:InteractionMessageTrigger>
+  </i:Interaction.Triggers>
   <UserControl.InputBindings>
     <KeyBinding
       Command="{Binding NextFrameCommand}"

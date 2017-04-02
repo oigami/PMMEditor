@@ -7,18 +7,38 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
+using Livet;
 using Livet.Commands;
+using Livet.Messaging;
 using Livet.Messaging.IO;
 using PMMEditor.Log;
 using PMMEditor.Models;
 using PMMEditor.MVVM;
 using PMMEditor.ViewModels.Documents;
 using PMMEditor.ViewModels.Graphics;
+using PMMEditor.Views;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 
 namespace PMMEditor.ViewModels.MMD
 {
+    public class LogMessageViewModel : BindableViewModel
+    {
+        public LogMessageViewModel(LogMessage log)
+        {
+            _log = log;
+        }
+
+        public string Message => _log.Message;
+
+        public Exception Exception => _log.Exception;
+
+        public LogLevel Level => _log.Level;
+
+        private LogMessage _log;
+    }
+
     internal class MainViewViewModel : BindableViewModel
     {
         private readonly Model _model;
@@ -30,7 +50,7 @@ namespace PMMEditor.ViewModels.MMD
             NextFrameCommand = new ViewModelCommand(() => _model.FrameControlModel.NextFrame());
             SwitchPlayAndStopCommand = new ViewModelCommand(() => _model.FrameControlModel.SwitchPlayAndStop());
 
-            logger.Subscribe(log => { MessageBox.Show(log.ToString()); });
+            logger.Subscribe(log => Messenger.Raise(new TransitionMessage(new LogMessageViewModel(log), "Transition")));
             RendererViewModel = new MainRenderViewModel(_model);
 
             // モデル操作のためのデータ
