@@ -12,6 +12,7 @@ using PMMEditor.MVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using SharpDX;
+using MathUtil = PMMEditor.Models.MathUtil;
 
 namespace PMMEditor.ViewModels
 {
@@ -41,12 +42,16 @@ namespace PMMEditor.ViewModels
         {
             var str = (string) value;
             var s = str.Split(',');
-            var arr = new float[s.Length];
-            for (int i = 0; i < s.Length; i++)
+            if (s.Length != 3)
             {
-                float.TryParse(s[i], out arr[i]);
+                throw new ArgumentException(nameof(value));
             }
-            return new Vector3(arr[0], arr[1], arr[2]);
+            var res = Vector3.Zero;
+            for (int i = 0; i < 3; i++)
+            {
+                res[i] = float.Parse(s[i].Trim());
+            }
+            return res;
         }
     }
 
@@ -137,7 +142,7 @@ namespace PMMEditor.ViewModels
 
         public ListenerCommand<CameraData> ResetCameraCommand
             => _resetCameraCommand ?? (_resetCameraCommand = new ListenerCommand<CameraData>(
-                _ => Model.SetView(_.LookAt, Models.MathUtil.DegreesToRadians(_.Rotate), _.Distance)));
+                _ => Model.SetView(_.LookAt, MathUtil.DegreesToRadians(_.Rotate), _.Distance)));
 
         #endregion
     }
