@@ -31,11 +31,23 @@ namespace PMMEditor.Models
 
         public async Task OpenPmm(byte[] pmmData)
         {
-            PmmStruct = await Pmm.ReadAsync(pmmData);
-            MmdModelList.Set(PmmStruct.ModelDatas);
-            await Camera.Set(PmmStruct.CameraKeyFrames, PmmStruct.CameraInitFrame);
-            await Light.Set(PmmStruct.LightKeyFrames, PmmStruct.LightInitFrame);
-            await MmdAccessoryList.Set(PmmStruct.AccessoryDatas);
+            try
+            {
+                PmmStruct = await Pmm.ReadAsync(pmmData);
+                MmdModelList.Set(PmmStruct.ModelDatas);
+                await Camera.Set(PmmStruct.CameraKeyFrames, PmmStruct.CameraInitFrame);
+                await Light.Set(PmmStruct.LightKeyFrames, PmmStruct.LightInitFrame);
+                await MmdAccessoryList.Set(PmmStruct.AccessoryDatas);
+            }
+            catch (Exception e)
+            {
+                Logger.Error("OpenPmm Error", e);
+                PmmStruct = null;
+                MmdModelList.Clear();
+                Camera.Clear();
+                Light.Clear();
+                MmdAccessoryList.Clear();
+            }
         }
 
         public async Task OpenPmm(string filepath)

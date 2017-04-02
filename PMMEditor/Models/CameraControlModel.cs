@@ -21,11 +21,12 @@ namespace PMMEditor.Models
                                SharpDX.MathUtil.DegreesToRadians(vec.Z));
         }
     }
+
     public class CameraControlModel : BindableDisposableBase
     {
         private Matrix _view;
-        private float _distance = 45;
-        private Vector3 _rotate = new Vector3(0, 0, 0);
+        private float _distance;
+        private Vector3 _rotate;
 
         private bool _isUpdateRequired = true;
 
@@ -46,7 +47,7 @@ namespace PMMEditor.Models
             }
         }
 
-        private Vector3 _lookAt = new Vector3(0, 10, 0);
+        private Vector3 _lookAt;
 
         public float Distance
         {
@@ -127,6 +128,7 @@ namespace PMMEditor.Models
 
         public CameraControlModel(Model model)
         {
+            Clear();
             model.FrameControlModel.ObserveProperty(_ => _.NowFrame).Subscribe(_ =>
             {
                 if (BoneKeyList.Count == 0)
@@ -246,6 +248,12 @@ namespace PMMEditor.Models
                 });
                 return list;
             }));
+        }
+
+        public void Clear()
+        {
+            BoneKeyList.Clear();
+            SetView(new Vector3(0, 10, 0), Vector3.Zero, 45.0f);
         }
     }
 }

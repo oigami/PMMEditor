@@ -54,5 +54,10 @@ namespace PMMEditor.Models
                 return list;
             }));
         }
+
+        public void Clear()
+        {
+            BoneKeyList.Clear();
+        }
     }
 }

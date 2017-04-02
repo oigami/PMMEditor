@@ -42,5 +42,10 @@ namespace PMMEditor.Models
                 _drawOrder.Add(i.Value);
             }
         }
+
+        public void Clear()
+        {
+            List.Clear();
+        }
     }
 }
