@@ -5,9 +5,46 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:local="clr-namespace:PMMEditor.Views.MMD"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:system="clr-namespace:System;assembly=mscorlib"
+  xmlns:viewModels="clr-namespace:PMMEditor.ViewModels"
+  d:DataContext="{d:DesignInstance viewModels:CameraControlViewModel}"
   d:DesignHeight="300"
   d:DesignWidth="300"
   mc:Ignorable="d">
+  <UserControl.Resources>
+    <viewModels:CameraData
+      x:Key="Front"
+      Distance="45"
+      LookAt="0,10,0"
+      Rotate="0,0,0" />
+
+    <viewModels:CameraData
+      x:Key="Back"
+      Distance="45"
+      LookAt="0,10,0"
+      Rotate="0,180,0" />
+
+    <viewModels:CameraData
+      x:Key="Top"
+      Distance="45"
+      LookAt="0,10,0"
+      Rotate="90,0,0" />
+    <viewModels:CameraData
+      x:Key="Left"
+      Distance="45"
+      LookAt="0,10,0"
+      Rotate="0,90,0" />
+    <viewModels:CameraData
+      x:Key="Right"
+      Distance="45"
+      LookAt="0,10,0"
+      Rotate="0,-90,0" />
+    <viewModels:CameraData
+      x:Key="Bottom"
+      Distance="45"
+      LookAt="0,10,0"
+      Rotate="-90,0,0" />
+  </UserControl.Resources>
   <StackPanel Orientation="Vertical">
     <Label
       HorizontalAlignment="Center"
@@ -28,16 +65,22 @@
         Grid.Row="0"
         Grid.Column="0"
         Margin="2"
+        Command="{Binding ResetCameraCommand}"
+        CommandParameter="{StaticResource Front}"
         Content="front" />
       <Button
         Grid.Row="0"
         Grid.Column="1"
         Margin="2"
+        Command="{Binding ResetCameraCommand}"
+        CommandParameter="{StaticResource Back}"
         Content="back" />
       <Button
         Grid.Row="0"
         Grid.Column="2"
         Margin="2"
+        Command="{Binding ResetCameraCommand}"
+        CommandParameter="{StaticResource Top}"
         Content="top" />
       <ToggleButton
         Grid.Row="0"
@@ -49,17 +92,23 @@
         Grid.Row="1"
         Grid.Column="0"
         Margin="2"
+        Command="{Binding ResetCameraCommand}"
+        CommandParameter="{StaticResource Left}"
         Content="left" />
       <Button
         Grid.Row="1"
         Grid.Column="1"
         Margin="2"
+        Command="{Binding ResetCameraCommand}"
+        CommandParameter="{StaticResource Right}"
         Content="right" />
       <Button
         Grid.Row="1"
         Grid.Column="2"
         Margin="2"
-        Content="camera" />
+        Command="{Binding ResetCameraCommand}"
+        CommandParameter="{StaticResource Bottom}"
+        Content="Bottom" />
     </Grid>
     <UniformGrid Columns="2">
       <CheckBox

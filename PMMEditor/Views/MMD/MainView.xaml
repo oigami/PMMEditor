@@ -34,7 +34,7 @@
       <local:ModelManipulation />
       <local:BoneManipulation />
       <local:FacialManipulation />
-      <local:ViewAndPlay />
+      <local:ViewAndPlay DataContext="{Binding RendererViewModel.CameraControl}"/>
     </StackPanel>
     <Grid DockPanel.Dock="Top">
       <Grid.ColumnDefinitions>
