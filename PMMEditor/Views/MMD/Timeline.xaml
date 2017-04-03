@@ -30,24 +30,18 @@
       HorizontalAlignment="Center"
       Content="Frame Manipulation"
       DockPanel.Dock="Top" />
-    <Grid DockPanel.Dock="Top">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="10*" />
-        <ColumnDefinition Width="30*" />
-        <ColumnDefinition Width="10*" />
-      </Grid.ColumnDefinitions>
+    <DockPanel DockPanel.Dock="Top">
       <Button
-        Grid.Column="0"
         Margin="2"
         HorizontalAlignment="Left"
-        Content="&lt;" />
+        Content="&lt;"
+        DockPanel.Dock="Left" />
       <Button
-        Grid.Column="2"
         Margin="2"
         HorizontalAlignment="Right"
         Content="&gt;"
         DockPanel.Dock="Right" />
-      <DockPanel Grid.Column="1">
+      <DockPanel HorizontalAlignment="Center">
         <Button
           Margin="2"
           Content=".&lt;" />
@@ -62,9 +56,11 @@
           Margin="2"
           Content="&gt;"
           DockPanel.Dock="Right" />
-        <TextBox Margin="2" />
+        <TextBox
+          Width="80"
+          Margin="2" />
       </DockPanel>
-    </Grid>
+    </DockPanel>
     <DockPanel
       HorizontalAlignment="Center"
       DockPanel.Dock="Bottom">
@@ -99,12 +95,13 @@
       </Grid>
       <Grid>
         <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="13*" />
           <ColumnDefinition Width="10*" />
+          <ColumnDefinition Width="15*" />
         </Grid.ColumnDefinitions>
         <ComboBox
           Grid.Column="0"
-          Margin="10"
+          Margin="2"
+          VerticalAlignment="Center"
           DockPanel.Dock="Left" />
         <Grid
           Grid.Column="1"
@@ -116,15 +113,17 @@
           <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
               <ColumnDefinition />
-              <ColumnDefinition Width="20" />
+              <ColumnDefinition Width="10" />
               <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
             <TextBox Margin="2" />
-            <Label
+            <TextBlock
               Grid.Column="1"
               Margin="0"
-              Content="-" />
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Text="-" />
             <TextBox
               Grid.Column="2"
               Margin="2" />

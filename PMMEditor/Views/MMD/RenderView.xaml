@@ -182,6 +182,13 @@
         </DockPanel>
       </WrapPanel>
     </DockPanel>
-    <graphics:MainCameraView DataContext="{Binding RendererViewModel, Mode=OneWay}" />
+
+    <Border
+      HorizontalAlignment="Center"
+      VerticalAlignment="Center"
+      BorderBrush="Black"
+      BorderThickness="1">
+      <graphics:MainCameraView DataContext="{Binding RendererViewModel, Mode=OneWay}" />
+    </Border>
   </DockPanel>
 </UserControl>
