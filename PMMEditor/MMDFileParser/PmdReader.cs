@@ -317,18 +317,16 @@ namespace PMMEditor.MMDFileParser
     {
         private readonly byte[] _binaryData;
 
-        public PmdReader(byte[] binaryData)
+        public PmdReader(byte[] binaryData) : base(new MemoryStream(binaryData))
         {
             _binaryData = binaryData;
-            _buffer = new byte[256];
         }
 
         public PmdStruct Read()
         {
-            _stream = new MemoryStream(_binaryData);
+            _stream.Seek(0, SeekOrigin.Begin);
             var o = new PmdStruct
             {
-
                 #region ヘッダ
 
                 Magic = ReadFixedString(3),
@@ -346,17 +344,11 @@ namespace PMMEditor.MMDFileParser
                 #endregion
 
                 Materials = ReadVList(ReadMaterial),
-
                 Bones = ReadList(ReadUInt16(), ReadBone),
-
                 IKs = ReadList(ReadUInt16(), ReadIK),
-
                 Skins = ReadList(ReadUInt16(), ReadSkin),
-
                 SkinIndices = ReadList(ReadByte(), ReadUInt16),
-
                 BoneDispNames = ReadList(ReadByte(), () => ReadFixedStringTerminationChar(50)),
-
                 BoneDisps = ReadVList(() => new PmdStruct.BoneDisp
                 {
                     BoneIndex = ReadUInt16(),

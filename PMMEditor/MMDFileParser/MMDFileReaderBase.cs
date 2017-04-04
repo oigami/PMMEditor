@@ -12,10 +12,22 @@ namespace PMMEditor.MMDFileParser
         protected byte[] _buffer;
         protected Stream _stream;
 
+        public Encoding Encoding { get; }
+
+        public MMDFileReaderBase(Stream stream, byte[] tmpBuffer = null, Encoding encoding = null)
+        {
+            _stream = stream;
+            _buffer = tmpBuffer ?? new byte[1024];
+            Encoding = encoding ?? Encoding.GetEncoding("Shift_jis");
+        }
         #region PrimitiveTypeRead
 
         protected byte[] ReadByte(int size)
         {
+            if (_buffer.Length < size)
+            {
+                _buffer = new byte[Math.Max(size, _buffer.Length * 2)];
+            }
             var len = _stream.Read(_buffer, 0, size);
             if (len != size)
             {
@@ -111,7 +123,12 @@ namespace PMMEditor.MMDFileParser
 
         protected string ReadFixedString(int count)
         {
-            return Encoding.GetEncoding("shift_jis").GetString(ReadByte(count), 0, count);
+            return ReadFixedString(count, Encoding);
+        }
+
+        protected string ReadFixedString(int count, Encoding encoding)
+        {
+            return encoding.GetString(ReadByte(count), 0, count);
         }
 
         protected string ReadFixedStringTerminationChar(int count)

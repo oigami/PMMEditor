@@ -587,18 +587,14 @@ namespace PMMEditor.MMDFileParser
 
     internal class PmmReader : MMDFileReaderBase
     {
-        private readonly byte[] _binaryData;
-
-        public PmmReader(byte[] binaryData)
+        public PmmReader(byte[] binaryData) : base(new MemoryStream(binaryData))
         {
-            _binaryData = binaryData;
-            _buffer = new byte[256];
         }
 
         public PmmStruct Read()
         {
             var data = new PmmStruct();
-            _stream = new MemoryStream(_binaryData);
+            _stream.Seek(0, SeekOrigin.Begin);
             data.FormatId = ReadFixedStringTerminationChar(30);
             if (data.FormatId != "Polygon Movie maker 0002")
             {
