@@ -55,15 +55,6 @@ namespace PMMEditor.MMDFileParser
 
         #region 材質
 
-        public class Color
-        {
-            public float R { get; set; }
-
-            public float G { get; set; }
-
-            public float B { get; set; }
-        }
-
         public class Material
         {
             public Color Diffuse { get; set; }
@@ -338,18 +329,18 @@ namespace PMMEditor.MMDFileParser
 
                 #region 頂点
 
-                Vertices = ReadVList(ReadVertex),
-                VertexIndex = ReadVList(ReadUInt16),
+                Vertices = ReadVIntList(ReadVertex),
+                VertexIndex = ReadVIntList(ReadUInt16),
 
                 #endregion
 
-                Materials = ReadVList(ReadMaterial),
+                Materials = ReadVIntList(ReadMaterial),
                 Bones = ReadList(ReadUInt16(), ReadBone),
                 IKs = ReadList(ReadUInt16(), ReadIK),
                 Skins = ReadList(ReadUInt16(), ReadSkin),
                 SkinIndices = ReadList(ReadByte(), ReadUInt16),
                 BoneDispNames = ReadList(ReadByte(), () => ReadFixedStringTerminationChar(50)),
-                BoneDisps = ReadVList(() => new PmdStruct.BoneDisp
+                BoneDisps = ReadVIntList(() => new PmdStruct.BoneDisp
                 {
                     BoneIndex = ReadUInt16(),
                     BoneDispFrameIndex = ReadByte()
@@ -375,12 +366,12 @@ namespace PMMEditor.MMDFileParser
             }
             if (IsRemaining())
             {
-                o.RigidBodies = ReadVList(ReadRigidBody);
+                o.RigidBodies = ReadVIntList(ReadRigidBody);
             }
             if (IsRemaining())
 
             {
-                o.Joints = ReadVList(ReadJoint);
+                o.Joints = ReadVIntList(ReadJoint);
             }
 
             return o;
@@ -509,9 +500,9 @@ namespace PMMEditor.MMDFileParser
             return val.CompareTo(invalidVal) != 0 ? val : (T?) null;
         }
 
-        private PmdStruct.Color ReadColor()
+        private Color ReadColor()
         {
-            return new PmdStruct.Color
+            return new Color
             {
                 R = ReadFloat(),
                 G = ReadFloat(),

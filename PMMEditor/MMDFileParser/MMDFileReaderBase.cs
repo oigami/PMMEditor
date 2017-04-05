@@ -7,12 +7,32 @@ using System.Text;
 
 namespace PMMEditor.MMDFileParser
 {
+    public struct Color
+    {
+        public float R { get; set; }
+
+        public float G { get; set; }
+
+        public float B { get; set; }
+    }
+
+    public struct ColorA
+    {
+        public float R { get; set; }
+
+        public float G { get; set; }
+
+        public float B { get; set; }
+
+        public float A { get; set; }
+    }
+
     internal abstract class MMDFileReaderBase
     {
         protected byte[] _buffer;
         protected Stream _stream;
 
-        public Encoding Encoding { get; }
+        public Encoding Encoding { get; set; }
 
         public MMDFileReaderBase(Stream stream, byte[] tmpBuffer = null, Encoding encoding = null)
         {
@@ -20,6 +40,7 @@ namespace PMMEditor.MMDFileParser
             _buffer = tmpBuffer ?? new byte[1024];
             Encoding = encoding ?? Encoding.GetEncoding("Shift_jis");
         }
+
         #region PrimitiveTypeRead
 
         protected byte[] ReadByte(int size)
@@ -90,7 +111,7 @@ namespace PMMEditor.MMDFileParser
             return t;
         }
 
-        protected T[] ReadVArray<T>(Func<T> func)
+        protected T[] ReadVIntArray<T>(Func<T> func)
         {
             var size = ReadInt();
             return ReadArray(size, func);
@@ -106,7 +127,7 @@ namespace PMMEditor.MMDFileParser
             return t;
         }
 
-        protected List<T> ReadVList<T>(Func<T> func)
+        protected List<T> ReadVIntList<T>(Func<T> func)
         {
             var size = ReadInt();
             return ReadList(size, func);
@@ -116,10 +137,16 @@ namespace PMMEditor.MMDFileParser
 
         #region StringTypeRead
 
-        protected string ReadVString()
+        protected string ReadVByteString()
         {
             return ReadFixedString(ReadByte());
         }
+
+        protected string ReadVIntString()
+        {
+            return ReadFixedString(ReadInt());
+        }
+
 
         protected string ReadFixedString(int count)
         {
@@ -146,6 +173,11 @@ namespace PMMEditor.MMDFileParser
         protected Vector3 ReadVector3()
         {
             return new Vector3(ReadFloat(), ReadFloat(), ReadFloat());
+        }
+
+        protected Vector4 ReadVector4()
+        {
+            return new Vector4(ReadFloat(), ReadFloat(), ReadFloat(), ReadFloat());
         }
 
         protected long RemainingLength()

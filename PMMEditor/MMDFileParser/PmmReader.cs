@@ -617,11 +617,11 @@ namespace PMMEditor.MMDFileParser
             data.ModelDatas = ReadList(modelCount, ReadModelData);
 
             data.CameraInitFrame = ReadCameraFrame(true);
-            data.CameraKeyFrames = ReadVList(() => ReadCameraFrame(false));
+            data.CameraKeyFrames = ReadVIntList(() => ReadCameraFrame(false));
             data.CameraCurrentData = ReadCameraCurrentData();
 
             data.LightInitFrame = ReadLightFrame(true);
-            data.LightKeyFrames = ReadVList(() => ReadLightFrame(false));
+            data.LightKeyFrames = ReadVIntList(() => ReadLightFrame(false));
             data.LightCurrentData = ReadLightCurrentData();
 
             data.SelectedAccessoryIndex = ReadByte();
@@ -668,12 +668,12 @@ namespace PMMEditor.MMDFileParser
 
             data.GravityCurrentData = ReadGravityCurrentData();
             data.GravityInitFrame = ReadGravityKeyFrame(true);
-            data.GravityKeyFrames = ReadVList(() => ReadGravityKeyFrame(false));
+            data.GravityKeyFrames = ReadVIntList(() => ReadGravityKeyFrame(false));
 
             data.IsShowSelfShadow = ReadBool();
             data.SelfShadowCurrentData = ReadFloat();
             data.SelfShadowInitFrame = ReadSelfShadowKeyFrame(true);
-            data.SelfShadowKeyFrames = ReadVList(() => ReadSelfShadowKeyFrame(false));
+            data.SelfShadowKeyFrames = ReadVIntList(() => ReadSelfShadowKeyFrame(false));
 
             data.EdgeColorR = ReadInt();
             data.EdgeColorG = ReadInt();
@@ -777,14 +777,14 @@ namespace PMMEditor.MMDFileParser
             var o = new PmmStruct.ModelData
             {
                 Number = ReadByte(),
-                Name = ReadVString(),
-                NameEn = ReadVString(),
+                Name = ReadVByteString(),
+                NameEn = ReadVByteString(),
                 Path = ReadFixedStringTerminationChar(256),
                 KeyFrameEditorTopLevelRows = ReadByte(),
-                BoneName = ReadVList(ReadVString),
-                MorphName = ReadVList(ReadVString),
-                IkIndex = ReadVList(ReadInt),
-                OpIndex = ReadVList(ReadInt),
+                BoneName = ReadVIntList(ReadVByteString),
+                MorphName = ReadVIntList(ReadVByteString),
+                IkIndex = ReadVIntList(ReadInt),
+                OpIndex = ReadVIntList(ReadInt),
 
                 DrawOrder = ReadByte(),
                 EditIsDisplay = ReadBool(),
@@ -795,14 +795,14 @@ namespace PMMEditor.MMDFileParser
                 LastFrame = ReadInt()
             };
             o.BoneInitFrames = ReadList(o.BoneName.Count, () => ReadBoneFrame(true));
-            o.BoneKeyFrames = ReadVList(() => ReadBoneFrame(false));
+            o.BoneKeyFrames = ReadVIntList(() => ReadBoneFrame(false));
 
             o.MorphInitFrames = ReadList(o.MorphName.Count, () => ReadMorphFrame(true));
-            o.MorphKeyFrames = ReadVList(() => ReadMorphFrame(false));
+            o.MorphKeyFrames = ReadVIntList(() => ReadMorphFrame(false));
 
             o.OpInitFrame = ReadOpFrame(o.IkIndex.Count, o.OpIndex.Count, true);
 
-            o.OpKeyFrames = ReadVList(() => ReadOpFrame(o.IkIndex.Count, o.OpIndex.Count, false));
+            o.OpKeyFrames = ReadVIntList(() => ReadOpFrame(o.IkIndex.Count, o.OpIndex.Count, false));
 
             o.BoneCurrentDatas = ReadList(o.BoneName.Count, ReadBoneCurrentData);
             o.MorphCurrentDatas = ReadList(o.MorphName.Count, ReadFloat);
@@ -855,7 +855,7 @@ namespace PMMEditor.MMDFileParser
                 Path = ReadFixedStringTerminationChar(256),
                 DrawOrder = ReadByte(),
                 InitFrame = ReadAccessoryKeyFrame(true),
-                KeyFrames = ReadVList(() => ReadAccessoryKeyFrame(false))
+                KeyFrames = ReadVIntList(() => ReadAccessoryKeyFrame(false))
             };
             var tmp = new PmmStruct.AccessoryData.DataBody();
             ReadAccessoryDataBody(ref tmp);
