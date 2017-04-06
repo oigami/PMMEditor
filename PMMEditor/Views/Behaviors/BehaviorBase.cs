@@ -19,7 +19,7 @@ namespace PMMEditor.Views.Behaviors
 
         protected override void OnChanged()
         {
-            var target = AssociatedObject;
+            T target = AssociatedObject;
             if (target != null)
             {
                 HookupBehavior(target);
@@ -46,6 +46,7 @@ namespace PMMEditor.Views.Behaviors
             {
                 return;
             }
+
             _weakTarget = new WeakReference(target);
             _isHookedUp = true;
             target.Unloaded += OnTarget_Unloaded;
@@ -59,8 +60,9 @@ namespace PMMEditor.Views.Behaviors
             {
                 return;
             }
+
             _isHookedUp = false;
-            var target = AssociatedObject ?? (T) _weakTarget.Target;
+            T target = AssociatedObject ?? (T) _weakTarget.Target;
             if (target != null)
             {
                 target.Unloaded -= OnTarget_Unloaded;
@@ -75,6 +77,7 @@ namespace PMMEditor.Views.Behaviors
             {
                 return;
             }
+
             _isSetup = true;
             OnSetup();
         }
@@ -85,6 +88,7 @@ namespace PMMEditor.Views.Behaviors
             {
                 return;
             }
+
             _isSetup = false;
             OnCleanup();
         }

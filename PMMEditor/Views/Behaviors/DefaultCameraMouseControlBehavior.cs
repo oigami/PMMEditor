@@ -56,7 +56,8 @@ namespace PMMEditor.Views.Behaviors
             {
                 return;
             }
-            var pos = e.GetPosition(AssociatedObject);
+
+            Point pos = e.GetPosition(AssociatedObject);
             if (e.RightButton == MouseButtonState.Pressed)
             {
                 var rot = new Vector3((float) (pos.Y - _startedPoint.Y),
@@ -83,6 +84,7 @@ namespace PMMEditor.Views.Behaviors
             {
                 return;
             }
+
             CameraControl.Distance -= e.Delta / 100.0f;
             AssociatedObject.View = CameraControl.View;
         }
@@ -103,6 +105,7 @@ namespace PMMEditor.Views.Behaviors
                                               {
                                                   return;
                                               }
+
                                               var me = (DefaultCameraMouseControlBehavior) d;
                                               me.OnCameraControlChanged();
                                           })
@@ -114,6 +117,7 @@ namespace PMMEditor.Views.Behaviors
             {
                 return;
             }
+
             AssociatedObject.View = CameraControl.View;
             AssociatedObject.Projection = CameraControl.CreateProjection();
             CameraControl.ObserveProperty(_ => _.View).Subscribe(view => AssociatedObject.View = view)

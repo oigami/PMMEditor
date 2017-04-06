@@ -47,6 +47,7 @@ namespace PMMEditor.Views.Timeline
             {
                 item.IsSelected = false;
             }
+
             var rect =
                 new RectangleGeometry(
                     new Rect(new Point(Canvas.GetLeft(SelectRangeControl), Canvas.GetTop(SelectRangeControl)),
@@ -65,6 +66,7 @@ namespace PMMEditor.Views.Timeline
                         item.IsSelected = true;
                         return HitTestFilterBehavior.ContinueSkipSelfAndChildren;
                     }
+
                     return HitTestFilterBehavior.Continue;
                 });
 
@@ -86,6 +88,7 @@ namespace PMMEditor.Views.Timeline
                     item.UnselectAll();
                 }
             }
+
             _rangeSelectedElements.Clear();
             _rangeStartPoint = new Point(e.HorizontalOffset, e.VerticalOffset);
         }
@@ -117,6 +120,7 @@ namespace PMMEditor.Views.Timeline
                 {
                     yield break;
                 }
+
                 yield return c.ContentTemplate.FindName("TimelineControl", c) as TimelineControl;
             }
         }
@@ -159,6 +163,7 @@ namespace PMMEditor.Views.Timeline
             {
                 return;
             }
+
             if (KeyFrameMoveDeltaCommand != null)
             {
                 KeyFrameMoveDeltaCommand.Execute(CreateKeyMoveEventArgs(diff));
@@ -175,6 +180,7 @@ namespace PMMEditor.Views.Timeline
                     }
                 }
             }
+
             foreach (var item1 in GetSelectedTimelineItem())
             {
                 item1.Index += diff;

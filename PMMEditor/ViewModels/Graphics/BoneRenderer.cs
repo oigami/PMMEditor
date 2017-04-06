@@ -45,22 +45,23 @@ namespace PMMEditor.ViewModels.Graphics
 
         private void InitializeInternal()
         {
-            var boneNum = _model.Model.BoneKeyList.Count;
+            int boneNum = _model.Model.BoneKeyList.Count;
             // 頂点バッファ生成
-            var vertexArr = _model.Model.BoneKeyList.SelectMany(_ =>
+            Vertex[] vertexArr = _model.Model.BoneKeyList.SelectMany(_ =>
             {
                 if (_.Type == PmdStruct.BoneKind.Invisible
                     || _.TailChildIndex == -1)
                 {
                     return Enumerable.Empty<Vertex>();
                 }
-                var now = (_.Index + boneNum) * 4;
-                var nowX = now % 1024;
-                var nowY = now / 1024;
 
-                var next = (_.TailChildIndex + boneNum) * 4;
-                var nextX = next % 1024;
-                var nextY = next / 1024;
+                int now = (_.Index + boneNum) * 4;
+                int nowX = now % 1024;
+                int nowY = now / 1024;
+
+                int next = (_.TailChildIndex + boneNum) * 4;
+                int nextX = next % 1024;
+                int nextY = next / 1024;
 
                 return new[]
                 {
@@ -89,7 +90,7 @@ namespace PMMEditor.ViewModels.Graphics
                 });
 
             // 頂点シェーダ生成
-            var shaderSource = Resource1.BoneRenderingShader;
+            byte[] shaderSource = Resource1.BoneRenderingShader;
             // UTF-8 BOMチェック
             if (3 <= shaderSource.Length
                 && shaderSource[0] == 0xEF && shaderSource[1] == 0xBB && shaderSource[2] == 0xBF)
@@ -99,16 +100,18 @@ namespace PMMEditor.ViewModels.Graphics
                     shaderSource[i] = (byte) ' ';
                 }
             }
-            var vertexShaderByteCode = ShaderBytecode.Compile(shaderSource, "VS", "vs_4_0", ShaderFlags.Debug);
+
+            CompilationResult vertexShaderByteCode = ShaderBytecode.Compile(shaderSource, "VS", "vs_4_0", ShaderFlags.Debug);
             if (vertexShaderByteCode.HasErrors)
             {
                 Console.WriteLine(vertexShaderByteCode.Message);
                 return;
             }
+
             _vertexShader = new Direct3D11.VertexShader(_device, vertexShaderByteCode);
 
             // インプットレイアウト生成
-            var inputSignature = ShaderSignature.GetInputSignature(vertexShaderByteCode);
+            ShaderSignature inputSignature = ShaderSignature.GetInputSignature(vertexShaderByteCode);
             _inputLayout = new Direct3D11.InputLayout(_device, inputSignature, new[]
             {
                 new Direct3D11.InputElement("BONE_INDEX", 0, Format.R32G32B32_SInt, 0, 0),
@@ -116,12 +119,13 @@ namespace PMMEditor.ViewModels.Graphics
             });
 
             // ピクセルシェーダ生成
-            var pixelShaderByteCode = ShaderBytecode.Compile(shaderSource, "PS", "ps_4_0", ShaderFlags.Debug);
+            CompilationResult pixelShaderByteCode = ShaderBytecode.Compile(shaderSource, "PS", "ps_4_0", ShaderFlags.Debug);
             if (pixelShaderByteCode.HasErrors)
             {
                 Console.WriteLine(pixelShaderByteCode.Message);
                 return;
             }
+
             _pixelShader = new Direct3D11.PixelShader(_device, pixelShaderByteCode);
 
             IsInternalInitialized = true;
@@ -143,10 +147,11 @@ namespace PMMEditor.ViewModels.Graphics
             {
                 return;
             }
-            var context = args.Context;
+
+            Direct3D11.DeviceContext context = args.Context;
             context.InputAssembler.InputLayout = _inputLayout;
 
-            var depthState = context.OutputMerger.DepthStencilState;
+            Direct3D11.DepthStencilState depthState = context.OutputMerger.DepthStencilState;
             context.OutputMerger.DepthStencilState = _boneRenderDepthState;
 
             context.VertexShader.Set(_vertexShader);

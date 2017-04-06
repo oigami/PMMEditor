@@ -158,7 +158,7 @@ namespace PMMEditor.Models
         {
             try
             {
-                var pmd = Pmd.ReadFile(filePath);
+                PmdStruct pmd = Pmd.ReadFile(filePath);
                 Name = pmd.ModelName;
                 NameEnglish = pmd.EnglishName?.ModelName;
                 IKList = pmd.IKs;
@@ -179,7 +179,7 @@ namespace PMMEditor.Models
             NameEnglish = modelData.NameEn;
             FilePath = modelData.Path;
 
-            var data = await Pmd.ReadFileAsync(modelData.Path).ConfigureAwait(false);
+            PmdStruct data = await Pmd.ReadFileAsync(modelData.Path).ConfigureAwait(false);
             IKList = data.IKs;
             await CreateBonesAsync(modelData, data.Bones).ConfigureAwait(false);
         }
@@ -191,15 +191,15 @@ namespace PMMEditor.Models
 
         private void CreateBones(PmmStruct.ModelData modelData, IList<PmdStruct.Bone> bones)
         {
-            var keyFrame =
+            PmmStruct.ModelData.BoneInitFrame[] keyFrame =
                 KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>
                     .CreateKeyFrameArray(modelData?.BoneKeyFrames);
             BoneKeyList.Clear();
 
-            var res = bones.Select(
+            IEnumerable<Task<Bone>> res = bones.Select(
                 (item, id) => Task.Run(() =>
                 {
-                    var boneInitFrame =
+                    PmmStruct.ModelData.BoneInitFrame boneInitFrame =
                         modelData?.BoneInitFrames.Zip(modelData?.BoneName, (x, y) => (bone: x, name: y))
                                   .First(t => t.name == item.Name).bone;
                     return CreateBone(item, id, bones, keyFrame, boneInitFrame);
@@ -216,7 +216,7 @@ namespace PMMEditor.Models
             PmmStruct.ModelData.BoneInitFrame boneInitFrame)
         {
             var outputBone = new Bone();
-            var size = inputBone.Count;
+            int size = inputBone.Count;
             //自分と同じ親で自分よりあとのボーンが兄弟になる
             for (int j = i + 1; j < size; ++j)
             {
@@ -226,6 +226,7 @@ namespace PMMEditor.Models
                     break;
                 }
             }
+
             outputBone.ParentIndex = item.ParentBoneIndex ?? -1;
 
             //自分が親になっていて一番早く現れるボーンが子になる
@@ -242,7 +243,7 @@ namespace PMMEditor.Models
             outputBone.Index = i;
             outputBone.Type = item.Kind;
             outputBone.TailChildIndex = item.TailBoneIndex ?? -1;
-            var modelLocalInitMat = Matrix.Translation(item.Position.X, item.Position.Y, item.Position.Z);
+            Matrix modelLocalInitMat = Matrix.Translation(item.Position.X, item.Position.Y, item.Position.Z);
             outputBone.InitMatModelLocal =
                 outputBone.BoneMatModelLocal = modelLocalInitMat; // モデルローカル座標系
             outputBone.InverseInitMatModelLocal = Matrix.Invert(modelLocalInitMat);

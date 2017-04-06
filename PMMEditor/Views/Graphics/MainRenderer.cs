@@ -58,6 +58,7 @@ namespace PMMEditor.Views.Graphics
             {
                 child.Update();
             }
+
             Matrix viewProj = View * Projection;
             foreach (var child in Children)
             {

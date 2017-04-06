@@ -63,7 +63,7 @@ namespace PMMEditor.Models
 
         public async Task SavePmmJson(string filename, bool isCompress = false)
         {
-            var json = JsonConvert.SerializeObject(PmmStruct, new JsonSerializerSettings
+            string json = JsonConvert.SerializeObject(PmmStruct, new JsonSerializerSettings
             {
                 Culture = new CultureInfo("ja-JP"),
                 DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
@@ -79,10 +79,10 @@ namespace PMMEditor.Models
                     {
                         using (var ds = new ZipArchive(fso, ZipArchiveMode.Create))
                         {
-                            var entry = ds.CreateEntry("pmm.json", CompressionLevel.Optimal);
-                            using (var stream = entry.Open())
+                            ZipArchiveEntry entry = ds.CreateEntry("pmm.json", CompressionLevel.Optimal);
+                            using (Stream stream = entry.Open())
                             {
-                                var data = Encoding.GetEncoding("Shift_JIS").GetBytes(json);
+                                byte[] data = Encoding.GetEncoding("Shift_JIS").GetBytes(json);
                                 stream.Write(data, 0, data.Length);
                             }
                         }
@@ -129,11 +129,12 @@ namespace PMMEditor.Models
         {
             Func<int, int> changeFunc = frame =>
             {
-                var i = changeFrameFunc(frame);
+                int? i = changeFrameFunc(frame);
                 if ((i ?? 1) <= 0)
                 {
                     throw new Exception("frame change error.");
                 }
+
                 return i ?? -1;
             };
             if (isChange.Model)
@@ -200,6 +201,7 @@ namespace PMMEditor.Models
                 {
                     return null;
                 }
+
                 return i - frameCount;
             });
         }

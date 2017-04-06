@@ -39,6 +39,7 @@ namespace PMMEditor.Models
                 {
                     return;
                 }
+
                 _isUpdateRequired = value;
                 if (value)
                 {
@@ -110,8 +111,8 @@ namespace PMMEditor.Models
 
         public void Transform(Vector2 addLookAt)
         {
-            var w = Matrix.RotationX(-Rotate.X) * Matrix.RotationY(-Rotate.Y);
-            var add = Vector3.Transform(new Vector3(addLookAt.X, addLookAt.Y, 0), w);
+            Matrix w = Matrix.RotationX(-Rotate.X) * Matrix.RotationY(-Rotate.Y);
+            Vector4 add = Vector3.Transform(new Vector3(addLookAt.X, addLookAt.Y, 0), w);
             LookAt += new Vector3(add.X, add.Y, add.Z);
         }
 
@@ -135,7 +136,8 @@ namespace PMMEditor.Models
                 {
                     return;
                 }
-                var data = BoneKeyList[0].GetInterpolationData(_);
+
+                BoneKeyFrame data = BoneKeyList[0].GetInterpolationData(_);
                 Distance = -data.Distance;
                 Rotate = data.Rotation;
                 LookAt = data.Translation;
@@ -149,7 +151,7 @@ namespace PMMEditor.Models
 
         private Matrix CreateView()
         {
-            var w = Matrix.Translation(-LookAt);
+            Matrix w = Matrix.Translation(-LookAt);
             w *= Matrix.RotationY(Rotate.Y) * Matrix.RotationX(Rotate.X);
 
             return w * Matrix.Translation(0, 0, Distance);
@@ -200,7 +202,7 @@ namespace PMMEditor.Models
 
             public BoneKeyFrame Interpolation(BoneKeyFrame left, BoneKeyFrame right, int frame)
             {
-                var t = (float) (frame - left.FrameNumber) / (right.FrameNumber - left.FrameNumber);
+                float t = (float) (frame - left.FrameNumber) / (right.FrameNumber - left.FrameNumber);
                 _res.Translation = left.Translation + (right.Translation - left.Translation) * t;
                 _res.Rotation = left.Rotation + (right.Rotation - left.Rotation) * t;
                 _res.Distance = left.Distance + (right.Distance - left.Distance) * t;
@@ -218,7 +220,7 @@ namespace PMMEditor.Models
         public async Task Set(List<PmmStruct.CameraFrame> cameraData, PmmStruct.CameraFrame cameraInitFrame)
         {
             BoneKeyList.Clear();
-            var keyFrame =
+            PmmStruct.CameraFrame[] keyFrame =
                 KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>
                     .CreateKeyFrameArray(cameraData);
             BoneKeyList.Add(await Task.Run(() =>

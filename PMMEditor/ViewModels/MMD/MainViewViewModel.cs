@@ -54,7 +54,7 @@ namespace PMMEditor.ViewModels.MMD
             RendererViewModel = new MainRenderViewModel(_model);
 
             // モデル操作のためのデータ
-            var modelList = _model.MmdModelList.List
+            ReadOnlyReactiveCollection<TimelineViewModelBase> modelList = _model.MmdModelList.List
                                   .ToReadOnlyReactiveCollection(
                                       _ => (TimelineViewModelBase) new BoneTimelineViewModel(model, _))
                                   .AddTo(CompositeDisposable);
@@ -81,11 +81,12 @@ namespace PMMEditor.ViewModels.MMD
                     MultiSelect = false
                 };
                 Messenger.Raise(message);
-                var path = message.Response?[0];
+                string path = message.Response?[0];
                 if (path == null)
                 {
                     return;
                 }
+
                 _model.MmdModelList.Add(path);
             });
 

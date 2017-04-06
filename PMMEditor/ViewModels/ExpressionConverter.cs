@@ -38,8 +38,10 @@ namespace PMMEditor.ViewModels
                 {
                     tmp += errors + "\n";
                 }
+
                 Console.WriteLine(tmp);
             }
+
             Assembly assembly = results.CompiledAssembly;
             _evalType = assembly.GetType("TestPackage.Test");
         }

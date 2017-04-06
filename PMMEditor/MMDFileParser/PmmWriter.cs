@@ -39,7 +39,7 @@ namespace PMMEditor.MMDFileParser
 
         private void WriteVString(string num)
         {
-            var bytes = Encoding.GetEncoding("shift_jis").GetBytes(num);
+            byte[] bytes = Encoding.GetEncoding("shift_jis").GetBytes(num);
             Write((byte) bytes.Length);
             Write(bytes);
         }
@@ -73,7 +73,7 @@ namespace PMMEditor.MMDFileParser
 
         private void WriteVList<T>(List<T> list, Action<T> func)
         {
-            var len = list.Count;
+            int len = list.Count;
             Write(len);
             WriteList(list, func);
         }

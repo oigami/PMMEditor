@@ -28,15 +28,16 @@ namespace PMMEditor.SharpDxControl
             {
                 return;
             }
+
             D3D9Instance.Instance.CheckDeviceLost();
 
-            var renderTarget = _renderTarget;
+            Texture renderTarget = _renderTarget;
             if (renderTarget == null)
             {
                 return;
             }
 
-            using (var surface = renderTarget.GetSurfaceLevel(0))
+            using (Surface surface = renderTarget.GetSurfaceLevel(0))
             {
                 SetBackBuffer(surface.NativePointer);
             }
@@ -48,6 +49,7 @@ namespace PMMEditor.SharpDxControl
             {
                 return;
             }
+
             Lock();
             AddDirtyRect(new Int32Rect(0, 0, PixelWidth, PixelHeight));
             Unlock();
@@ -78,19 +80,20 @@ namespace PMMEditor.SharpDxControl
             {
                 return;
             }
+
             Debug.Assert(IsShareable(target));
 
-            var format = TranslateFormat(target);
+            Format format = TranslateFormat(target);
             Debug.Assert(format != Format.Unknown);
 
-            var handle = GetSharedHandle(target);
+            IntPtr handle = GetSharedHandle(target);
             Debug.Assert(handle != IntPtr.Zero);
 
             _renderTarget = new Texture(D3D9Instance.Instance.D3DDevice,
                                         target.Description.Width, target.Description.Height, 1,
                                         Usage.RenderTarget, format, Pool.Default, ref handle);
 
-            using (var surface = _renderTarget.GetSurfaceLevel(0))
+            using (Surface surface = _renderTarget.GetSurfaceLevel(0))
             {
                 SetBackBuffer(surface.NativePointer);
             }
@@ -98,7 +101,7 @@ namespace PMMEditor.SharpDxControl
 
         private static IntPtr GetSharedHandle(Texture2D texture)
         {
-            using (var resource = texture.QueryInterface<Resource>())
+            using (Resource resource = texture.QueryInterface<Resource>())
             {
                 return resource.SharedHandle;
             }
@@ -135,6 +138,7 @@ namespace PMMEditor.SharpDxControl
             {
                 return;
             }
+
             _disposed = true;
             if (disposing)
             {

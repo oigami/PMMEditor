@@ -260,6 +260,7 @@ namespace PMMEditor.ViewModels.Documents
                 {
                     return _self[index];
                 }
+
                 return _other[index - _countList[0]];
             }
             set { throw new InvalidOperationException(); }
@@ -282,6 +283,7 @@ namespace PMMEditor.ViewModels.Documents
             {
                 self = new ReadOnlyMultiCollection<T>(self, arr[i]);
             }
+
             return self;
         }
     }

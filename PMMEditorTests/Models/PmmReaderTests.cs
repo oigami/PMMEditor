@@ -25,7 +25,7 @@ namespace PMMEditorTests.Models
         [TestMethod]
         public void PmmWriteTest()
         {
-            var data = Pmm.ReadFile("C:/tool/MikuMikuDance_v926x64/UserFile/サンプル（きしめんAllStar).pmm");
+            PmmStruct data = Pmm.ReadFile("C:/tool/MikuMikuDance_v926x64/UserFile/サンプル（きしめんAllStar).pmm");
 
             try
             {
@@ -35,9 +35,9 @@ namespace PMMEditorTests.Models
                     new PmmWriter(stream).Write(data);
                     bytes = stream.ToArray();
                 }
-                var writtenData = Pmm.Read(bytes);
-                var jsonData = JsonConvert.SerializeObject(data);
-                var jsonWrittenData = JsonConvert.SerializeObject(writtenData);
+                PmmStruct writtenData = Pmm.Read(bytes);
+                string jsonData = JsonConvert.SerializeObject(data);
+                string jsonWrittenData = JsonConvert.SerializeObject(writtenData);
                 Assert.AreEqual(jsonData, jsonWrittenData);
             }
             catch (Exception e)

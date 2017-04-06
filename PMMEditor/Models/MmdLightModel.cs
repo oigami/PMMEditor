@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using Livet;
 using PMMEditor.MMDFileParser;
 using PMMEditor.MVVM;
+using Color = System.Windows.Media.Color;
 
 namespace PMMEditor.Models
 {
@@ -29,9 +29,8 @@ namespace PMMEditor.Models
         public async Task Set(List<PmmStruct.LightFrame> cameraData, PmmStruct.LightFrame lightInitFrame)
         {
             BoneKeyList.Clear();
-            var keyFrame =
-                MmdLightKeyFrameList.CreateKeyFrameArray(
-                    cameraData);
+            PmmStruct.LightFrame[] keyFrame =
+                MmdLightKeyFrameList.CreateKeyFrameArray(cameraData);
             BoneKeyList.Add(await Task.Run(() =>
             {
                 var list = new MmdLightKeyFrameList("");

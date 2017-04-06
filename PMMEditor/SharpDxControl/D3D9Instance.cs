@@ -12,7 +12,7 @@ namespace PMMEditor.SharpDxControl
 
         public void CheckDeviceLost()
         {
-            var d = D3DDevice.CheckDeviceState((IntPtr) null);
+            DeviceState d = D3DDevice.CheckDeviceState((IntPtr) null);
             if (d != DeviceState.Ok)
             {
                 var presentParams = new PresentParameters

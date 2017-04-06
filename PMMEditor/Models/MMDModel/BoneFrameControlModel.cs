@@ -40,6 +40,7 @@ namespace PMMEditor.Models.MMDModel
             {
                 _boneList[i].KeyFrameList.GetInterpolationData(_frameControlModel.NowFrame).CopyTo(NowBoneKeyFrame[i]);
             }
+
             BoneCalculator.Update(NowBoneKeyFrame);
         }
 

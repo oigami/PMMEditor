@@ -69,6 +69,7 @@ namespace PMMEditor.Views.Behaviors
                 {
                     return;
                 }
+
                 sv = _scrollViewers[""];
                 panel.Viewport = new Rect(sv.HorizontalOffset,
                                           sv.VerticalOffset,

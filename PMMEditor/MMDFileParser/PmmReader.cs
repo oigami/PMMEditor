@@ -600,6 +600,7 @@ namespace PMMEditor.MMDFileParser
             {
                 throw new ArgumentException("Format id is not \"Polygon Movie maker 0002\"");
             }
+
             data.ViewWidth = ReadInt();
             data.ViewHeight = ReadInt();
             data.FrameWidth = ReadInt();
@@ -613,7 +614,7 @@ namespace PMMEditor.MMDFileParser
             data.IsOpenSelfShadowPanel = ReadBool();
             data.SelectedModelIndex = ReadByte();
 
-            var modelCount = ReadByte();
+            byte modelCount = ReadByte();
             data.ModelDatas = ReadList(modelCount, ReadModelData);
 
             data.CameraInitFrame = ReadCameraFrame(true);
@@ -626,7 +627,7 @@ namespace PMMEditor.MMDFileParser
 
             data.SelectedAccessoryIndex = ReadByte();
             data.AccessoryVScroll = ReadInt();
-            var accessoryCount = ReadByte();
+            byte accessoryCount = ReadByte();
             data.AccessoryName = ReadList(accessoryCount, () => ReadFixedStringTerminationChar(100));
             data.AccessoryDatas = ReadList(accessoryCount, ReadAccessory);
 
@@ -821,7 +822,7 @@ namespace PMMEditor.MMDFileParser
 
         private void ReadAccessoryDataBody<T>(ref T o) where T : PmmStruct.AccessoryData.DataBody
         {
-            var tmp = ReadByte();
+            byte tmp = ReadByte();
             o.Transparency = (byte) ((tmp & 0xfe) >> 1);
             o.IsVisible = (tmp & 0x01) != 0;
             o.ParentModelIndex = ReadInt();
@@ -1027,8 +1028,8 @@ namespace PMMEditor.MMDFileParser
 
         private KeyValuePair<int, int> ReadPair()
         {
-            var a = ReadInt();
-            var b = ReadInt();
+            int a = ReadInt();
+            int b = ReadInt();
             return new KeyValuePair<int, int>(a, b);
         }
 

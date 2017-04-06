@@ -48,7 +48,7 @@ namespace PMMEditor.Models
             Name = accessoryData.Name;
             NameEnglish = Name;
             BoneKeyList.Clear();
-            var keyFrame = MmdAccessoryKeyFrameList.CreateKeyFrameArray(accessoryData.KeyFrames);
+            PmmStruct.AccessoryData.KeyFrame[] keyFrame = MmdAccessoryKeyFrameList.CreateKeyFrameArray(accessoryData.KeyFrames);
             BoneKeyList.Add(await Task.Run(() =>
             {
                 var list = new MmdAccessoryKeyFrameList(Name);

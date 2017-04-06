@@ -252,7 +252,7 @@ namespace PMMEditor.Views.Timeline
         public int LowerBound(IList<TimelineFrameData> data, double value)
         {
             int l = 0, r = data.Count;
-            var width = double.IsNaN(IndexWidth) ? SelectedItemVisual.DesiredSize.Width : IndexWidth;
+            double width = double.IsNaN(IndexWidth) ? SelectedItemVisual.DesiredSize.Width : IndexWidth;
 
             while (r - l > 0)
             {
@@ -267,6 +267,7 @@ namespace PMMEditor.Views.Timeline
                     l = mid + 1;
                 }
             }
+
             return r;
         }
 
@@ -277,7 +278,8 @@ namespace PMMEditor.Views.Timeline
             {
                 return;
             }
-            var width = double.IsNaN(IndexWidth) ? SelectedItemVisual.DesiredSize.Width : IndexWidth;
+
+            double width = double.IsNaN(IndexWidth) ? SelectedItemVisual.DesiredSize.Width : IndexWidth;
 
 
             _renderedRect.X = Math.Max(0, Viewport.Left - Viewport.Width);
@@ -285,13 +287,14 @@ namespace PMMEditor.Views.Timeline
 
             for (int i = LowerBound(KeyChildren, _renderedRect.Left); i < KeyChildren.Count; i++)
             {
-                var data = KeyChildren[i];
-                var obj = data.IsSelected ? _selectedObject : _unselectedObject;
+                TimelineFrameData data = KeyChildren[i];
+                RenderObject obj = data.IsSelected ? _selectedObject : _unselectedObject;
                 double x = GetPosition(data.FrameNumber, width, SelectedItemVisual);
                 if (_renderedRect.Right < x)
                 {
                     break;
                 }
+
                 dc.DrawRectangle(obj.Brush, null,
                                  new Rect(new Point(x, 0), obj.Size));
             }
@@ -317,6 +320,7 @@ namespace PMMEditor.Views.Timeline
                         break;
                 }
             }
+
             return x;
         }
 
@@ -325,7 +329,7 @@ namespace PMMEditor.Views.Timeline
             foreach (UIElement child in Children)
             {
                 var location = new Point(GetIndex(child), Margin.Top);
-                var width = double.IsNaN(IndexWidth) ? child.DesiredSize.Width : IndexWidth;
+                double width = double.IsNaN(IndexWidth) ? child.DesiredSize.Width : IndexWidth;
                 location.X = GetPosition(location.X, width, child);
 
                 child.Arrange(new Rect(location, child.DesiredSize));
@@ -346,16 +350,17 @@ namespace PMMEditor.Views.Timeline
                         Math.Max(SelectedItemVisual.DesiredSize.Height, UnselectedItemVisual.DesiredSize.Height)
                 };
             }
-            var indexWidth = 0.0;
-            var height = 0.0;
-            var index = 0;
+
+            double indexWidth = 0.0;
+            double height = 0.0;
+            int index = 0;
             UIElement lastIndexChild = null;
             foreach (UIElement child in Children)
             {
                 child.Measure(availableSize);
                 indexWidth = Math.Max(indexWidth, child.DesiredSize.Width);
                 height = Math.Max(height, child.DesiredSize.Height);
-                var childIndex = GetIndex(child);
+                int childIndex = GetIndex(child);
                 if (index <= childIndex)
                 {
                     lastIndexChild = child;

@@ -49,11 +49,12 @@ namespace PMMEditor.MMDFileParser
             {
                 _buffer = new byte[Math.Max(size, _buffer.Length * 2)];
             }
-            var len = _stream.Read(_buffer, 0, size);
+            int len = _stream.Read(_buffer, 0, size);
             if (len != size)
             {
                 throw new ArgumentException("");
             }
+
             return _buffer;
         }
 
@@ -104,32 +105,34 @@ namespace PMMEditor.MMDFileParser
         protected T[] ReadArray<T>(int size, Func<T> func)
         {
             var t = new T[size];
-            for (var i = 0; i < size; i++)
+            for (int i = 0; i < size; i++)
             {
                 t[i] = func();
             }
+
             return t;
         }
 
         protected T[] ReadVIntArray<T>(Func<T> func)
         {
-            var size = ReadInt();
+            int size = ReadInt();
             return ReadArray(size, func);
         }
 
         protected List<T> ReadList<T>(int size, Func<T> func)
         {
             var t = new List<T>(size);
-            for (var i = 0; i < size; i++)
+            for (int i = 0; i < size; i++)
             {
                 t.Add(func());
             }
+
             return t;
         }
 
         protected List<T> ReadVIntList<T>(Func<T> func)
         {
-            var size = ReadInt();
+            int size = ReadInt();
             return ReadList(size, func);
         }
 
@@ -165,6 +168,8 @@ namespace PMMEditor.MMDFileParser
 
         #endregion StringTypeRead
 
+        #region VectorTypeRead
+
         protected Vector2 ReadVector2()
         {
             return new Vector2(ReadFloat(), ReadFloat());
@@ -179,6 +184,8 @@ namespace PMMEditor.MMDFileParser
         {
             return new Vector4(ReadFloat(), ReadFloat(), ReadFloat(), ReadFloat());
         }
+
+        #endregion
 
         protected long RemainingLength()
         {

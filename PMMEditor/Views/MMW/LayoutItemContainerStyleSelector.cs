@@ -16,7 +16,7 @@ namespace PMMEditor.Views.MMW
 
         public override Style SelectStyle(object item, DependencyObject container)
         {
-            var styleData = Items.FirstOrDefault(s => item.GetType().IsSubclassOf(s.DataType));
+            LayoutItemTypedStyle styleData = Items.FirstOrDefault(s => item.GetType().IsSubclassOf(s.DataType));
             return styleData?.Style ?? base.SelectStyle(item, container);
         }
     }

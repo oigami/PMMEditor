@@ -71,9 +71,10 @@ namespace PMMEditor.Models
                 {
                     throw new InvalidOperationException("すでにセット処理が実行中です");
                 }
+
                 _tokenSource = new CancellationTokenSource();
             });
-            var token = _tokenSource.Token;
+            CancellationToken token = _tokenSource.Token;
             Task.Run(async () =>
             {
                 var order = new SortedDictionary<int, int>();
@@ -89,6 +90,7 @@ namespace PMMEditor.Models
                 {
                     _drawOrder.Add(i.Value);
                 }
+
                 DispatcherHelper.UIDispatcher.Invoke(() => _tokenSource = null);
             }, token).ContinueOnlyOnFaultedErrorLog(_logger, "Charactor List Set error", () => _list.Clear());
         }

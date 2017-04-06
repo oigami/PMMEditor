@@ -89,6 +89,7 @@ namespace PMMEditor.Views.Behaviors
             {
                 return false;
             }
+
             if (_syncGroups.ContainsKey(groupName) == false)
             {
                 _syncGroups.Add(groupName, new List<Control>());
@@ -126,6 +127,7 @@ namespace PMMEditor.Views.Behaviors
             {
                 return false;
             }
+
             var sv = AssociatedObject as ScrollViewer;
             var sb = AssociatedObject as ScrollBar;
 

@@ -35,22 +35,25 @@ namespace PMMEditor.ViewModels
             {
                 return true;
             }
+
             return base.CanConvertFrom(context, sourceType);
         }
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             var str = (string) value;
-            var s = str.Split(',');
+            string[] s = str.Split(',');
             if (s.Length != 3)
             {
                 throw new ArgumentException(nameof(value));
             }
-            var res = Vector3.Zero;
+
+            Vector3 res = Vector3.Zero;
             for (int i = 0; i < 3; i++)
             {
                 res[i] = float.Parse(s[i].Trim());
             }
+
             return res;
         }
     }
@@ -83,7 +86,7 @@ namespace PMMEditor.ViewModels
         {
             if (Math.Abs(Model.LookAt[index] - value) > 1e-5f)
             {
-                var tmp = Model.LookAt;
+                Vector3 tmp = Model.LookAt;
                 tmp[index] = value;
                 Model.LookAt = tmp;
             }
@@ -112,7 +115,7 @@ namespace PMMEditor.ViewModels
         {
             if (Math.Abs(Model.Rotate[index] - value) > 1e-5f)
             {
-                var tmp = Model.Rotate;
+                Vector3 tmp = Model.Rotate;
                 tmp[index] = value;
                 Model.Rotate = tmp;
             }

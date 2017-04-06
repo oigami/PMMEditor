@@ -54,6 +54,7 @@ namespace PMMEditor.Log
             {
                 return $"{Level.Name}:[{CreatedAt:G}] {Message} [{Exception.Message}] \n\nStackTrace:[{Exception.StackTrace}]";
             }
+
             return $"{Level.Name}:[{CreatedAt:G}] {Message}";
         }
 

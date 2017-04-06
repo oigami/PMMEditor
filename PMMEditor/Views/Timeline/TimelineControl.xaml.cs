@@ -68,7 +68,7 @@ namespace PMMEditor.Views.Timeline
     /// <summary>
     /// TimelineControl.xaml の相互作用ロジック
     /// </summary>
-    public class TimelineControlBase : MultiSelector {}
+    public class TimelineControlBase : MultiSelector { }
 
     public partial class TimelineControl
     {
@@ -99,8 +99,7 @@ namespace PMMEditor.Views.Timeline
 
         new public void UnselectAll()
         {
-            var list = SelectedItems.Cast<TimelineItem>().ToList();
-            foreach (var timelineItem in list)
+            foreach (var timelineItem in SelectedItems.Cast<TimelineItem>().ToList())
             {
                 timelineItem.IsSelected = false;
             }

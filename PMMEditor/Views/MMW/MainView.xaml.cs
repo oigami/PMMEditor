@@ -14,6 +14,7 @@ namespace PMMEditor.Views.MMW
             {
                 throw new ArgumentException("value is not byte[]", nameof(value));
             }
+
             return string.Join(",", Array.ConvertAll(bytes, o => $"{o,3}"));
         }
 
@@ -47,6 +48,7 @@ namespace PMMEditor.Views.MMW
                 {
                     return;
                 }
+
                 Keyboard.ClearFocus();
                 FocusManager.SetFocusedElement(this, this);
             };

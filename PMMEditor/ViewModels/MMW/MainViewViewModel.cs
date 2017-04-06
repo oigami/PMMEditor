@@ -97,7 +97,7 @@ namespace PMMEditor.ViewModels.MMW
             };
             if (ofd.ShowDialog() == true)
             {
-                var ext = Path.GetExtension(ofd.FileName);
+                string ext = Path.GetExtension(ofd.FileName);
                 switch (ext)
                 {
                     case ".pmm":
@@ -154,7 +154,7 @@ namespace PMMEditor.ViewModels.MMW
 
         private async Task<T> AddDocument<T>(Func<Task<T>> createFunc, string contentId) where T : DocumentViewModelBase
         {
-            var item =
+            DocumentViewModelBase item =
                 DockingDocumentViewModels.FirstOrDefault(d => d.ContentId == contentId);
             if (item == null)
             {
@@ -168,7 +168,7 @@ namespace PMMEditor.ViewModels.MMW
 
         private T AddPane<T>(Func<T> createFunc) where T : PaneViewModelBase
         {
-            var item =
+            PaneViewModelBase item =
                 DockingPaneViewModels.FirstOrDefault(d => d.ContentId == typeof(T).FullName);
             if (item == null)
             {

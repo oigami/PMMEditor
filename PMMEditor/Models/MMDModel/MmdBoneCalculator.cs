@@ -16,7 +16,7 @@ namespace PMMEditor.Models.MMDModel
         public MmdModelBoneCalculator(MmdModelModel model)
         {
             _model = model;
-            var bones = _model.BoneKeyList;
+            ObservableCollection<MmdModelModel.Bone> bones = _model.BoneKeyList;
             _modelLocalBones2 = Enumerable.Range(0, bones.Count).Select(_ => Matrix.Identity).ToArray();
             _worldBones = Enumerable.Range(0, bones.Count).Select(_ => Matrix.Identity).ToArray();
         }
@@ -27,7 +27,7 @@ namespace PMMEditor.Models.MMDModel
             MmdModelModel.Bone me, Matrix parent,
             ref Matrix[] inOutWorlds)
         {
-            var bones = _model.BoneKeyList;
+            ObservableCollection<MmdModelModel.Bone> bones = _model.BoneKeyList;
             foreach (var bone in bones)
             {
                 inOutWorlds[bone.Index] = bone.InverseInitMatModelLocal * inOutWorlds[bone.Index];
@@ -40,7 +40,7 @@ namespace PMMEditor.Models.MMDModel
         {
             while (true)
             {
-                var m = me.BoneMatBoneLocal * parent;
+                Matrix m = me.BoneMatBoneLocal * parent;
                 resultModelLocalMatrix[me.Index] = m;
                 if (me.FirstChildIndex != -1)
                 {
@@ -50,6 +50,7 @@ namespace PMMEditor.Models.MMDModel
                 {
                     break;
                 }
+
                 me = _model.BoneKeyList[me.SiblingIndex];
             }
         }
@@ -57,7 +58,7 @@ namespace PMMEditor.Models.MMDModel
 
         public void Update(IList<MmdModelModel.BoneKeyFrame> nowBoneKeyFrame)
         {
-            var bones = _model.BoneKeyList;
+            ObservableCollection<MmdModelModel.Bone> bones = _model.BoneKeyList;
             UpdateForwardKinematics(nowBoneKeyFrame);
             UpdateInverseKinematics();
             CalcBoneModelLocalMatrix(bones[0], Matrix.Identity, ref _modelLocalBones2);
@@ -68,13 +69,13 @@ namespace PMMEditor.Models.MMDModel
         private void UpdateForwardKinematics(IList<MmdModelModel.BoneKeyFrame> nowBoneKeyFrame)
         {
             Debug.Assert(_model.BoneKeyList.Count == nowBoneKeyFrame.Count);
-            var bones = _model.BoneKeyList;
+            ObservableCollection<MmdModelModel.Bone> bones = _model.BoneKeyList;
             foreach (var i in Enumerable.Range(0, bones.Count))
             {
 
-                var data = nowBoneKeyFrame[i];
-                var pos = data.Position;
-                var q = data.Quaternion;
+                MmdModelModel.BoneKeyFrame data = nowBoneKeyFrame[i];
+                System.Numerics.Vector3 pos = data.Position;
+                System.Numerics.Quaternion q = data.Quaternion;
 
                 bones[i].BoneMatBoneLocal = Matrix.RotationQuaternion(new Quaternion(q.X, q.Y, q.Z, q.W))
                                             * Matrix.Translation(pos.X, pos.Y, pos.Z) * bones[i].InitMatBoneLocal;
@@ -83,33 +84,34 @@ namespace PMMEditor.Models.MMDModel
 
         private void UpdateInverseKinematics()
         {
-            var bones = _model.BoneKeyList;
+            ObservableCollection<MmdModelModel.Bone> bones = _model.BoneKeyList;
             foreach (var ik in _model.IKList)
             {
-                var targetMatrix = CalcBoneModelLocalMatrix(ik.BoneIndex);
+                Matrix targetMatrix = CalcBoneModelLocalMatrix(ik.BoneIndex);
                 foreach (var i in Enumerable.Range(0, ik.Iterations))
                 {
                     foreach (var attentionIndex in ik.IKChildBoneIndex)
                     {
-                        var bone = bones[attentionIndex];
+                        MmdModelModel.Bone bone = bones[attentionIndex];
 
-                        var effectorMatrix = CalcBoneModelLocalMatrix(ik.TargetBoneIndex);
+                        Matrix effectorMatrix = CalcBoneModelLocalMatrix(ik.TargetBoneIndex);
 
-                        var inverseCoord = Matrix.Invert(CalcBoneModelLocalMatrix(attentionIndex));
+                        Matrix inverseCoord = Matrix.Invert(CalcBoneModelLocalMatrix(attentionIndex));
 
-                        var localEffectorDir = Vector3.TransformCoordinate(effectorMatrix.TranslationVector,
+                        Vector3 localEffectorDir = Vector3.TransformCoordinate(effectorMatrix.TranslationVector,
                                                                            inverseCoord);
-                        var localTargetDir = Vector3.TransformCoordinate(targetMatrix.TranslationVector,
+                        Vector3 localTargetDir = Vector3.TransformCoordinate(targetMatrix.TranslationVector,
                                                                          inverseCoord);
 
                         localEffectorDir.Normalize();
                         localTargetDir.Normalize();
-                        var cosAngle = Vector3.Dot(localEffectorDir, localTargetDir);
+                        float cosAngle = Vector3.Dot(localEffectorDir, localTargetDir);
                         if (1.0f <= cosAngle)
                         {
                             continue;
                         }
-                        var angle =
+
+                        float angle =
                             Math.Min((float) Math.Acos(Math.Max(cosAngle, -1.0)), ik.LimitAngle * (float) Math.PI);
                         Debug.Assert(float.IsNaN(angle) == false && float.IsInfinity(angle) == false);
                         if (Math.Abs(angle) < 1e-7f)
@@ -117,7 +119,7 @@ namespace PMMEditor.Models.MMDModel
                             continue;
                         }
 
-                        var axis = Vector3.Cross(localEffectorDir, localTargetDir);
+                        Vector3 axis = Vector3.Cross(localEffectorDir, localTargetDir);
                         if (bone.Name == "左足" || bone.Name == "右足")
                         {
                             axis.Y = 0.0f;
@@ -127,9 +129,10 @@ namespace PMMEditor.Models.MMDModel
                         {
                             continue;
                         }
+
                         axis.Normalize();
 
-                        var rotation = Quaternion.RotationAxis(axis, angle);
+                        Quaternion rotation = Quaternion.RotationAxis(axis, angle);
                         if (bone.Name == "左ひざ" || bone.Name == "右ひざ")
                         {
                             Quaternion rv = rotation * Quaternion.RotationMatrix(bone.BoneMatBoneLocal);
@@ -160,12 +163,13 @@ namespace PMMEditor.Models.MMDModel
             {
                 return min;
             }
+
             return value;
         }
 
         private Matrix CalcBoneModelLocalMatrix(int index)
         {
-            var bones = _model.BoneKeyList;
+            ObservableCollection<MmdModelModel.Bone> bones = _model.BoneKeyList;
             Matrix res = bones[index].BoneMatBoneLocal;
 
             for (int parent = bones[index].ParentIndex; parent != -1; parent = bones[parent].ParentIndex)
@@ -214,6 +218,7 @@ namespace PMMEditor.Models.MMDModel
                 {
                     break;
                 }
+
                 parentoffsetMat = me.InverseInitMatModelLocal;
                 me = _model.BoneKeyList[me.FirstChildIndex];
             }

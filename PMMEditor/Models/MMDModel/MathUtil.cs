@@ -24,6 +24,7 @@ namespace PMMEditor.Models.MMDModel
             {
                 return true;
             }
+
             return false;
         }
 
@@ -121,6 +122,7 @@ namespace PMMEditor.Models.MMDModel
                 case Type.YZX:
                     return CreateY() * CreateZ() * CreateX();
             }
+
             Debug.Assert(false);
             return Matrix.Identity;
         }

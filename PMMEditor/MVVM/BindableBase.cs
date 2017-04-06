@@ -13,6 +13,7 @@ namespace PMMEditor.MVVM
             {
                 return false;
             }
+
             t = val;
             RaisePropertyChanged(propertyName);
             return true;
@@ -27,6 +28,7 @@ namespace PMMEditor.MVVM
             {
                 return false;
             }
+
             t = val;
             RaisePropertyChanged(propertyName);
             return true;

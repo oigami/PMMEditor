@@ -39,6 +39,7 @@ namespace PMMEditor.SharpDxControl
             {
                 return;
             }
+
             _renderTarget = renderTarget;
             UpdateResources();
         }
@@ -57,6 +58,7 @@ namespace PMMEditor.SharpDxControl
             {
                 return false;
             }
+
             SafeDispose(ref res);
             _factorys.Remove(key);
             Resources.Remove(key);
@@ -67,9 +69,10 @@ namespace PMMEditor.SharpDxControl
         {
             foreach (var key in Resources.Keys)
             {
-                var res = Resources[key];
+                T res = Resources[key];
                 SafeDispose(ref res);
             }
+
             _factorys.Clear();
             Resources.Clear();
         }
@@ -90,7 +93,7 @@ namespace PMMEditor.SharpDxControl
 
             foreach (var factory in _factorys)
             {
-                var key = factory.Key;
+                string key = factory.Key;
 
                 if (Resources.TryGetValue(key, out T resOld))
                 {
@@ -113,7 +116,7 @@ namespace PMMEditor.SharpDxControl
         protected override void OnDetaching()
         {
             AssociatedObject.Loaded -= UserControlLoadedHandler;
-            var window = Window.GetWindow(AssociatedObject);
+            Window window = Window.GetWindow(AssociatedObject);
             if (window != null)
             {
                 window.Closed -= WindowClosedHandler;
@@ -122,7 +125,7 @@ namespace PMMEditor.SharpDxControl
 
         private void UserControlLoadedHandler(object sender, RoutedEventArgs e)
         {
-            var window = Window.GetWindow(AssociatedObject);
+            Window window = Window.GetWindow(AssociatedObject);
             if (window == null)
             {
                 throw new Exception(
@@ -248,7 +251,7 @@ namespace PMMEditor.SharpDxControl
         }
 
         protected abstract void Render();
-        protected virtual void ResetRenderTarget() {}
+        protected virtual void ResetRenderTarget() { }
 
         private void OnRendering(object sender, EventArgs e)
         {
@@ -309,8 +312,9 @@ namespace PMMEditor.SharpDxControl
             {
                 return;
             }
-            var width = Math.Max((int) ActualWidth, 100);
-            var height = Math.Max((int) ActualHeight, 100);
+
+            int width = Math.Max((int) ActualWidth, 100);
+            int height = Math.Max((int) ActualHeight, 100);
             if (!double.IsNaN(D3DWidth))
             {
                 width = (int) D3DWidth;
@@ -346,7 +350,7 @@ namespace PMMEditor.SharpDxControl
 
             _renderTarget2D = new Texture2D(Device, renderDesc).AddTo(_d3DRenderTargetCompositeDisposable);
 
-            var surface = _renderTarget2D.QueryInterface<Surface>();
+            Surface surface = _renderTarget2D.QueryInterface<Surface>();
 
             var rtp = new RenderTargetProperties(new PixelFormat(Format.Unknown, AlphaMode.Premultiplied));
             D2DRenderTarget = new RenderTarget(_d2DFactory, surface, rtp).AddTo(_d3DRenderTargetCompositeDisposable);
@@ -420,7 +424,7 @@ namespace PMMEditor.SharpDxControl
                 return;
             }
 
-            var context = Device.ImmediateContext;
+            SharpDX.Direct3D11.DeviceContext context = Device.ImmediateContext;
             context.ClearDepthStencilView(_depthStencilView, DepthStencilClearFlags.Depth, 1.0f, 0);
             context.ClearRenderTargetView(_renderTarget, new RawColor4(0, 0, 0, 0));
             context.OutputMerger.SetDepthStencilState(_depthStencilState);

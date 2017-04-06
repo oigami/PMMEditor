@@ -16,13 +16,8 @@ namespace PMMEditor.Models.Graphics
     {
         public MmdModelRendererSource(MmdModelModel model, Direct3D11.Device device)
         {
-            if (device == null)
-            {
-                throw new ArgumentNullException(nameof(device));
-            }
-
             Model = model;
-            _device = device;
+            _device = device ?? throw new ArgumentNullException(nameof(device));
 
             BoneCount = Model.BoneKeyList.Count;
             Task.Run(() =>
@@ -126,7 +121,7 @@ namespace PMMEditor.Models.Graphics
         {
             OnUnload();
 
-            var data = Pmd.ReadFile(Model.FilePath);
+            PmdStruct data = Pmd.ReadFile(Model.FilePath);
 
             Materials = new List<Material>(data.Materials.Count);
             int preIndex = 0;
@@ -148,7 +143,7 @@ namespace PMMEditor.Models.Graphics
             // 頂点データ生成
             if (data.Vertices.Count > 0)
             {
-                var typeSize = Utilities.SizeOf<Vertex>();
+                int typeSize = Utilities.SizeOf<Vertex>();
                 _verteBuffer = Direct3D11.Buffer.Create(
                     _device,
                     data.Vertices.Select(_ => new Vertex
@@ -171,7 +166,7 @@ namespace PMMEditor.Models.Graphics
                 VertexBufferBinding = new Direct3D11.VertexBufferBinding(_verteBuffer, typeSize, 0);
 
                 // 頂点インデックス生成
-                var indexNum = data.VertexIndex.Count;
+                int indexNum = data.VertexIndex.Count;
                 IndexBuffer = Direct3D11.Buffer.Create(
                     _device, data.VertexIndex.ToArray(),
                     new Direct3D11.BufferDescription

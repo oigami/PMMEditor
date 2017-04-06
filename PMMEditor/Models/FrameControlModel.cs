@@ -41,6 +41,7 @@ namespace PMMEditor.Models
             {
                 return;
             }
+
             NowFrame++;
         }
 
@@ -50,6 +51,7 @@ namespace PMMEditor.Models
             {
                 return;
             }
+
             NowFrame++;
         }
 
@@ -59,6 +61,7 @@ namespace PMMEditor.Models
             {
                 return;
             }
+
             if (NowFrame > 0)
             {
                 NowFrame--;

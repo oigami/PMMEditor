@@ -33,22 +33,26 @@ namespace PMMEditor.ViewModels.Panes
 
         private IEnumerable<PmmStruct.ModelData.BoneInitFrame> CreateList(int num)
         {
-            var item = _model?.PmmStruct?.ModelDatas?[0].BoneInitFrames?[num];
+            PmmStruct.ModelData.BoneInitFrame item = _model?.PmmStruct?.ModelDatas?[0].BoneInitFrames?[num];
             if (item == null)
             {
                 yield break;
             }
+
             yield return item;
+
             int nowIndex = item.NextIndex;
-            var boneFrameList = _model?.PmmStruct?.ModelDatas?[0].BoneKeyFrames;
+            List<PmmStruct.ModelData.BoneInitFrame> boneFrameList = _model?.PmmStruct?.ModelDatas?[0].BoneKeyFrames;
             while (nowIndex != 0)
             {
-                var tmp = boneFrameList.FirstOrDefault(frame => frame.DataIndex == nowIndex);
+                PmmStruct.ModelData.BoneInitFrame tmp = boneFrameList.FirstOrDefault(frame => frame.DataIndex == nowIndex);
                 if (tmp == null)
                 {
                     yield break;
                 }
+
                 yield return tmp;
+
                 nowIndex = tmp.NextIndex;
             }
         }
@@ -65,6 +69,7 @@ namespace PMMEditor.ViewModels.Panes
                 {
                     list.Add(CreateList(i));
                 }
+
                 return list;
             }
         }

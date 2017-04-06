@@ -116,6 +116,7 @@ namespace PMMEditor.Views.Graphics
             {
                 return;
             }
+
             int index = args.NewStartingIndex;
             switch (args.Action)
             {
@@ -124,12 +125,14 @@ namespace PMMEditor.Views.Graphics
                     {
                         _renderer.Children.Insert(index++, argsNewItem);
                     }
+
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     foreach (IRenderer item in args.OldItems)
                     {
                         _renderer.Children.Remove(item);
                     }
+
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     _renderer.Children.Clear();
@@ -137,6 +140,7 @@ namespace PMMEditor.Views.Graphics
                     {
                         _renderer.Children.Add(item);
                     }
+
                     break;
                 default:
                     // TODO: Replace, Moveの処理

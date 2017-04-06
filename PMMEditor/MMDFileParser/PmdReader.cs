@@ -346,7 +346,7 @@ namespace PMMEditor.MMDFileParser
                     BoneDispFrameIndex = ReadByte()
                 })
             };
-            var hasEnglishName = ReadByte() == 1;
+            bool hasEnglishName = ReadByte() == 1;
             if (hasEnglishName)
             {
                 o.EnglishName = new PmdStruct.EnglishNames
@@ -428,7 +428,7 @@ namespace PMMEditor.MMDFileParser
                 BoneIndex = ReadUInt16(),
                 TargetBoneIndex = ReadUInt16()
             };
-            var childSize = ReadByte();
+            byte childSize = ReadByte();
             o.Iterations = ReadUInt16();
             o.LimitAngle = ReadFloat();
             o.IKChildBoneIndex = ReadList(childSize, ReadUInt16);
@@ -442,7 +442,7 @@ namespace PMMEditor.MMDFileParser
                 Name = ReadFixedStringTerminationChar(20)
             };
 
-            var skinVertexCount = ReadInt();
+            int skinVertexCount = ReadInt();
             o.Kind = (PmdStruct.SkinKind) ReadByte();
 
             o.SkinVertices = ReadList(skinVertexCount, () => new PmdStruct.SkinVertex

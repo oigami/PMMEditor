@@ -66,7 +66,7 @@ namespace PMMEditor.ViewModels.Graphics
 
         private void CreateData(MmdModelRendererSource model)
         {
-            var boneNum = model.BoneCount * 2;
+            int boneNum = model.BoneCount * 2;
             _outputArr = new Matrix[boneNum];
             _boneTexture2D = new Direct3D11.Texture2D(
                 _device,
@@ -94,7 +94,7 @@ namespace PMMEditor.ViewModels.Graphics
 
         public void Update(Direct3D11.DeviceContext context, int nowFrame)
         {
-            var calclator = _controller.BoneCalculator;
+            MmdModelBoneCalculator calclator = _controller.BoneCalculator;
             calclator.WorldBones.CopyTo(_outputArr, 0);
             calclator.ModelLocalBones.CopyTo(_outputArr, calclator.WorldBones.Length);
             context.UpdateSubresource(_outputArr, _boneTexture2D, 0, 16 * 1024, 16 * 1024, new Direct3D11.ResourceRegion
@@ -149,7 +149,7 @@ namespace PMMEditor.ViewModels.Graphics
             BoneRenderer = new BoneRenderer(ModelSource, _device).AddTo(CompositeDisposables);
 
             // 頂点シェーダ生成
-            var shaderSource = Resource1.TestShader;
+            byte[] shaderSource = Resource1.TestShader;
             // UTF-8 BOMチェック
             if (3 <= shaderSource.Length
                 && shaderSource[0] == 0xEF && shaderSource[1] == 0xBB && shaderSource[2] == 0xBF)
@@ -159,16 +159,18 @@ namespace PMMEditor.ViewModels.Graphics
                     shaderSource[i] = (byte) ' ';
                 }
             }
-            var vertexShaderByteCode = ShaderBytecode.Compile(shaderSource, "VS", "vs_4_0", ShaderFlags.Debug);
+
+            CompilationResult vertexShaderByteCode = ShaderBytecode.Compile(shaderSource, "VS", "vs_4_0", ShaderFlags.Debug);
             if (vertexShaderByteCode.HasErrors)
             {
                 Console.WriteLine(vertexShaderByteCode.Message);
                 return;
             }
+
             _vertexShader = new Direct3D11.VertexShader(_device, vertexShaderByteCode);
 
             // インプットレイアウト生成
-            var inputSignature = ShaderSignature.GetInputSignature(vertexShaderByteCode);
+            ShaderSignature inputSignature = ShaderSignature.GetInputSignature(vertexShaderByteCode);
             _inputLayout = new Direct3D11.InputLayout(_device, inputSignature, new[]
             {
                 new Direct3D11.InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
@@ -177,15 +179,16 @@ namespace PMMEditor.ViewModels.Graphics
             });
 
             // ピクセルシェーダ生成
-            var pixelShaderByteCode = ShaderBytecode.Compile(shaderSource, "PS", "ps_4_0", ShaderFlags.Debug);
+            CompilationResult pixelShaderByteCode = ShaderBytecode.Compile(shaderSource, "PS", "ps_4_0", ShaderFlags.Debug);
             if (pixelShaderByteCode.HasErrors)
             {
                 Console.WriteLine(pixelShaderByteCode.Message);
                 return;
             }
+
             _pixelShader = new Direct3D11.PixelShader(_device, pixelShaderByteCode);
 
-            var m = Matrix.LookAtLH(new Vector3(0, 0, -50), new Vector3(0, 0, 0), Vector3.Up);
+            Matrix m = Matrix.LookAtLH(new Vector3(0, 0, -50), new Vector3(0, 0, 0), Vector3.Up);
             m *= Matrix.PerspectiveFovLH((float) Math.PI / 3, 1.4f, 0.1f, 10000000f);
             m.Transpose();
             _viewProjConstantBuffer =
@@ -208,8 +211,9 @@ namespace PMMEditor.ViewModels.Graphics
             {
                 return;
             }
-            var target = args.Context;
-            var m = args.ViewProj;
+
+            Direct3D11.DeviceContext target = args.Context;
+            Matrix m = args.ViewProj;
             m.Transpose();
             // view,proj行列の設定
             target.UpdateSubresource(ref m, _viewProjConstantBuffer);
@@ -242,6 +246,7 @@ namespace PMMEditor.ViewModels.Graphics
             {
                 return;
             }
+
             _boneCalculator.UpdateBone();
         }
 

@@ -87,6 +87,7 @@ namespace PMMEditor.Models
                 {
                     return;
                 }
+
                 _maxFrame = value;
                 RaisePropertyChanged();
             }
@@ -106,6 +107,7 @@ namespace PMMEditor.Models
             {
                 return true;
             }
+
             return _item[nowIndex + diff].IsSelected || isOverride;
         }
 
@@ -116,7 +118,7 @@ namespace PMMEditor.Models
 
         public bool CanSelectedFrameMove(int diff, bool isOverride = false)
         {
-            var selectedIndex = this.Where(v => v.Value.IsSelected).Select(v => v.Key);
+            IEnumerable<int> selectedIndex = this.Where(v => v.Value.IsSelected).Select(v => v.Key);
             return CanMoveAll(selectedIndex, diff, isOverride);
         }
 
@@ -126,7 +128,7 @@ namespace PMMEditor.Models
 
         public void Move(KeyValuePair<int, T> nowIndex, int diff)
         {
-            var p = nowIndex.Value;
+            T p = nowIndex.Value;
             _item[nowIndex.Key + diff] = p;
             p.FrameNumber = nowIndex.Key + diff;
         }
@@ -145,7 +147,7 @@ namespace PMMEditor.Models
 
         public void SelectedFrameMove(int diff)
         {
-            var selectedIndex = this.Where(v => v.Value.IsSelected).ToList();
+            List<KeyValuePair<int, T>> selectedIndex = this.Where(v => v.Value.IsSelected).ToList();
             MoveAll(selectedIndex, diff);
         }
 
@@ -157,6 +159,7 @@ namespace PMMEditor.Models
             {
                 throw new ArgumentOutOfRangeException(nameof(index), "Negative number is out of range");
             }
+
             T preData = null;
             // TODO: 二分探索にする
             foreach (var item in this)
@@ -167,12 +170,15 @@ namespace PMMEditor.Models
                     {
                         return preData;
                     }
-                    var left = preData;
-                    var right = item.Value;
+
+                    T left = preData;
+                    T right = item.Value;
                     return _interpolationMethod.Interpolation(left, right, index);
                 }
+
                 preData = item.Value;
             }
+
             return preData;
         }
 
@@ -184,7 +190,7 @@ namespace PMMEditor.Models
             Debug.Assert(initFrame != null && frame != null);
 
             Add(initFrame.FrameNumber, createFunc(initFrame));
-            var next = initFrame.NextIndex;
+            int next = initFrame.NextIndex;
             while (next != 0)
             {
                 Add(frame[next].FrameNumber, createFunc(frame[next]));
@@ -200,16 +206,19 @@ namespace PMMEditor.Models
             {
                 return null;
             }
+
             int maxDataIndex = 0;
             foreach (var item in boneKeyFrames)
             {
                 maxDataIndex = Math.Max(maxDataIndex, item.DataIndex);
             }
+
             var res = new TKeyFrame[maxDataIndex + 1];
             foreach (var item in boneKeyFrames)
             {
                 res[item.DataIndex] = item;
             }
+
             return res;
         }
 

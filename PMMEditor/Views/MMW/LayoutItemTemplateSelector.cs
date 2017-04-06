@@ -15,7 +15,7 @@ namespace PMMEditor.Views.MMW
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            var template = Items.FirstOrDefault(dt => item.GetType().Equals(dt.DataType));
+            DataTemplate template = Items.FirstOrDefault(dt => item.GetType().Equals(dt.DataType));
             return template ?? base.SelectTemplate(item, container);
         }
     }
