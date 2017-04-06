@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PMMEditor.MMDFileParser
 {
-    internal class PmxReader : MMDFileReaderBase
+    internal class PmxReader : MmdFileReaderBase
     {
         public PmxReader(byte[] binaryData) : base(new MemoryStream(binaryData)) { }
 

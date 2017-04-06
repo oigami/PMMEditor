@@ -304,7 +304,7 @@ namespace PMMEditor.MMDFileParser
         #endregion
     }
 
-    internal class PmdReader : MMDFileReaderBase
+    internal class PmdReader : MmdFileReaderBase
     {
         private readonly byte[] _binaryData;
 

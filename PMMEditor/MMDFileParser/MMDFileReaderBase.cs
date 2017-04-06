@@ -27,14 +27,14 @@ namespace PMMEditor.MMDFileParser
         public float A { get; set; }
     }
 
-    internal abstract class MMDFileReaderBase
+    internal abstract class MmdFileReaderBase
     {
         protected byte[] _buffer;
         protected Stream _stream;
 
         public Encoding Encoding { get; set; }
 
-        public MMDFileReaderBase(Stream stream, byte[] tmpBuffer = null, Encoding encoding = null)
+        public MmdFileReaderBase(Stream stream, byte[] tmpBuffer = null, Encoding encoding = null)
         {
             _stream = stream;
             _buffer = tmpBuffer ?? new byte[1024];

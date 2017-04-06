@@ -585,7 +585,7 @@ namespace PMMEditor.MMDFileParser
         #endregion SelectorChoiceInfo
     }
 
-    internal class PmmReader : MMDFileReaderBase
+    internal class PmmReader : MmdFileReaderBase
     {
         public PmmReader(byte[] binaryData) : base(new MemoryStream(binaryData))
         {
