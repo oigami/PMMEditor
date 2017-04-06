@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Models\PmdParserTests.cs" />
     <Compile Include="Models\PmmReaderTests.cs" />
+    <Compile Include="Models\PmxParsesrTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

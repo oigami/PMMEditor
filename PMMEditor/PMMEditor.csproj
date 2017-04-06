@@ -74,6 +74,9 @@
     <Compile Include="MMDFileParser\MMDFileReaderBase.cs" />
     <Compile Include="MMDFileParser\Pmd.cs" />
     <Compile Include="MMDFileParser\PmdReader.cs" />
+    <Compile Include="MMDFileParser\Pmx.cs" />
+    <Compile Include="MMDFileParser\PmxReader.cs" />
+    <Compile Include="MMDFileParser\PmxStruct.cs" />
     <Compile Include="Models\CameraControlModel.cs" />
     <Compile Include="Models\CameraLightAccessoryTimelineModel.cs" />
     <Compile Include="Models\FrameControlModel.cs" />

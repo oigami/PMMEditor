@@ -12,14 +12,7 @@ namespace PMMEditorTests.Models
         [TestMethod]
         public void PmmReadTest()
         {
-            try
-            {
-                Pmm.ReadFile("C:/tool/MikuMikuDance_v926x64/UserFile/サンプル（きしめんAllStar).pmm");
-            }
-            catch (Exception e)
-            {
-                Assert.Fail(e.Message + "\n\n" + e.StackTrace);
-            }
+            Pmm.ReadFile("C:/tool/MikuMikuDance_v926x64/UserFile/サンプル（きしめんAllStar).pmm");
         }
 
         [TestMethod]
@@ -27,23 +20,16 @@ namespace PMMEditorTests.Models
         {
             PmmStruct data = Pmm.ReadFile("C:/tool/MikuMikuDance_v926x64/UserFile/サンプル（きしめんAllStar).pmm");
 
-            try
+            byte[] bytes;
+            using (var stream = new MemoryStream())
             {
-                byte[] bytes;
-                using (var stream = new MemoryStream())
-                {
-                    new PmmWriter(stream).Write(data);
-                    bytes = stream.ToArray();
-                }
-                PmmStruct writtenData = Pmm.Read(bytes);
-                string jsonData = JsonConvert.SerializeObject(data);
-                string jsonWrittenData = JsonConvert.SerializeObject(writtenData);
-                Assert.AreEqual(jsonData, jsonWrittenData);
+                new PmmWriter(stream).Write(data);
+                bytes = stream.ToArray();
             }
-            catch (Exception e)
-            {
-                Assert.Fail(e.Message + "\n\n" + e.StackTrace);
-            }
+            PmmStruct writtenData = Pmm.Read(bytes);
+            string jsonData = JsonConvert.SerializeObject(data);
+            string jsonWrittenData = JsonConvert.SerializeObject(writtenData);
+            Assert.AreEqual(jsonData, jsonWrittenData);
         }
     }
 }
