@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Livet;
 using PMMEditor.Log;
 using PMMEditor.MMDFileParser;
+using PMMEditor.Models.MMDModel;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Action = System.Action;

@@ -224,7 +224,7 @@ namespace PMMEditor.ViewModels.Graphics
             target.VertexShader.Set(_vertexShader);
             target.VertexShader.SetConstantBuffer(0, _viewProjConstantBuffer);
             target.InputAssembler.SetVertexBuffers(0, ModelSource.VertexBufferBinding);
-            target.InputAssembler.SetIndexBuffer(ModelSource.IndexBuffer, Format.R16_UInt, 0);
+            target.InputAssembler.SetIndexBuffer(ModelSource.IndexBuffer, Format.R32_UInt, 0);
 
             target.PixelShader.Set(_pixelShader);
 

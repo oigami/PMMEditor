@@ -75,9 +75,11 @@
     <Compile Include="MMDFileParser\MmdFileReaderBase.cs" />
     <Compile Include="MMDFileParser\Pmd.cs" />
     <Compile Include="MMDFileParser\PmdReader.cs" />
+    <Compile Include="MMDFileParser\MmdConverter.cs" />
     <Compile Include="MMDFileParser\Pmx.cs" />
     <Compile Include="MMDFileParser\PmxReader.cs" />
     <Compile Include="MMDFileParser\PmxStruct.cs" />
+    <Compile Include="MmwUtil.cs" />
     <Compile Include="Models\CameraControlModel.cs" />
     <Compile Include="Models\CameraLightAccessoryTimelineModel.cs" />
     <Compile Include="Models\FrameControlModel.cs" />
@@ -87,7 +89,7 @@
     <Compile Include="Models\MmdAccessoryModel.cs" />
     <Compile Include="Models\MmdLightModel.cs" />
     <Compile Include="Models\MmdModelList.cs" />
-    <Compile Include="Models\MmdModelModel.cs" />
+    <Compile Include="Models\MMDModel\MmdModelModel.cs" />
     <Compile Include="MMDFileParser\Pmm.cs" />
     <Compile Include="MMDFileParser\PmmWriter.cs" />
     <Compile Include="Models\MMDModel\BoneFrameControlModel.cs" />

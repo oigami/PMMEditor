@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using PMMEditor.MMDFileParser;
 using PMMEditor.MVVM;
 using SharpDX;
+using Quaternion = SharpDX.Quaternion;
+using Vector3 = SharpDX.Vector3;
 
 namespace PMMEditor.Models.MMDModel
 {
@@ -72,7 +74,6 @@ namespace PMMEditor.Models.MMDModel
             ObservableCollection<MmdModelModel.Bone> bones = _model.BoneKeyList;
             foreach (var i in Enumerable.Range(0, bones.Count))
             {
-
                 MmdModelModel.BoneKeyFrame data = nowBoneKeyFrame[i];
                 System.Numerics.Vector3 pos = data.Position;
                 System.Numerics.Quaternion q = data.Quaternion;
@@ -85,23 +86,32 @@ namespace PMMEditor.Models.MMDModel
         private void UpdateInverseKinematics()
         {
             ObservableCollection<MmdModelModel.Bone> bones = _model.BoneKeyList;
-            foreach (var ik in _model.IKList)
+            foreach (var (ikBone, j) in _model.IKList)
             {
-                Matrix targetMatrix = CalcBoneModelLocalMatrix(ik.BoneIndex);
+                PmxStruct.Bone.IKData ik = ikBone.IK;
+                if (ik.Iterations <= 0)
+                {
+                    continue;
+                }
+
+                Matrix targetMatrix = CalcBoneModelLocalMatrix(j);
                 foreach (var i in Enumerable.Range(0, ik.Iterations))
                 {
-                    foreach (var attentionIndex in ik.IKChildBoneIndex)
+                    foreach (var ikLink in ik.IKLinks)
                     {
+                        int attentionIndex = ikLink.BoneIndex;
                         MmdModelModel.Bone bone = bones[attentionIndex];
 
                         Matrix effectorMatrix = CalcBoneModelLocalMatrix(ik.TargetBoneIndex);
 
                         Matrix inverseCoord = Matrix.Invert(CalcBoneModelLocalMatrix(attentionIndex));
 
-                        Vector3 localEffectorDir = Vector3.TransformCoordinate(effectorMatrix.TranslationVector,
-                                                                           inverseCoord);
-                        Vector3 localTargetDir = Vector3.TransformCoordinate(targetMatrix.TranslationVector,
-                                                                         inverseCoord);
+                        Vector3 localEffectorDir =
+                            Vector3.TransformCoordinate(effectorMatrix.TranslationVector,
+                                                        inverseCoord);
+                        Vector3 localTargetDir =
+                            Vector3.TransformCoordinate(targetMatrix.TranslationVector,
+                                                        inverseCoord);
 
                         localEffectorDir.Normalize();
                         localTargetDir.Normalize();

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Livet.Commands;
 using PMMEditor.Models;
+using PMMEditor.Models.MMDModel;
 using PMMEditor.Views.Timeline;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;

@@ -88,12 +88,12 @@ namespace PMMEditor.MMDFileParser
             o.RigidBodyIndexSizeOption = ReadOption(nameof(o.RigidBodyIndexSizeOption));
 
             o.Name = ReadVIntString();
-            o.NameEnglish = ReadVIntString();
+            o.EnglishName = ReadVIntString();
             o.Comment = ReadVIntString();
             o.CommentEnglish = ReadVIntString();
 
             o.Vertices = ReadVIntList(() => ReadVertex(o));
-            o.indices = ReadVIntList(() => ReadSizeOption(o.VertexSizeOption));
+            o.Indices = ReadVIntList(() => ReadSizeOption(o.VertexSizeOption));
             o.TexturePath = ReadVIntList(ReadVIntString);
             o.Materials = ReadVIntList(() => ReadMaterial(o));
             o.Bones = ReadVIntList(() => ReadBone(o));
@@ -260,7 +260,7 @@ namespace PMMEditor.MMDFileParser
             var material = new PmxStruct.Material
             {
                 Name = ReadVIntString(),
-                NameEnglish = ReadVIntString(),
+                EnglishName = ReadVIntString(),
                 Diffuse = ReadColorA(),
                 Specular = ReadColor(),
                 Specularity = ReadFloat(),
@@ -299,7 +299,7 @@ namespace PMMEditor.MMDFileParser
             }
 
             material.Memo = ReadVIntString();
-            material.FaceVertexCount = ReadInt();
+            material.FaceVertexCount = ReadUInt();
             if (material.FaceVertexCount % 3 != 0)
             {
                 throw new InvalidOperationException(nameof(material.FaceVertexCount));
@@ -313,7 +313,7 @@ namespace PMMEditor.MMDFileParser
             var bone = new PmxStruct.Bone
             {
                 Name = ReadVIntString(),
-                NameEnglish = ReadVIntString(),
+                EnglishName = ReadVIntString(),
                 Position = ReadVector3(),
                 ParentBoneIndex = ReadSizeOption(o.BoneIndexSizeOption),
                 TransformLevel = ReadInt(),
@@ -425,7 +425,7 @@ namespace PMMEditor.MMDFileParser
                     case PmxStruct.Morph.MorphKind.Vertex:
                         offset = new PmxStruct.Morph.VertexMorph
                         {
-                            VertexIndex = ReadSizeOption(o.VertexSizeOption),
+                            VertexIndex = (uint) ReadSizeOption(o.VertexSizeOption),
                             PositionOffset = ReadVector3()
                         };
                         break;

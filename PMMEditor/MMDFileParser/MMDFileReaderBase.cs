@@ -18,6 +18,14 @@ namespace PMMEditor.MMDFileParser
 
     public struct ColorA
     {
+        public ColorA(float r = 0, float g = 0, float b = 0, float a = 1)
+        {
+            R = r;
+            G = g;
+            B = b;
+            A = a;
+        }
+
         public float R { get; set; }
 
         public float G { get; set; }

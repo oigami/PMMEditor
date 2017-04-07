@@ -14,9 +14,9 @@ namespace PMMEditor.MMDFileParser
         #region ヘッダ
 
         [StringLength(4, MinimumLength = 4)]
-        public string Magic { get; set; }
+        public string Magic { get; set; } = "Pmx ";
 
-        public float Version { get; set; }
+        public float Version { get; set; } = 2.0f;
 
         #region Option
 
@@ -26,27 +26,27 @@ namespace PMMEditor.MMDFileParser
             UTF8
         }
 
-        public EncodingKind EncodingOption { get; set; }
+        public EncodingKind EncodingOption { get; set; } = EncodingKind.UTF8;
 
-        public int AddUvSizeOption { get; set; }
+        public int AddUvSizeOption { get; set; } = 0;
 
-        public int VertexSizeOption { get; set; }
+        public int VertexSizeOption { get; set; } = 4;
 
-        public int TextureIndexSizeOption { get; set; }
+        public int TextureIndexSizeOption { get; set; } = 4;
 
-        public int MaterialIndexSizeOption { get; set; }
+        public int MaterialIndexSizeOption { get; set; } = 4;
 
-        public int BoneIndexSizeOption { get; set; }
+        public int BoneIndexSizeOption { get; set; } = 4;
 
-        public int MorphIndexSizeOption { get; set; }
+        public int MorphIndexSizeOption { get; set; } = 4;
 
-        public int RigidBodyIndexSizeOption { get; set; }
+        public int RigidBodyIndexSizeOption { get; set; } = 4;
 
         #endregion
 
         public string Name { get; set; }
 
-        public string NameEnglish { get; set; }
+        public string EnglishName { get; set; }
 
         public string Comment { get; set; }
 
@@ -107,7 +107,7 @@ namespace PMMEditor.MMDFileParser
 
         #endregion
 
-        public List<int> indices { get; set; }
+        public List<int> Indices { get; set; }
 
         public List<string> TexturePath { get; set; }
 
@@ -116,7 +116,7 @@ namespace PMMEditor.MMDFileParser
         {
             public string Name { get; set; }
 
-            public string NameEnglish { get; set; }
+            public string EnglishName { get; set; }
 
             public ColorA Diffuse { get; set; }
 
@@ -161,7 +161,7 @@ namespace PMMEditor.MMDFileParser
 
             public float EdgeSize { get; set; }
 
-            public int TextureIndex { get; set; }
+            public int? TextureIndex { get; set; }
 
             public int SphereTextureIndex { get; set; }
 
@@ -173,7 +173,7 @@ namespace PMMEditor.MMDFileParser
                 SubTexture
             }
 
-            public SphereModes SphereMode { get; set; }
+            public SphereModes SphereMode { get; set; } = SphereModes.Disabled;
 
             public bool IsCommonToon { get; set; }
 
@@ -181,7 +181,7 @@ namespace PMMEditor.MMDFileParser
 
             public string Memo { get; set; }
 
-            public int FaceVertexCount { get; set; }
+            public uint FaceVertexCount { get; set; }
         }
 
         public List<Material> Materials { get; set; }
@@ -190,11 +190,11 @@ namespace PMMEditor.MMDFileParser
         {
             public string Name { get; set; }
 
-            public string NameEnglish { get; set; }
+            public string EnglishName { get; set; }
 
             public Vector3 Position { get; set; }
 
-            public int ParentBoneIndex { get; set; }
+            public int? ParentBoneIndex { get; set; }
 
             public int TransformLevel { get; set; }
 
@@ -352,10 +352,10 @@ namespace PMMEditor.MMDFileParser
             public enum MorphPanel
             {
                 Base,
-                EyeBrow,
+                Eyebrow,
                 Eye,
                 Lip,
-                Other
+                Others
             }
 
             public MorphPanel Panel { get; set; }
@@ -379,7 +379,7 @@ namespace PMMEditor.MMDFileParser
 
             public class VertexMorph : IMorphOffset
             {
-                public int VertexIndex { get; set; }
+                public uint VertexIndex { get; set; }
 
                 public Vector3 PositionOffset { get; set; }
             }

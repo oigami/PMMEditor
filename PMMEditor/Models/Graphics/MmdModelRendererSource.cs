@@ -121,14 +121,12 @@ namespace PMMEditor.Models.Graphics
         {
             OnUnload();
 
-            PmdStruct data = Pmd.ReadFile(Model.FilePath);
-
-            Materials = new List<Material>(data.Materials.Count);
+            Materials = new List<Material>(Model.Materials.Count);
             int preIndex = 0;
-            foreach (var material in data.Materials)
+            foreach (var material in Model.Materials)
             {
                 var diffuse = new Color4(new Color3(material.Diffuse.R, material.Diffuse.G, material.Diffuse.B),
-                                         material.DiffuseAlpha);
+                                         material.Diffuse.A);
                 Materials.Add(new Material
                 {
                     IndexNum = (int) material.FaceVertexCount,
@@ -141,24 +139,24 @@ namespace PMMEditor.Models.Graphics
             }
 
             // 頂点データ生成
-            if (data.Vertices.Count > 0)
+            if (Model.Vertices.Count > 0)
             {
                 int typeSize = Utilities.SizeOf<Vertex>();
                 _verteBuffer = Direct3D11.Buffer.Create(
                     _device,
-                    data.Vertices.Select(_ => new Vertex
+                    Model.Vertices.Select(_ => new Vertex
                     {
                         Position = new Vector4(_.Position.X, _.Position.Y, _.Position.Z, 1.0f),
-                        Weight = _.BoneWeight / 100.0f,
+                        Weight = _.BdefN[0].Weight,
                         Idx = new Int4
                         {
-                            X = _.BoneNum1,
-                            Y = _.BoneNum2
+                            X = _.BdefN[0].BoneIndex,
+                            Y = _.BdefN[1].BoneIndex
                         }
                     }).ToArray(),
                     new Direct3D11.BufferDescription
                     {
-                        SizeInBytes = typeSize * data.Vertices.Count,
+                        SizeInBytes = typeSize * Model.Vertices.Count,
                         Usage = Direct3D11.ResourceUsage.Immutable,
                         BindFlags = Direct3D11.BindFlags.VertexBuffer,
                         StructureByteStride = typeSize
@@ -166,15 +164,15 @@ namespace PMMEditor.Models.Graphics
                 VertexBufferBinding = new Direct3D11.VertexBufferBinding(_verteBuffer, typeSize, 0);
 
                 // 頂点インデックス生成
-                int indexNum = data.VertexIndex.Count;
+                int indexNum = Model.Indices.Count;
                 IndexBuffer = Direct3D11.Buffer.Create(
-                    _device, data.VertexIndex.ToArray(),
+                    _device, Model.Indices.ToArray(),
                     new Direct3D11.BufferDescription
                     {
-                        SizeInBytes = Utilities.SizeOf<ushort>() * indexNum,
+                        SizeInBytes = Utilities.SizeOf<int>() * indexNum,
                         Usage = Direct3D11.ResourceUsage.Immutable,
                         BindFlags = Direct3D11.BindFlags.IndexBuffer,
-                        StructureByteStride = Utilities.SizeOf<ushort>()
+                        StructureByteStride = Utilities.SizeOf<int>()
                     }).AddTo(_d3DObjectCompositeDisposable2);
             }
 

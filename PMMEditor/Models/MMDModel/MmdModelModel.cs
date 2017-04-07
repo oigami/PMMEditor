@@ -1,19 +1,18 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using Livet;
 using PMMEditor.Log;
 using PMMEditor.MMDFileParser;
-using PMMEditor.Models.MMDModel;
 using PMMEditor.MVVM;
 using SharpDX;
 using Quaternion = System.Numerics.Quaternion;
 using Vector3 = System.Numerics.Vector3;
 
-namespace PMMEditor.Models
+namespace PMMEditor.Models.MMDModel
 {
     public class MmdModelModel : BindableBase
     {
@@ -31,8 +30,6 @@ namespace PMMEditor.Models
         {
             _logger = logger;
         }
-
-        private PmmStruct.ModelData _modelData;
 
         #region ボーン構造体
 
@@ -86,7 +83,7 @@ namespace PMMEditor.Models
 
             public int TailChildIndex { get; set; }
 
-            public PmdStruct.BoneKind Type { get; set; }
+            public PmxStruct.Bone.Flag Type { get; set; }
 
             public Matrix InitMatBoneLocal { get; set; }
 
@@ -135,6 +132,8 @@ namespace PMMEditor.Models
 
         #endregion
 
+        public List<(PmxStruct.Bone, int)> IKList;
+
         #region FilePath変更通知プロパティ
 
         private string _filePath;
@@ -145,25 +144,48 @@ namespace PMMEditor.Models
             private set { SetProperty(ref _filePath, value); }
         }
 
-        #endregion
+        public List<PmxStruct.Material> Materials { get; set; }
 
-        public List<PmdStruct.IK> IKList { get; private set; }
+        public List<PmxStruct.Vertex> Vertices { get; set; }
+
+        public List<int> Indices { get; set; }
+
+        #endregion
 
         public Task SetAsync(string filePath)
         {
             return Task.Run(() => Set(filePath));
         }
 
-        public void Set(string filePath)
+        public void Set(string filePath, PmmStruct.ModelData modelData = null)
         {
             try
             {
-                PmdStruct pmd = Pmd.ReadFile(filePath);
-                Name = pmd.ModelName;
-                NameEnglish = pmd.EnglishName?.ModelName;
-                IKList = pmd.IKs;
+                byte[] fileData = File.ReadAllBytes(filePath);
+                MmdFileKind kind = Mmd.FileKind(fileData);
+                PmxStruct data = null;
+                switch (kind)
+                {
+                    case MmdFileKind.Pmd:
+                        data = Pmd.Read(fileData).ToPmx();
+                        break;
+                    case MmdFileKind.Pmx:
+                        data = Pmx.Read(fileData);
+                        break;
+                    case MmdFileKind.Unknown:
+                    case MmdFileKind.Pmm:
+                    default:
+                        throw new ArgumentException(nameof(filePath));
+                }
+
+                Indices = data.Indices;
+                Vertices = data.Vertices;
+                Materials = data.Materials;
+                Name = data.Name;
+                NameEnglish = data.EnglishName;
+                IKList = data.Bones.Indexed().Where(_ => _.Item1.IK.Iterations > 0).ToList();
                 FilePath = filePath;
-                CreateBones(null, pmd.Bones);
+                CreateBones(modelData, data.Bones);
                 IsInitialized = true;
             }
             catch (Exception e)
@@ -172,24 +194,12 @@ namespace PMMEditor.Models
             }
         }
 
-        public async Task SetAsync(PmmStruct.ModelData modelData)
+        public Task SetAsync(PmmStruct.ModelData modelData)
         {
-            _modelData = modelData;
-            Name = modelData.Name;
-            NameEnglish = modelData.NameEn;
-            FilePath = modelData.Path;
-
-            PmdStruct data = await Pmd.ReadFileAsync(modelData.Path).ConfigureAwait(false);
-            IKList = data.IKs;
-            await CreateBonesAsync(modelData, data.Bones).ConfigureAwait(false);
+            return Task.Run(() => Set(modelData.Path, modelData));
         }
 
-        private Task CreateBonesAsync(PmmStruct.ModelData modelData, IList<PmdStruct.Bone> bones)
-        {
-            return Task.Run(() => CreateBones(modelData, bones));
-        }
-
-        private void CreateBones(PmmStruct.ModelData modelData, IList<PmdStruct.Bone> bones)
+        private void CreateBones(PmmStruct.ModelData modelData, IList<PmxStruct.Bone> bones)
         {
             PmmStruct.ModelData.BoneInitFrame[] keyFrame =
                 KeyFrameList<BoneKeyFrame, DefaultKeyFrameInterpolationMethod<BoneKeyFrame>>
@@ -211,7 +221,7 @@ namespace PMMEditor.Models
         }
 
         private Bone CreateBone(
-            PmdStruct.Bone item, int i, IList<PmdStruct.Bone> inputBone,
+            PmxStruct.Bone item, int i, IList<PmxStruct.Bone> inputBone,
             PmmStruct.ModelData.BoneInitFrame[] keyFrame,
             PmmStruct.ModelData.BoneInitFrame boneInitFrame)
         {
@@ -241,8 +251,8 @@ namespace PMMEditor.Models
 
             outputBone.Name = item.Name;
             outputBone.Index = i;
-            outputBone.Type = item.Kind;
-            outputBone.TailChildIndex = item.TailBoneIndex ?? -1;
+            outputBone.Type = item.Flags;
+            outputBone.TailChildIndex = (item.Flags & PmxStruct.Bone.Flag.Connection) != 0 ? item.ConnectionBoneIndex : -1;
             Matrix modelLocalInitMat = Matrix.Translation(item.Position.X, item.Position.Y, item.Position.Z);
             outputBone.InitMatModelLocal =
                 outputBone.BoneMatModelLocal = modelLocalInitMat; // モデルローカル座標系

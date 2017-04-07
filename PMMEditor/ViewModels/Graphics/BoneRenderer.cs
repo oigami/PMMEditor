@@ -49,8 +49,7 @@ namespace PMMEditor.ViewModels.Graphics
             // 頂点バッファ生成
             Vertex[] vertexArr = _model.Model.BoneKeyList.SelectMany(_ =>
             {
-                if (_.Type == PmdStruct.BoneKind.Invisible
-                    || _.TailChildIndex == -1)
+                if (_.TailChildIndex == -1)
                 {
                     return Enumerable.Empty<Vertex>();
                 }
@@ -65,11 +64,24 @@ namespace PMMEditor.ViewModels.Graphics
 
                 return new[]
                 {
-                    new Vertex { Id = new Int3(nowX, nowY, 0), IsBegin = 1 },
-                    new Vertex { Id = new Int3(nextX, nextY, 0), IsBegin = 0 }
+                    new Vertex
+                    {
+                        Id = new Int3(nowX, nowY, 0),
+                        IsBegin = 1
+                    },
+                    new Vertex
+                    {
+                        Id = new Int3(nextX, nextY, 0),
+                        IsBegin = 0
+                    }
                 };
             }).ToArray();
             _numVertex = vertexArr.Length;
+            if (_numVertex == 0)
+            {
+                return;
+            }
+
             _vertexBuffer = Direct3D11.Buffer.Create(_device, vertexArr, new Direct3D11.BufferDescription
             {
                 BindFlags = Direct3D11.BindFlags.VertexBuffer,
@@ -101,7 +113,8 @@ namespace PMMEditor.ViewModels.Graphics
                 }
             }
 
-            CompilationResult vertexShaderByteCode = ShaderBytecode.Compile(shaderSource, "VS", "vs_4_0", ShaderFlags.Debug);
+            CompilationResult vertexShaderByteCode = ShaderBytecode.Compile(shaderSource, "VS", "vs_4_0",
+                                                                            ShaderFlags.Debug);
             if (vertexShaderByteCode.HasErrors)
             {
                 Console.WriteLine(vertexShaderByteCode.Message);
@@ -119,7 +132,8 @@ namespace PMMEditor.ViewModels.Graphics
             });
 
             // ピクセルシェーダ生成
-            CompilationResult pixelShaderByteCode = ShaderBytecode.Compile(shaderSource, "PS", "ps_4_0", ShaderFlags.Debug);
+            CompilationResult pixelShaderByteCode = ShaderBytecode.Compile(shaderSource, "PS", "ps_4_0",
+                                                                           ShaderFlags.Debug);
             if (pixelShaderByteCode.HasErrors)
             {
                 Console.WriteLine(pixelShaderByteCode.Message);

@@ -17,7 +17,7 @@ namespace PMMEditor.MMDFileParser
         public float Version { get; set; }
 
         [StringLength(20)]
-        public string ModelName { get; set; }
+        public string Name { get; set; }
 
         [StringLength(256)]
         public string Comment { get; set; }
@@ -50,7 +50,7 @@ namespace PMMEditor.MMDFileParser
 
         #region 頂点インデックス
 
-        public List<ushort> VertexIndex { get; set; }
+        public List<ushort> Indices { get; set; }
 
         #endregion
 
@@ -58,9 +58,7 @@ namespace PMMEditor.MMDFileParser
 
         public class Material
         {
-            public Color Diffuse { get; set; }
-
-            public float DiffuseAlpha { get; set; }
+            public ColorA Diffuse { get; set; }
 
             public float Specularity { get; set; }
 
@@ -70,12 +68,14 @@ namespace PMMEditor.MMDFileParser
 
             public byte ToonIndex { get; set; }
 
-            public byte EdgeFlag { get; set; }
+            public bool IsEdge { get; set; }
 
             public uint FaceVertexCount { get; set; }
 
             [StringLength(20)]
             public string TextureFilename { get; set; }
+
+            public string SphereTextureName { get; set; }
         }
 
         public List<Material> Materials { get; set; }
@@ -161,12 +161,12 @@ namespace PMMEditor.MMDFileParser
             public string Name { get; set; }
 
 
-            public SkinKind Kind { get; set; }
+            public SkinKind SkinPanel { get; set; }
 
             public List<SkinVertex> SkinVertices { get; set; }
         }
 
-        public List<Skin> Skins { get; set; }
+        public List<Skin> Morphs { get; set; }
 
         #endregion
 
@@ -205,10 +205,10 @@ namespace PMMEditor.MMDFileParser
             public List<string> SkinName { get; set; }
 
             [StringLength(50)]
-            public List<string> BoneDipsName { get; set; }
+            public List<string> BoneDispName { get; set; }
         }
 
-        public EnglishNames EnglishName { get; set; }
+        public EnglishNames EnglishData { get; set; }
 
         #endregion
 
@@ -328,7 +328,7 @@ namespace PMMEditor.MMDFileParser
 
                 Magic = ReadFixedString(3),
                 Version = ReadFloat(),
-                ModelName = ReadFixedStringTerminationChar(20),
+                Name = ReadFixedStringTerminationChar(20),
                 Comment = ReadFixedStringTerminationChar(256),
 
                 #endregion
@@ -336,14 +336,14 @@ namespace PMMEditor.MMDFileParser
                 #region 頂点
 
                 Vertices = ReadVIntList(ReadVertex),
-                VertexIndex = ReadVIntList(ReadUInt16),
+                Indices = ReadVIntList(ReadUInt16),
 
                 #endregion
 
                 Materials = ReadVIntList(ReadMaterial),
                 Bones = ReadList(ReadUInt16(), ReadBone),
                 IKs = ReadList(ReadUInt16(), ReadIK),
-                Skins = ReadList(ReadUInt16(), ReadSkin),
+                Morphs = ReadList(ReadUInt16(), ReadSkin),
                 SkinIndices = ReadList(ReadByte(), ReadUInt16),
                 BoneDispNames = ReadList(ReadByte(), () => ReadFixedStringTerminationChar(50)),
                 BoneDisps = ReadVIntList(() => new PmdStruct.BoneDisp
@@ -355,14 +355,14 @@ namespace PMMEditor.MMDFileParser
             bool hasEnglishName = ReadByte() == 1;
             if (hasEnglishName)
             {
-                o.EnglishName = new PmdStruct.EnglishNames
+                o.EnglishData = new PmdStruct.EnglishNames
                 {
                     ModelName = ReadFixedStringTerminationChar(20),
                     Comment = ReadFixedStringTerminationChar(256),
                     BoneName = ReadList(o.Bones.Count, () => ReadFixedStringTerminationChar(20)),
-                    SkinName = ReadList(Math.Max(0, o.Skins.Count - 1),
+                    SkinName = ReadList(Math.Max(0, o.Morphs.Count - 1),
                                         () => ReadFixedStringTerminationChar(20)),
-                    BoneDipsName = ReadList(o.BoneDispNames.Count,
+                    BoneDispName = ReadList(o.BoneDispNames.Count,
                                             () => ReadFixedStringTerminationChar(50))
                 };
             }
@@ -400,17 +400,45 @@ namespace PMMEditor.MMDFileParser
 
         private PmdStruct.Material ReadMaterial()
         {
-            return new PmdStruct.Material
+            var res = new PmdStruct.Material
             {
-                Diffuse = ReadColor(),
-                DiffuseAlpha = ReadFloat(),
+                Diffuse = ReadColorA(),
                 Specularity = ReadFloat(),
                 Specular = ReadColor(),
                 Ambient = ReadColor(),
                 ToonIndex = ReadByte(),
-                EdgeFlag = ReadByte(),
+                IsEdge = ReadByte() != 0,
                 FaceVertexCount = ReadUInt(),
-                TextureFilename = ReadFixedStringTerminationChar(20)
+            };
+            string textureFilename = ReadFixedStringTerminationChar(20);
+            string fileName = Path.GetFileName(textureFilename);
+            if (fileName != null)
+            {
+                foreach (var tex in fileName.Split('*'))
+                {
+                    string ext = Path.GetExtension(tex);
+                    if (ext == ".sph" || ext == ".spa")
+                    {
+                        res.SphereTextureName = tex;
+                    }
+                    else
+                    {
+                        res.TextureFilename = tex;
+                    }
+                }
+            }
+
+            return res;
+        }
+
+        private ColorA ReadColorA()
+        {
+            return new ColorA
+            {
+                R = ReadFloat(),
+                G = ReadFloat(),
+                B = ReadFloat(),
+                A = ReadFloat()
             };
         }
 
@@ -449,7 +477,7 @@ namespace PMMEditor.MMDFileParser
             };
 
             int skinVertexCount = ReadInt();
-            o.Kind = (PmdStruct.SkinKind) ReadByte();
+            o.SkinPanel = (PmdStruct.SkinKind) ReadByte();
 
             o.SkinVertices = ReadList(skinVertexCount, () => new PmdStruct.SkinVertex
             {
