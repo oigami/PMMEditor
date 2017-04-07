@@ -9,6 +9,10 @@ namespace PMMEditor.MMDFileParser
 {
     public static class Pmx
     {
+        public static bool MagicNumberEqual(byte[] checkData)
+        {
+            return PmxReader.MagicNumberEqual(checkData);
+        }
 
         public static PmxStruct Read(byte[] data)
         {

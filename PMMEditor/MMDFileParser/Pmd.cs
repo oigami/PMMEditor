@@ -5,6 +5,11 @@ namespace PMMEditor.MMDFileParser
 {
     public static class Pmd
     {
+        public static bool MagicNumberEqual(byte[] checkData)
+        {
+            return PmdReader.MagicNumberEqual(checkData);
+        }
+
         public static PmdStruct Read(byte[] data)
         {
             return new PmdReader(data).Read();

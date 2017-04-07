@@ -12,7 +12,13 @@ namespace PMMEditorTests.Models
         [TestMethod]
         public void PmmReadTest()
         {
-            Pmm.ReadFile("C:/tool/MikuMikuDance_v926x64/UserFile/サンプル（きしめんAllStar).pmm");
+            string checkFile = "C:/tool/MikuMikuDance_v926x64/UserFile/サンプル（きしめんAllStar).pmm";
+            Assert.IsTrue(
+                Pmm.MagicNumberEqual(File.ReadAllBytes(checkFile)));
+            Assert.IsFalse(
+                Pmm.MagicNumberEqual(File.ReadAllBytes("../../../UserFile/Model/PronamaChan/01_Normal_通常/b.bmp")));
+
+            Pmm.ReadFile(checkFile);
         }
 
         [TestMethod]

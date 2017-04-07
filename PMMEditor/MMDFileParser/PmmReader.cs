@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace PMMEditor.MMDFileParser
 {
@@ -587,8 +588,12 @@ namespace PMMEditor.MMDFileParser
 
     internal class PmmReader : MmdFileReaderBase
     {
-        public PmmReader(byte[] binaryData) : base(new MemoryStream(binaryData))
+        public PmmReader(byte[] binaryData) : base(new MemoryStream(binaryData)) { }
+
+        public static bool MagicNumberEqual(byte[] checkData)
         {
+            return Encoding.ASCII.GetString(checkData, 0, "Polygon Movie maker 0002".Length)
+                   == "Polygon Movie maker 0002";
         }
 
         public PmmStruct Read()
@@ -786,7 +791,6 @@ namespace PMMEditor.MMDFileParser
                 MorphName = ReadVIntList(ReadVByteString),
                 IkIndex = ReadVIntList(ReadInt),
                 OpIndex = ReadVIntList(ReadInt),
-
                 DrawOrder = ReadByte(),
                 EditIsDisplay = ReadBool(),
                 EditSelectedBone = ReadInt(),

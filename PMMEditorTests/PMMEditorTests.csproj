@@ -52,6 +52,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Models\MmdTests.cs" />
     <Compile Include="Models\PmdParserTests.cs" />
     <Compile Include="Models\PmmReaderTests.cs" />
     <Compile Include="Models\PmxParsesrTests.cs" />

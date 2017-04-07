@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Numerics;
+using System.Text;
 
 namespace PMMEditor.MMDFileParser
 {
@@ -311,6 +312,11 @@ namespace PMMEditor.MMDFileParser
         public PmdReader(byte[] binaryData) : base(new MemoryStream(binaryData))
         {
             _binaryData = binaryData;
+        }
+
+        public static bool MagicNumberEqual(byte[] binary)
+        {
+            return Encoding.ASCII.GetString(binary, 0, 3) == "Pmd";
         }
 
         public PmdStruct Read()

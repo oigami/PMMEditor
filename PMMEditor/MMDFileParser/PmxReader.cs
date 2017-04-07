@@ -13,6 +13,11 @@ namespace PMMEditor.MMDFileParser
     {
         public PmxReader(byte[] binaryData) : base(new MemoryStream(binaryData)) { }
 
+        public static bool MagicNumberEqual(byte[] binaryData)
+        {
+            return Encoding.ASCII.GetString(binaryData, 0, 4) == "PMX ";
+        }
+
         public PmxStruct Read()
         {
             var o = new PmxStruct
@@ -42,11 +47,11 @@ namespace PMMEditor.MMDFileParser
                 {
                     case 0:
                         o.EncodingOption = PmxStruct.EncodingKind.UTF16;
-                        Encoding = Encoding.Unicode;
+                        DefaultEncoding = Encoding.Unicode;
                         break;
                     case 1:
                         o.EncodingOption = PmxStruct.EncodingKind.UTF8;
-                        Encoding = Encoding.UTF8;
+                        DefaultEncoding = Encoding.UTF8;
                         break;
                     default:
                         throw new InvalidOperationException(nameof(encodingKind));
@@ -100,7 +105,7 @@ namespace PMMEditor.MMDFileParser
                 var joint = new PmxStruct.Joint
                 {
                     Name = ReadVIntString(),
-                    NameEnglish = ReadVIntString(),
+                    NameEnglish = ReadVIntString()
                 };
                 switch (ReadByte())
                 {
@@ -535,7 +540,7 @@ namespace PMMEditor.MMDFileParser
                 NameEnglish = ReadVIntString(),
                 RelativeBoneIndex = CheckInvalidData(ReadSizeOption(o.BoneIndexSizeOption), -1),
                 Group = ReadByte(),
-                IgnoreCollisionGroup = ReadUInt16(),
+                IgnoreCollisionGroup = ReadUInt16()
             };
             switch (ReadByte())
             {
@@ -578,6 +583,5 @@ namespace PMMEditor.MMDFileParser
 
             return rigidBody;
         }
-
     }
 }

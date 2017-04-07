@@ -32,13 +32,13 @@ namespace PMMEditor.MMDFileParser
         protected byte[] _buffer;
         protected Stream _stream;
 
-        public Encoding Encoding { get; set; }
+        public Encoding DefaultEncoding { get; set; }
 
         public MmdFileReaderBase(Stream stream, byte[] tmpBuffer = null, Encoding encoding = null)
         {
             _stream = stream;
             _buffer = tmpBuffer ?? new byte[1024];
-            Encoding = encoding ?? Encoding.GetEncoding("Shift_jis");
+            DefaultEncoding = encoding ?? Encoding.GetEncoding("Shift_jis");
         }
 
         #region PrimitiveTypeRead
@@ -153,7 +153,7 @@ namespace PMMEditor.MMDFileParser
 
         protected string ReadFixedString(int count)
         {
-            return ReadFixedString(count, Encoding);
+            return ReadFixedString(count, DefaultEncoding);
         }
 
         protected string ReadFixedString(int count, Encoding encoding)
