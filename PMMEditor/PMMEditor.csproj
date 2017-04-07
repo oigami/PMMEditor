@@ -117,6 +117,7 @@
     <Compile Include="ViewModels\MMD\MainViewViewModel.cs" />
     <Compile Include="Views\Behaviors\BehaviorBase.cs" />
     <Compile Include="Views\Behaviors\DefaultCameraMouseControlBehavior.cs" />
+    <Compile Include="Views\Behaviors\DragAcceptBehavior.cs" />
     <Compile Include="Views\Behaviors\ScrollViewportSyncronizingBehavior.cs" />
     <Compile Include="Views\ExceptionDialog.xaml.cs">
       <DependentUpon>ExceptionDialog.xaml</DependentUpon>

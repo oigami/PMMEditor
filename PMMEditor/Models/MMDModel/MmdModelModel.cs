@@ -134,34 +134,16 @@ namespace PMMEditor.Models.MMDModel
 
         public List<(PmxStruct.Bone, int)> IKList;
 
-        #region FilePath変更通知プロパティ
-
-        private string _filePath;
-
-        public string FilePath
-        {
-            get { return _filePath; }
-            private set { SetProperty(ref _filePath, value); }
-        }
-
         public List<PmxStruct.Material> Materials { get; set; }
 
         public List<PmxStruct.Vertex> Vertices { get; set; }
 
         public List<int> Indices { get; set; }
 
-        #endregion
-
-        public Task SetAsync(string filePath)
-        {
-            return Task.Run(() => Set(filePath));
-        }
-
-        public void Set(string filePath, PmmStruct.ModelData modelData = null)
+        public void Set(byte[] fileData, PmmStruct.ModelData modelData = null)
         {
             try
             {
-                byte[] fileData = File.ReadAllBytes(filePath);
                 MmdFileKind kind = Mmd.FileKind(fileData);
                 PmxStruct data = null;
                 switch (kind)
@@ -175,7 +157,7 @@ namespace PMMEditor.Models.MMDModel
                     case MmdFileKind.Unknown:
                     case MmdFileKind.Pmm:
                     default:
-                        throw new ArgumentException(nameof(filePath));
+                        throw new ArgumentException(nameof(data));
                 }
 
                 Indices = data.Indices;
@@ -183,8 +165,7 @@ namespace PMMEditor.Models.MMDModel
                 Materials = data.Materials;
                 Name = data.Name;
                 NameEnglish = data.EnglishName;
-                IKList = data.Bones.Indexed().Where(_ => _.Item1.IK.Iterations > 0).ToList();
-                FilePath = filePath;
+                IKList = data.Bones.Indexed().Where(_ => (_.Item1.Flags & PmxStruct.Bone.Flag.IkFlag) != 0).ToList();
                 CreateBones(modelData, data.Bones);
                 IsInitialized = true;
             }
@@ -192,6 +173,11 @@ namespace PMMEditor.Models.MMDModel
             {
                 _logger.Error("Model Load Error", e);
             }
+        }
+
+        public void Set(string filePath, PmmStruct.ModelData modelData = null)
+        {
+            Set(File.ReadAllBytes(filePath), modelData);
         }
 
         public Task SetAsync(PmmStruct.ModelData modelData)

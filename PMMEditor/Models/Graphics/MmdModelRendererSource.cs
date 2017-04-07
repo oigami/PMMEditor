@@ -142,17 +142,28 @@ namespace PMMEditor.Models.Graphics
             if (Model.Vertices.Count > 0)
             {
                 int typeSize = Utilities.SizeOf<Vertex>();
+
+                Int4 createBoneIndex(IList<PmxStruct.Bdef> bdef)
+                {
+                    switch (bdef.Count)
+                    {
+                        case 1:
+                            return new Int4(bdef[0].BoneIndex, 0, 0, 0);
+                        case 2:
+                            return new Int4(bdef[0].BoneIndex, bdef[1].BoneIndex, 0, 0);
+                        case 4:
+                            return new Int4(bdef[0].BoneIndex, bdef[1].BoneIndex, bdef[1].BoneIndex, 0);
+                    }
+
+                    throw new ArgumentException(nameof(bdef));
+                }
                 _verteBuffer = Direct3D11.Buffer.Create(
                     _device,
                     Model.Vertices.Select(_ => new Vertex
                     {
                         Position = new Vector4(_.Position.X, _.Position.Y, _.Position.Z, 1.0f),
                         Weight = _.BdefN[0].Weight,
-                        Idx = new Int4
-                        {
-                            X = _.BdefN[0].BoneIndex,
-                            Y = _.BdefN[1].BoneIndex
-                        }
+                        Idx = _.Sdef == null ? createBoneIndex(_.BdefN) : new Int4()
                     }).ToArray(),
                     new Direct3D11.BufferDescription
                     {

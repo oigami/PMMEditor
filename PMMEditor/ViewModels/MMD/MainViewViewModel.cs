@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -36,7 +37,7 @@ namespace PMMEditor.ViewModels.MMD
 
         public LogLevel Level => _log.Level;
 
-        private LogMessage _log;
+        private readonly LogMessage _log;
     }
 
     internal class MainViewViewModel : BindableViewModel
@@ -50,16 +51,26 @@ namespace PMMEditor.ViewModels.MMD
             NextFrameCommand = new ViewModelCommand(() => _model.FrameControlModel.NextFrame());
             SwitchPlayAndStopCommand = new ViewModelCommand(() => _model.FrameControlModel.SwitchPlayAndStop());
 
-            logger.Subscribe(log => Messenger.Raise(new TransitionMessage(new LogMessageViewModel(log), "Transition")));
+            logger.Subscribe(log =>
+            {
+                Debug.WriteLine(log.Exception.Message + "\n\n" + log.Exception.StackTrace);
+                Messenger.Raise(new TransitionMessage(new LogMessageViewModel(log), "Transition"));
+            });
             RendererViewModel = new MainRenderViewModel(_model);
 
             // モデル操作のためのデータ
             ReadOnlyReactiveCollection<TimelineViewModelBase> modelList = _model.MmdModelList.List
-                                  .ToReadOnlyReactiveCollection(
-                                      _ => (TimelineViewModelBase) new BoneTimelineViewModel(model, _))
-                                  .AddTo(CompositeDisposable);
+                                                                                .ToReadOnlyReactiveCollection(
+                                                                                    _ =>
+                                                                                        (TimelineViewModelBase)
+                                                                                        new BoneTimelineViewModel(
+                                                                                        model, _))
+                                                                                .AddTo(CompositeDisposable);
             ModelAndCameraList =
-                new ObservableCollection<TimelineViewModelBase> { new CameraLightAccessoryViewModel(_model) }
+                new ObservableCollection<TimelineViewModelBase>
+                {
+                    new CameraLightAccessoryViewModel(_model)
+                }
                     .MultiMerge(modelList).AddTo(CompositeDisposable);
 
             SelectedModel = ModelAndCameraList[0];
@@ -128,7 +139,7 @@ namespace PMMEditor.ViewModels.MMD
                 return;
             }
 
-            await _model.OpenPmm(m.Response[0]);
+            await _model.OpenPmmAsync(m.Response[0]);
         }
 
         public ReactiveProperty<bool> IsCharacterModelMode { get; }
@@ -165,5 +176,16 @@ namespace PMMEditor.ViewModels.MMD
         public ViewModelCommand PrevFrameCommand { get; }
 
         public ViewModelCommand SwitchPlayAndStopCommand { get; }
+
+        private ListenerCommand<DragEventArgs> _dropCommand;
+
+        public ListenerCommand<DragEventArgs> DropCommand
+            => _dropCommand ?? (_dropCommand = new ListenerCommand<DragEventArgs>(Drop));
+
+        void Drop(DragEventArgs e)
+        {
+            var files = (string[]) e.Data.GetData(DataFormats.FileDrop);
+            _model.Open(files);
+        }
     }
 }

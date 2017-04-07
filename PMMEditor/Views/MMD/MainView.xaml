@@ -2,6 +2,7 @@
   x:Class="PMMEditor.Views.MMD.MainWindow"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:behaviors="clr-namespace:PMMEditor.Views.Behaviors"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:graphics="clr-namespace:PMMEditor.Views.Graphics"
   xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
@@ -14,17 +15,21 @@
   d:DataContext="{d:DesignInstance mmd:MainViewViewModel}"
   d:DesignHeight="600"
   d:DesignWidth="800"
+  AllowDrop="True"
   Focusable="True"
   mc:Ignorable="d">
   <i:Interaction.Triggers>
     <io:InteractionMessageTrigger
-        MessageKey="Transition"
-        Messenger="{Binding Messenger, Mode=OneWay}">
+      MessageKey="Transition"
+      Messenger="{Binding Messenger, Mode=OneWay}">
       <io:TransitionInteractionMessageAction
-          Mode="Modal"
-          WindowType="{x:Type views:ExceptionDialog}" />
+        Mode="Modal"
+        WindowType="{x:Type views:ExceptionDialog}" />
     </io:InteractionMessageTrigger>
   </i:Interaction.Triggers>
+  <i:Interaction.Behaviors>
+    <behaviors:DragAcceptBehavior DropCommand="{Binding DropCommand}" />
+  </i:Interaction.Behaviors>
   <UserControl.InputBindings>
     <KeyBinding
       Command="{Binding NextFrameCommand}"

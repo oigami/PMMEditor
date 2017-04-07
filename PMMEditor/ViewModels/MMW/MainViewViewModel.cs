@@ -38,7 +38,7 @@ namespace PMMEditor.ViewModels.MMW
 #if DEBUG
             try
             {
-                await _model.OpenPmm(File.ReadAllBytes("C:/tool/MikuMikuDance_v926x64/UserFile/サンプル（きしめんAllStar).pmm"));
+                await _model.OpenPmmAsync(File.ReadAllBytes("C:/tool/MikuMikuDance_v926x64/UserFile/サンプル（きしめんAllStar).pmm"));
             }
             catch (Exception e)
             {
@@ -76,7 +76,7 @@ namespace PMMEditor.ViewModels.MMW
             };
             if (ofd.ShowDialog() == true)
             {
-                await _model.OpenPmm(File.ReadAllBytes(ofd.FileName));
+                await _model.OpenPmmAsync(File.ReadAllBytes(ofd.FileName));
             }
         }
 

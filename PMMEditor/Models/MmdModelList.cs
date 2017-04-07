@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -52,10 +53,23 @@ namespace PMMEditor.Models
 
         public void Add(string path)
         {
+            try
+            {
+                byte[] data = File.ReadAllBytes(path);
+                Add(data);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("", ex);
+            }
+        }
+
+        public void Add(byte[] data)
+        {
             Task.Run(() =>
             {
                 var model = new MmdModelModel(_logger);
-                model.Set(path);
+                model.Set(data);
                 if (model.IsInitialized)
                 {
                     _list.Add(model);
@@ -76,24 +90,25 @@ namespace PMMEditor.Models
                 _tokenSource = new CancellationTokenSource();
             });
             CancellationToken token = _tokenSource.Token;
-            Task.Run(async () =>
-            {
-                var order = new SortedDictionary<int, int>();
-                _list.Clear();
-                foreach (var item in list.Select((data, i) => new { data, i }))
-                {
-                    var model = new MmdModelModel(_logger);
-                    await model.SetAsync(item.data).ConfigureAwait(false);
-                    _list.Add(model);
-                    order.Add(item.data.DrawOrder, item.i);
-                }
-                foreach (var i in order)
-                {
-                    _drawOrder.Add(i.Value);
-                }
+            Task.Run(() =>
+           {
+               var order = new SortedDictionary<int, int>();
+               _list.Clear();
+               foreach (var item in list.Select((data, i) => new { data, i }))
+               {
+                   var model = new MmdModelModel(_logger);
+                   model.Set(item.data.Path, item.data);
+                   _list.Add(model);
+                   order.Add(item.data.DrawOrder, item.i);
+               }
+               foreach (var i in order)
+               {
+                   _drawOrder.Add(i.Value);
+               }
 
-                DispatcherHelper.UIDispatcher.Invoke(() => _tokenSource = null);
-            }, token).ContinueOnlyOnFaultedErrorLog(_logger, "Charactor List Set error", () => _list.Clear());
+               DispatcherHelper.UIDispatcher.Invoke(() => _tokenSource = null);
+           }, token).ContinueOnlyOnFaultedErrorLog(_logger, "Charactor List Set error", () => _list.Clear());
         }
+
     }
 }

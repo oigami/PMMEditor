@@ -18,6 +18,7 @@ namespace PMMEditor.Models
     public class Model : BindableDisposableBase
     {
         public ILogger Logger { get; }
+
         public Model(ILogger logger)
         {
             Logger = logger;
@@ -29,7 +30,7 @@ namespace PMMEditor.Models
 
         #region ReadWriteFile
 
-        public async Task OpenPmm(byte[] pmmData)
+        public async Task OpenPmmAsync(byte[] pmmData)
         {
             try
             {
@@ -50,11 +51,20 @@ namespace PMMEditor.Models
             }
         }
 
-        public async Task OpenPmm(string filepath)
+        public async Task OpenPmmAsync(string filepath)
         {
-            await OpenPmm(await Task.Run(() => File.ReadAllBytes(filepath)));
+            await OpenPmmAsync(await Task.Run(() => File.ReadAllBytes(filepath)));
         }
 
+        public void OpenPmm(string filepath)
+        {
+            OpenPmmAsync(filepath).ContinueOnlyOnFaultedErrorLog(Logger);
+        }
+
+        public void OpenPmm(byte[] data)
+        {
+            OpenPmmAsync(data).ContinueOnlyOnFaultedErrorLog(Logger);
+        }
 
         public async Task SavePmm(string filename)
         {
@@ -246,5 +256,38 @@ namespace PMMEditor.Models
 
         public GraphicsModel GraphicsModel { get; }
 
+        public void Open(string[] files)
+        {
+            foreach (var file in files)
+            {
+                Open(file);
+            }
+        }
+
+        public void Open(string file)
+        {
+            byte[] data = File.ReadAllBytes(file);
+            switch (Mmd.FileKind(data))
+            {
+                case MmdFileKind.Pmm:
+                    OpenPmm(file);
+                    break;
+                case MmdFileKind.Pmd:
+                case MmdFileKind.Pmx:
+                    MmdModelList.Add(data);
+                    break;
+                default:
+                    try
+                    {
+                        throw new ArgumentException(file);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Info("file not match object", e);
+                    }
+
+                    break;
+            }
+        }
     }
 }
