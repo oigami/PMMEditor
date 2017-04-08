@@ -257,6 +257,10 @@ namespace PMMEditor.MMDFileParser
 
         private PmxStruct.Material ReadMaterial(PmxStruct o)
         {
+            int? CheckInvalidData(int data, int invalidData)
+            {
+                return data == invalidData ? null : (int?) data;
+            }
             var material = new PmxStruct.Material
             {
                 Name = ReadVIntString(),
@@ -268,7 +272,7 @@ namespace PMMEditor.MMDFileParser
                 RenderFlags = (PmxStruct.Material.RenderFlag) ReadByte(),
                 EdgeColor = ReadColorA(),
                 EdgeSize = ReadFloat(),
-                TextureIndex = ReadSizeOption(o.TextureIndexSizeOption),
+                TextureIndex = CheckInvalidData(ReadSizeOption(o.TextureIndexSizeOption), -1),
                 SphereTextureIndex = ReadSizeOption(o.TextureIndexSizeOption)
             };
             byte sphereMode = ReadByte();

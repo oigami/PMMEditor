@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
@@ -9,10 +10,73 @@ using PMMEditor.MVVM;
 using Reactive.Bindings.Extensions;
 using SharpDX;
 using SharpDX.DXGI;
+using SharpDX.WIC;
 using Direct3D11 = SharpDX.Direct3D11;
 
 namespace PMMEditor.Models.Graphics
 {
+    public static class TextureLoader
+    {
+        private static readonly ImagingFactory2 _factory = new ImagingFactory2();
+
+        /// <summary>
+        /// Loads a bitmap using WIC.
+        /// </summary>
+        /// <param name = "filename"> </param>
+        /// <returns> </returns>
+        public static BitmapSource LoadBitmap(string filename)
+        {
+            var bitmapDecoder = new BitmapDecoder(
+                _factory,
+                filename,
+                DecodeOptions.CacheOnDemand
+                );
+
+            var formatConverter = new FormatConverter(_factory);
+
+            formatConverter.Initialize(
+                bitmapDecoder.GetFrame(0),
+                PixelFormat.Format32bppPRGBA,
+                BitmapDitherType.None,
+                null,
+                0.0,
+                BitmapPaletteType.Custom);
+
+            return formatConverter;
+        }
+
+        /// <summary>
+        /// Creates a <see cref = "SharpDX.Direct3D11.Texture2D" /> from a WIC <see cref = "SharpDX.WIC.BitmapSource" />
+        /// </summary>
+        /// <param name = "device"> The Direct3D11 device </param>
+        /// <param name = "bitmapSource"> The WIC bitmap source </param>
+        /// <returns> A Texture2D </returns>
+        public static Direct3D11.Texture2D CreateTexture2DFromBitmap(
+            Direct3D11.Device device, BitmapSource bitmapSource)
+        {
+            // Allocate DataStream to receive the WIC image pixels
+            int stride = bitmapSource.Size.Width * 4;
+            using (var buffer = new DataStream(bitmapSource.Size.Height * stride, true, true))
+            {
+                // Copy the content of the WIC to the buffer
+                bitmapSource.CopyPixels(stride, buffer);
+                return new Direct3D11.Texture2D(device, new Direct3D11.Texture2DDescription
+                {
+                    Width = bitmapSource.Size.Width,
+                    Height = bitmapSource.Size.Height,
+                    ArraySize = 1,
+                    BindFlags = Direct3D11.BindFlags.ShaderResource,
+                    Usage = Direct3D11.ResourceUsage.Immutable,
+                    CpuAccessFlags = Direct3D11.CpuAccessFlags.None,
+                    Format = Format.R8G8B8A8_UNorm,
+                    MipLevels = 1,
+                    OptionFlags = Direct3D11.ResourceOptionFlags.None,
+                    SampleDescription = new SampleDescription(1, 0)
+                }, new DataRectangle(buffer.DataPointer, stride));
+            }
+        }
+    }
+
     public sealed class MmdModelRendererSource : BindableBase, IDisposable
     {
         public MmdModelRendererSource(MmdModelModel model, Direct3D11.Device device)
@@ -28,7 +92,7 @@ namespace PMMEditor.Models.Graphics
             });
         }
 
-        public int BoneCount { get; private set; }
+        public int BoneCount { get; }
 
         private CompositeDisposable _d3DObjectCompositeDisposable2 = new CompositeDisposable();
         private readonly Direct3D11.Device _device;
@@ -83,11 +147,19 @@ namespace PMMEditor.Models.Graphics
 
         #endregion
 
+        #region Materials変更通知プロパティ
+
+        public List<Direct3D11.ShaderResourceView> Textures { get; } = new List<Direct3D11.ShaderResourceView>();
+
+        #endregion
+
         public class Material
         {
             public int IndexStart { get; set; }
 
             public int IndexNum { get; set; }
+
+            public int? TexuteIndex { get; set; }
 
             public Direct3D11.Buffer PixelConstantBuffer0 { get; set; }
         }
@@ -99,6 +171,8 @@ namespace PMMEditor.Models.Graphics
             public Int4 Idx { get; set; }
 
             public Vector4 Weight { get; set; }
+
+            public Vector2 UV { get; set; }
         }
 
 
@@ -131,9 +205,11 @@ namespace PMMEditor.Models.Graphics
                 {
                     IndexNum = (int) material.FaceVertexCount,
                     IndexStart = preIndex,
+                    TexuteIndex = material.TextureIndex,
                     PixelConstantBuffer0 =
                         Direct3D11.Buffer.Create(_device, Direct3D11.BindFlags.ConstantBuffer, ref diffuse, 0,
-                                                 Direct3D11.ResourceUsage.Immutable).AddTo(_d3DObjectCompositeDisposable2)
+                                                 Direct3D11.ResourceUsage.Immutable)
+                                  .AddTo(_d3DObjectCompositeDisposable2)
                 });
                 preIndex += (int) material.FaceVertexCount;
             }
@@ -157,6 +233,7 @@ namespace PMMEditor.Models.Graphics
 
                     throw new ArgumentException(nameof(bdef));
                 }
+
                 Vector4 createBoneWeight(IList<PmxStruct.Bdef> bdef)
                 {
                     switch (bdef.Count)
@@ -178,7 +255,8 @@ namespace PMMEditor.Models.Graphics
                     {
                         Position = new Vector4(_.Position.X, _.Position.Y, _.Position.Z, 1.0f),
                         Weight = _.Sdef == null ? createBoneWeight(_.BdefN) : new Vector4(),
-                        Idx = _.Sdef == null ? createBoneIndex(_.BdefN) : new Int4()
+                        Idx = _.Sdef == null ? createBoneIndex(_.BdefN) : new Int4(),
+                        UV = new Vector2(_.UV.X, _.UV.Y),
                     }).ToArray(),
                     new Direct3D11.BufferDescription
                     {
@@ -200,6 +278,17 @@ namespace PMMEditor.Models.Graphics
                         BindFlags = Direct3D11.BindFlags.IndexBuffer,
                         StructureByteStride = Utilities.SizeOf<int>()
                     }).AddTo(_d3DObjectCompositeDisposable2);
+
+                // テクスチャ読み込み
+                foreach (var texturePath in Model.TextureFilePath)
+                {
+                    BitmapSource bitmap =
+                        TextureLoader.LoadBitmap(Path.Combine(Path.GetDirectoryName(Model.FilePath) ?? "", texturePath));
+
+                    Direct3D11.Texture2D texture = TextureLoader.CreateTexture2DFromBitmap(_device, bitmap);
+                    var textureView = new Direct3D11.ShaderResourceView(_device, texture);
+                    Textures.Add(textureView);
+                }
             }
 
             OnLoad();
@@ -208,6 +297,7 @@ namespace PMMEditor.Models.Graphics
         #region IDisposable Support
 
         private bool _disposedValue;
+
         private void Dispose(bool disposing)
         {
             if (!_disposedValue)

@@ -4,17 +4,7 @@ struct VS_INPUT
   float4 pos : POSITION;
   int4 Index : BONE_INDEX;
   float4 Weight : BONE_WEIGHT;
-
-};
-
-struct VS_OUTPUT
-{
-  float4 pos : SV_POSITION;
-};
-
-struct PS_OUTPUT
-{
-  float4 color : SV_Target0;
+  float2 tex : TEXCOORD0;
 };
 
 // 頂点シェーダ
@@ -36,6 +26,14 @@ float4x4 GetBoneMatrix(int index)
   res[3] = boneTex.Load(vPos.xyz);
   return res;
 }
+
+
+struct VS_OUTPUT
+{
+  float4 oPos : SV_POSITION;
+  float2 oUV : TEXCOORD0;
+};
+
 VS_OUTPUT VS(VS_INPUT input)
 {
   const float4 inPos = input.pos;
@@ -45,7 +43,8 @@ VS_OUTPUT VS(VS_INPUT input)
   pos += mul(inPos, GetBoneMatrix(input.Index.w)) * input.Weight.w;
 
   VS_OUTPUT Out;
-  Out.pos = mul(pos, g_viewProjectionMatrix);
+  Out.oPos = mul(pos, g_viewProjectionMatrix);
+  Out.oUV = input.tex;
   return Out;
 }
 
@@ -56,9 +55,47 @@ cbuffer vscbMesh0 : register(b0)
   float4 g_diffuseColor;
 }
 
-PS_OUTPUT PS(VS_OUTPUT input)
+Texture2D MaterialTexture : MATERIALTEXTURE;
+
+SamplerState TextureSamp
 {
-  PS_OUTPUT res;
-  res.color = g_diffuseColor;
-  return res;
+  Filter = MIN_MAG_MIP_LINEAR;
+  AddressU = Wrap;
+  AddressV = Wrap;
+};
+void PS(in float4 pos : SV_POSITION, in float2 uv : TEXCOORD0, out float4 oColor : SV_Target0, uniform bool useTexute)
+{
+  float4 color = g_diffuseColor;
+  
+  if (useTexute)
+  {
+    color = MaterialTexture.Sample(TextureSamp, uv);
+  }
+  oColor = color;
 }
+
+technique11 WithTex <
+  bool UseTexture = true;
+>
+{
+  pass P0
+  {
+    SetVertexShader(CompileShader(vs_4_0, VS()));
+    SetGeometryShader(NULL);
+    SetPixelShader(CompileShader(ps_4_0, PS(true)));
+  }
+}
+
+
+technique11 WithoutTex <
+  bool UseTexture = false;
+>
+{
+  pass P0
+  {
+    SetVertexShader(CompileShader(vs_4_0, VS()));
+    SetGeometryShader(NULL);
+    SetPixelShader(CompileShader(ps_4_0, PS(false)));
+  }
+}
+

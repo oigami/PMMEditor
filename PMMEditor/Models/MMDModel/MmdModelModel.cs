@@ -142,6 +142,8 @@ namespace PMMEditor.Models.MMDModel
 
         public string FilePath { get; set; }
 
+        public IList<string> TextureFilePath { get; set; }
+
         public void Set(FileBlob blob, PmmStruct.ModelData modelData = null)
         {
             try
@@ -168,6 +170,7 @@ namespace PMMEditor.Models.MMDModel
                 Indices = data.Indices;
                 Vertices = data.Vertices;
                 Materials = data.Materials;
+                TextureFilePath = data.TexturePath;
                 Name = data.Name;
                 NameEnglish = data.EnglishName;
                 IKList = data.Bones.Indexed().Where(_ => (_.Item1.Flags & PmxStruct.Bone.Flag.IkFlag) != 0).ToList();
