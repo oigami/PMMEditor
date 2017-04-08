@@ -140,11 +140,15 @@ namespace PMMEditor.Models.MMDModel
 
         public List<int> Indices { get; set; }
 
-        public void Set(byte[] fileData, PmmStruct.ModelData modelData = null)
+        public string FilePath { get; set; }
+
+        public void Set(FileBlob blob, PmmStruct.ModelData modelData = null)
         {
             try
             {
-                MmdFileKind kind = Mmd.FileKind(fileData);
+                string filePath = blob.Path;
+                byte[] fileData = blob.Data;
+                MmdFileKind kind = blob.Kind;
                 PmxStruct data = null;
                 switch (kind)
                 {
@@ -157,9 +161,10 @@ namespace PMMEditor.Models.MMDModel
                     case MmdFileKind.Unknown:
                     case MmdFileKind.Pmm:
                     default:
-                        throw new ArgumentException(nameof(data));
+                        throw new ArgumentException(filePath);
                 }
 
+                FilePath = filePath;
                 Indices = data.Indices;
                 Vertices = data.Vertices;
                 Materials = data.Materials;
@@ -175,14 +180,9 @@ namespace PMMEditor.Models.MMDModel
             }
         }
 
-        public void Set(string filePath, PmmStruct.ModelData modelData = null)
-        {
-            Set(File.ReadAllBytes(filePath), modelData);
-        }
-
         public Task SetAsync(PmmStruct.ModelData modelData)
         {
-            return Task.Run(() => Set(modelData.Path, modelData));
+            return Task.Run(() => Set(new FileBlob(modelData.Path), modelData));
         }
 
         private void CreateBones(PmmStruct.ModelData modelData, IList<PmxStruct.Bone> bones)
@@ -192,14 +192,14 @@ namespace PMMEditor.Models.MMDModel
                     .CreateKeyFrameArray(modelData?.BoneKeyFrames);
             BoneKeyList.Clear();
 
-            IEnumerable<Task<Bone>> res = bones.Select(
-                (item, id) => Task.Run(() =>
-                {
-                    PmmStruct.ModelData.BoneInitFrame boneInitFrame =
-                        modelData?.BoneInitFrames.Zip(modelData?.BoneName, (x, y) => (bone: x, name: y))
-                                  .First(t => t.name == item.Name).bone;
-                    return CreateBone(item, id, bones, keyFrame, boneInitFrame);
-                }));
+            IEnumerable<Task<Bone>> res = bones.Select((item, id) => Task.Run(() =>
+            {
+                PmmStruct.ModelData.BoneInitFrame boneInitFrame =
+                    modelData?.BoneInitFrames
+                              .Zip(modelData?.BoneName, (x, y) => (bone: x, name: y))
+                              .First(t => t.name == item.Name).bone;
+                return CreateBone(item, id, bones, keyFrame, boneInitFrame);
+            }));
             foreach (var item in res)
             {
                 BoneKeyList.Add(item.Result);
@@ -238,7 +238,9 @@ namespace PMMEditor.Models.MMDModel
             outputBone.Name = item.Name;
             outputBone.Index = i;
             outputBone.Type = item.Flags;
-            outputBone.TailChildIndex = (item.Flags & PmxStruct.Bone.Flag.Connection) != 0 ? item.ConnectionBoneIndex : -1;
+            outputBone.TailChildIndex = (item.Flags & PmxStruct.Bone.Flag.Connection) != 0
+                ? item.ConnectionBoneIndex
+                : -1;
             Matrix modelLocalInitMat = Matrix.Translation(item.Position.X, item.Position.Y, item.Position.Z);
             outputBone.InitMatModelLocal =
                 outputBone.BoneMatModelLocal = modelLocalInitMat; // モデルローカル座標系
@@ -246,7 +248,7 @@ namespace PMMEditor.Models.MMDModel
 
             var list = new KeyFrameList<BoneKeyFrame, KeyInterpolationMethod>(item.Name);
             outputBone.KeyFrameList = list;
-            Func<sbyte[], int[]> createArray4 = _ => new int[] { _[0], _[1], _[2], _[3] };
+
             if (boneInitFrame == null)
             {
                 list.Add(0, new BoneKeyFrame
@@ -260,22 +262,21 @@ namespace PMMEditor.Models.MMDModel
             }
             else
             {
-                list.CreateKeyFrame(keyFrame, boneInitFrame, listBone =>
+                int[] CreateArray4(sbyte[] _) => new int[] { _[0], _[1], _[2], _[3] };
+
+                list.CreateKeyFrame(keyFrame, boneInitFrame, listBone => new BoneKeyFrame
                 {
-                    return new BoneKeyFrame
-                    {
-                        Position =
-                            new Vector3(listBone.Translation[0], listBone.Translation[1], listBone.Translation[2]),
-                        Quaternion =
-                            new Quaternion(listBone.Quaternion[0], listBone.Quaternion[1], listBone.Quaternion[2],
-                                           listBone.Quaternion[3]),
-                        InterpolationX = createArray4(listBone.InterpolationX),
-                        InterpolationY = createArray4(listBone.InterpolationY),
-                        InterpolationZ = createArray4(listBone.InterpolationZ),
-                        InterpolationRotation = createArray4(listBone.InterpolationRotation),
-                        IsPhysicsDisabled = listBone.IsPhysicsDisabled,
-                        IsSelected = listBone.IsSelected
-                    };
+                    Position =
+                        new Vector3(listBone.Translation[0], listBone.Translation[1], listBone.Translation[2]),
+                    Quaternion =
+                        new Quaternion(listBone.Quaternion[0], listBone.Quaternion[1], listBone.Quaternion[2],
+                                       listBone.Quaternion[3]),
+                    InterpolationX = CreateArray4(listBone.InterpolationX),
+                    InterpolationY = CreateArray4(listBone.InterpolationY),
+                    InterpolationZ = CreateArray4(listBone.InterpolationZ),
+                    InterpolationRotation = CreateArray4(listBone.InterpolationRotation),
+                    IsPhysicsDisabled = listBone.IsPhysicsDisabled,
+                    IsSelected = listBone.IsSelected
                 });
             }
 

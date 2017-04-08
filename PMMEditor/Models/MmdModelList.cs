@@ -55,8 +55,8 @@ namespace PMMEditor.Models
         {
             try
             {
-                byte[] data = File.ReadAllBytes(path);
-                Add(data);
+                var blob = new FileBlob(path);
+                Add(blob);
             }
             catch (Exception ex)
             {
@@ -64,12 +64,12 @@ namespace PMMEditor.Models
             }
         }
 
-        public void Add(byte[] data)
+        public void Add(FileBlob blob)
         {
             Task.Run(() =>
             {
                 var model = new MmdModelModel(_logger);
-                model.Set(data);
+                model.Set(blob);
                 if (model.IsInitialized)
                 {
                     _list.Add(model);
@@ -97,7 +97,7 @@ namespace PMMEditor.Models
                foreach (var item in list.Select((data, i) => new { data, i }))
                {
                    var model = new MmdModelModel(_logger);
-                   model.Set(item.data.Path, item.data);
+                   model.Set(new FileBlob(item.data.Path), item.data);
                    _list.Add(model);
                    order.Add(item.data.DrawOrder, item.i);
                }

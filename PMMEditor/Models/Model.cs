@@ -266,27 +266,35 @@ namespace PMMEditor.Models
 
         public void Open(string file)
         {
-            byte[] data = File.ReadAllBytes(file);
-            switch (Mmd.FileKind(data))
+            try
             {
-                case MmdFileKind.Pmm:
-                    OpenPmm(file);
-                    break;
-                case MmdFileKind.Pmd:
-                case MmdFileKind.Pmx:
-                    MmdModelList.Add(data);
-                    break;
-                default:
-                    try
-                    {
-                        throw new ArgumentException(file);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Info("file not match object", e);
-                    }
+                var blob = new FileBlob(file);
+                byte[] data = blob.Data;
+                switch (Mmd.FileKind(data))
+                {
+                    case MmdFileKind.Pmm:
+                        OpenPmm(file);
+                        break;
+                    case MmdFileKind.Pmd:
+                    case MmdFileKind.Pmx:
+                        MmdModelList.Add(blob);
+                        break;
+                    default:
+                        try
+                        {
+                            throw new ArgumentException(file);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Info("file not match object", e);
+                        }
 
-                    break;
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error("", e);
             }
         }
     }
