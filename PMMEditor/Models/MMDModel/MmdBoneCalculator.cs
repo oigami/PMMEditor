@@ -89,10 +89,6 @@ namespace PMMEditor.Models.MMDModel
             foreach (var (ikBone, j) in _model.IKList)
             {
                 PmxStruct.Bone.IKData ik = ikBone.IK;
-                if (ik.Iterations <= 0)
-                {
-                    continue;
-                }
 
                 Matrix targetMatrix = CalcBoneModelLocalMatrix(j);
                 foreach (var i in Enumerable.Range(0, ik.Iterations))

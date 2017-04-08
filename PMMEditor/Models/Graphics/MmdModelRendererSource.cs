@@ -98,7 +98,7 @@ namespace PMMEditor.Models.Graphics
 
             public Int4 Idx { get; set; }
 
-            public float Weight { get; set; }
+            public Vector4 Weight { get; set; }
         }
 
 
@@ -152,17 +152,32 @@ namespace PMMEditor.Models.Graphics
                         case 2:
                             return new Int4(bdef[0].BoneIndex, bdef[1].BoneIndex, 0, 0);
                         case 4:
-                            return new Int4(bdef[0].BoneIndex, bdef[1].BoneIndex, bdef[1].BoneIndex, 0);
+                            return new Int4(bdef[0].BoneIndex, bdef[1].BoneIndex, bdef[2].BoneIndex, bdef[3].BoneIndex);
                     }
 
                     throw new ArgumentException(nameof(bdef));
                 }
+                Vector4 createBoneWeight(IList<PmxStruct.Bdef> bdef)
+                {
+                    switch (bdef.Count)
+                    {
+                        case 1:
+                            return new Vector4(bdef[0].Weight, 0, 0, 0);
+                        case 2:
+                            return new Vector4(bdef[0].Weight, bdef[1].Weight, 0, 0);
+                        case 4:
+                            return new Vector4(bdef[0].Weight, bdef[1].Weight, bdef[2].Weight, bdef[3].Weight);
+                    }
+
+                    throw new ArgumentException(nameof(bdef));
+                }
+
                 _verteBuffer = Direct3D11.Buffer.Create(
                     _device,
                     Model.Vertices.Select(_ => new Vertex
                     {
                         Position = new Vector4(_.Position.X, _.Position.Y, _.Position.Z, 1.0f),
-                        Weight = _.BdefN[0].Weight,
+                        Weight = _.Sdef == null ? createBoneWeight(_.BdefN) : new Vector4(),
                         Idx = _.Sdef == null ? createBoneIndex(_.BdefN) : new Int4()
                     }).ToArray(),
                     new Direct3D11.BufferDescription

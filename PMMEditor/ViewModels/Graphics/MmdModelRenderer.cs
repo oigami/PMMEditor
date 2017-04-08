@@ -175,7 +175,7 @@ namespace PMMEditor.ViewModels.Graphics
             {
                 new Direct3D11.InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
                 new Direct3D11.InputElement("BONE_INDEX", 0, Format.R32G32B32A32_SInt, 16, 0),
-                new Direct3D11.InputElement("BONE_WEIGHT", 0, Format.R32_Float, 32, 0)
+                new Direct3D11.InputElement("BONE_WEIGHT", 0, Format.R32G32B32A32_SInt, 32, 0)
             });
 
             // ピクセルシェーダ生成
