@@ -47,7 +47,6 @@ namespace PMMEditor.ViewModels.Graphics
 
     public class MmdModelBoneCalculatorSRV : BindableDisposableBase
     {
-        private readonly MmdModelRendererSource _model;
         private readonly Direct3D11.Device _device;
         private Direct3D11.Texture2D _boneTexture2D;
         private Matrix[] _outputArr;
@@ -59,7 +58,6 @@ namespace PMMEditor.ViewModels.Graphics
             MmdModelRendererSource model, BoneFrameControlModel controller, Direct3D11.Device device)
         {
             _device = device;
-            _model = model;
             _controller = controller;
             CreateData(model);
         }
@@ -224,7 +222,7 @@ namespace PMMEditor.ViewModels.Graphics
             target.VertexShader.Set(_vertexShader);
             target.VertexShader.SetConstantBuffer(0, _viewProjConstantBuffer);
             target.InputAssembler.SetVertexBuffers(0, ModelSource.VertexBufferBinding);
-            target.InputAssembler.SetIndexBuffer(ModelSource.IndexBuffer, Format.R32_UInt, 0);
+            ModelSource.SetIndexBuffer(target);
 
             target.PixelShader.Set(_pixelShader);
 

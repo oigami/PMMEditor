@@ -8,6 +8,7 @@ using PMMEditor.Models.MMDModel;
 using PMMEditor.MVVM;
 using Reactive.Bindings.Extensions;
 using SharpDX;
+using SharpDX.DXGI;
 using Direct3D11 = SharpDX.Direct3D11;
 
 namespace PMMEditor.Models.Graphics
@@ -63,10 +64,9 @@ namespace PMMEditor.Models.Graphics
 
         private Direct3D11.Buffer _indexBuffer;
 
-        public Direct3D11.Buffer IndexBuffer
+        public void SetIndexBuffer(Direct3D11.DeviceContext context)
         {
-            get { return _indexBuffer; }
-            private set { SetProperty(ref _indexBuffer, value); }
+            context.InputAssembler.SetIndexBuffer(_indexBuffer, Format.R32_UInt, 0);
         }
 
         #endregion
@@ -108,7 +108,7 @@ namespace PMMEditor.Models.Graphics
             _d3DObjectCompositeDisposable2 = new CompositeDisposable();
             IsInitialized = false;
             VertexBufferBinding = new Direct3D11.VertexBufferBinding();
-            IndexBuffer = null;
+            _indexBuffer = null;
             Materials = null;
         }
 
@@ -191,7 +191,7 @@ namespace PMMEditor.Models.Graphics
 
                 // 頂点インデックス生成
                 int indexNum = Model.Indices.Count;
-                IndexBuffer = Direct3D11.Buffer.Create(
+                _indexBuffer = Direct3D11.Buffer.Create(
                     _device, Model.Indices.ToArray(),
                     new Direct3D11.BufferDescription
                     {
