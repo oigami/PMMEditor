@@ -172,7 +172,7 @@ namespace PMMEditor.MMDFileParser
                 {
                     res.IK = new PmxStruct.Bone.IKData
                     {
-                        TargetBoneIndex = ik.BoneIndex,
+                        TargetBoneIndex = ik.TargetBoneIndex,
                         Iterations = ik.Iterations,
                         LimitAngle = ik.LimitAngle * 4.0f,
                         IKLinks = new List<PmxStruct.Bone.IKLink>(ik.IKChildBoneIndex.Count)

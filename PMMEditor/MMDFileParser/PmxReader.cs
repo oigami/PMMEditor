@@ -166,7 +166,7 @@ namespace PMMEditor.MMDFileParser
             switch (size)
             {
                 case 1:
-                    return ReadByte();
+                    return ReadSByte();
                 case 2:
                     return ReadInt16();
                 case 3:
@@ -310,12 +310,16 @@ namespace PMMEditor.MMDFileParser
 
         private PmxStruct.Bone ReadBone(PmxStruct o)
         {
+            int? CheckValidData(int data, int invalidData)
+            {
+                return data == invalidData ? null : (int?) data;
+            }
             var bone = new PmxStruct.Bone
             {
                 Name = ReadVIntString(),
                 EnglishName = ReadVIntString(),
                 Position = ReadVector3(),
-                ParentBoneIndex = ReadSizeOption(o.BoneIndexSizeOption),
+                ParentBoneIndex = CheckValidData(ReadSizeOption(o.BoneIndexSizeOption), -1),
                 TransformLevel = ReadInt(),
                 Flags = (PmxStruct.Bone.Flag) ReadInt16()
             };
