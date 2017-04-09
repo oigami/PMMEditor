@@ -129,9 +129,11 @@ namespace PMMEditor.Models.Graphics
 
         private Direct3D11.Buffer _indexBuffer;
 
+        private Format _indexFormat;
+
         public void SetIndexBuffer(Direct3D11.DeviceContext context)
         {
-            context.InputAssembler.SetIndexBuffer(_indexBuffer, Format.R32_UInt, 0);
+            context.InputAssembler.SetIndexBuffer(_indexBuffer, _indexFormat, 0);
         }
 
         #endregion
@@ -263,19 +265,45 @@ namespace PMMEditor.Models.Graphics
                         BindFlags = Direct3D11.BindFlags.VertexBuffer,
                         StructureByteStride = typeSize
                     }).AddTo(_d3DObjectCompositeDisposable2);
+
                 VertexBufferBinding = new Direct3D11.VertexBufferBinding(_verteBuffer, typeSize, 0);
 
                 // 頂点インデックス生成
+                int maxIndex = Model.Indices.Max();
+
+                int indexSize = sizeof(ushort);
+                _indexFormat = Format.R16_UInt;
+                if (ushort.MaxValue < maxIndex)
+                {
+                    indexSize = sizeof(int);
+                    _indexFormat = Format.R32_UInt;
+                }
+                else if (maxIndex < byte.MaxValue)
+                {
+                    indexSize = sizeof(byte);
+                    _indexFormat = Format.R8_UInt;
+                }
                 int indexNum = Model.Indices.Count;
-                _indexBuffer = Direct3D11.Buffer.Create(
-                    _device, Model.Indices.ToArray(),
-                    new Direct3D11.BufferDescription
-                    {
-                        SizeInBytes = Utilities.SizeOf<int>() * indexNum,
-                        Usage = Direct3D11.ResourceUsage.Immutable,
-                        BindFlags = Direct3D11.BindFlags.IndexBuffer,
-                        StructureByteStride = Utilities.SizeOf<int>()
-                    }).AddTo(_d3DObjectCompositeDisposable2);
+                var bufferDescription = new Direct3D11.BufferDescription
+                {
+                    SizeInBytes = indexSize * indexNum,
+                    Usage = Direct3D11.ResourceUsage.Immutable,
+                    BindFlags = Direct3D11.BindFlags.IndexBuffer,
+                    StructureByteStride = indexSize
+                };
+                if (indexSize == sizeof(int))
+                {
+                    _indexBuffer = Direct3D11.Buffer.Create(_device, Model.Indices.ToArray(), bufferDescription);
+                }
+                else if (indexSize == sizeof(short))
+                {
+                    _indexBuffer = Direct3D11.Buffer.Create(_device, Model.Indices.Select(x => (ushort) x).ToArray(), bufferDescription);
+                }
+                else
+                {
+                    _indexBuffer = Direct3D11.Buffer.Create(_device, Model.Indices.Select(x => (byte) x).ToArray(), bufferDescription);
+                }
+                _indexBuffer.AddTo(_d3DObjectCompositeDisposable2);
 
                 // テクスチャ読み込み
                 foreach (var texturePath in Model.TextureFilePath)
