@@ -118,9 +118,6 @@ namespace PMMEditor.ViewModels.Graphics
         private Direct3D11.Device _device;
 
         private InputLayout _inputLayout;
-        private VertexShader _vertexShader;
-        private PixelShader _pixelShader;
-        private Direct3D11.Buffer _viewProjConstantBuffer;
 
         private readonly ReadOnlyReactiveProperty<int> _nowFrame;
         private readonly ReactiveProperty<bool> _isInternalInitialized = new ReactiveProperty<bool>(false);
@@ -141,6 +138,16 @@ namespace PMMEditor.ViewModels.Graphics
             public UseTextureFlag UseTexture { get; set; }
         }
 
+        private struct MyEffect
+        {
+            public EffectMatrixVariable ViewProj { get; set; }
+
+            public EffectShaderResourceVariable MaterialTexture { get; set; }
+
+            public EffectVectorVariable Diffuse { get; set; }
+        }
+
+        private MyEffect _myEffect;
         private readonly List<Technique> _techniques = new List<Technique>();
 
         public MmdModelRenderer(Model model, MmdModelRendererSource sourceModel)
@@ -165,7 +172,6 @@ namespace PMMEditor.ViewModels.Graphics
                 .AddTo(CompositeDisposables);
             BoneRenderer = new BoneRenderer(ModelSource, _device).AddTo(CompositeDisposables);
 
-            // 頂点シェーダ生成
             byte[] shaderSource = Resource1.TestShader;
             // UTF-8 BOMチェック
             if (3 <= shaderSource.Length
@@ -176,44 +182,6 @@ namespace PMMEditor.ViewModels.Graphics
                     shaderSource[i] = (byte) ' ';
                 }
             }
-
-            CompilationResult vertexShaderByteCode = ShaderBytecode.Compile(shaderSource, "VS", "vs_4_0",
-                                                                            ShaderFlags.Debug);
-            if (vertexShaderByteCode.HasErrors)
-            {
-                Console.WriteLine(vertexShaderByteCode.Message);
-                return;
-            }
-
-            _vertexShader = new VertexShader(_device, vertexShaderByteCode);
-
-            // インプットレイアウト生成
-            ShaderSignature inputSignature = ShaderSignature.GetInputSignature(vertexShaderByteCode);
-            _inputLayout = new InputLayout(_device, inputSignature, new[]
-            {
-                new InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
-                new InputElement("BONE_INDEX", 0, Format.R32G32B32A32_SInt, 16, 0),
-                new InputElement("BONE_WEIGHT", 0, Format.R32G32B32A32_Float, 32, 0),
-                new InputElement("TEXCOORD", 0, Format.R32G32_Float, 48, 0)
-            });
-
-            // ピクセルシェーダ生成
-            CompilationResult pixelShaderByteCode = ShaderBytecode.Compile(shaderSource, "PS", "ps_4_0",
-                                                                           ShaderFlags.Debug);
-            if (pixelShaderByteCode.HasErrors)
-            {
-                Console.WriteLine(pixelShaderByteCode.Message);
-                return;
-            }
-
-            _pixelShader = new PixelShader(_device, pixelShaderByteCode);
-
-            Matrix m = Matrix.LookAtLH(new Vector3(0, 0, -50), new Vector3(0, 0, 0), Vector3.Up);
-            m *= Matrix.PerspectiveFovLH((float) Math.PI / 3, 1.4f, 0.1f, 10000000f);
-            m.Transpose();
-            _viewProjConstantBuffer =
-                Direct3D11.Buffer.Create(_device, BindFlags.ConstantBuffer, ref m)
-                          .AddTo(CompositeDisposables);
 
             ShaderBytecode shaderBytes = ShaderBytecode.Compile(shaderSource, "fx_5_0", ShaderFlags.Debug);
             _effect = new Effect(_device, shaderBytes);
@@ -231,10 +199,40 @@ namespace PMMEditor.ViewModels.Graphics
                     EffectVariable variable = technique.GetAnnotationByIndex(k);
                     if (variable.Description.Name == "UseTexture")
                     {
-                        _techniques[j].UseTexture = variable.AsScalar().GetBool() ? Technique.UseTextureFlag.True : Technique.UseTextureFlag.False;
+                        _techniques[j].UseTexture = variable.AsScalar().GetBool()
+                            ? Technique.UseTextureFlag.True
+                            : Technique.UseTextureFlag.False;
                     }
                 }
             }
+
+            U Cast<T, U>(T variable, Func<T, U> func)
+                where T : EffectVariable
+                where U : EffectVariable
+            {
+                if (variable?.IsValid != true)
+                {
+                    return null;
+                }
+
+                return func(variable) ?? throw new ArgumentException();
+            }
+
+            _myEffect.MaterialTexture = Cast(_effect.GetVariableBySemantic("MATERIALTEXTURE"), x => x.AsShaderResource());
+            _myEffect.ViewProj = Cast(_effect.GetVariableBySemantic("VIEWPROJECTION"), x => x.AsMatrix());
+            _myEffect.Diffuse = Cast(_effect.GetVariableBySemantic("DIFFUSE"), x => x.AsVector());
+
+            // インプットレイアウト生成
+            EffectPass pass = _effect.GetTechniqueByIndex(0).GetPassByIndex(0);
+            ShaderBytecode inputSignature = pass.Description.Signature;
+            _inputLayout = new InputLayout(_device, inputSignature, new[]
+            {
+                new InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
+                new InputElement("BONE_INDEX", 0, Format.R32G32B32A32_SInt, 16, 0),
+                new InputElement("BONE_WEIGHT", 0, Format.R32G32B32A32_Float, 32, 0),
+                new InputElement("TEXCOORD", 0, Format.R32G32_Float, 48, 0)
+            });
+
 
             _isInternalInitialized.Value = true;
         }
@@ -256,27 +254,26 @@ namespace PMMEditor.ViewModels.Graphics
 
             DeviceContext target = args.Context;
             Matrix m = args.ViewProj;
-            m.Transpose();
-            // view,proj行列の設定
-            target.UpdateSubresource(ref m, _viewProjConstantBuffer);
 
             // シェーダの設定
             target.InputAssembler.InputLayout = _inputLayout;
 
-            target.VertexShader.Set(_vertexShader);
-            target.VertexShader.SetConstantBuffer(0, _viewProjConstantBuffer);
             target.InputAssembler.SetVertexBuffers(0, ModelSource.VertexBufferBinding);
             ModelSource.SetIndexBuffer(target);
-
-            target.PixelShader.Set(_pixelShader);
 
             target.InputAssembler.PrimitiveTopology = Direct3D.PrimitiveTopology.TriangleList;
             _boneCalculator.Update(target, _nowFrame.Value);
             target.VertexShader.SetShaderResource(0, _boneCalculator.BoneSrv);
-            EffectVariable materialTexture = _effect.GetVariableBySemantic("MATERIALTEXTURE");
+            _myEffect.ViewProj?.SetMatrix(m);
             foreach (var material in ModelSource.Materials)
             {
                 bool useTexture = material.TexuteIndex != null;
+                if (useTexture)
+                {
+                    _myEffect.MaterialTexture?.SetResource(ModelSource.Textures[(int) material.TexuteIndex]);
+                }
+
+                _myEffect.Diffuse?.Set(material.Diffuse);
 
                 foreach (var item in _techniques)
                 {
@@ -293,14 +290,8 @@ namespace PMMEditor.ViewModels.Graphics
                     for (int i = 0; i < technique.Description.PassCount; ++i)
                     {
                         EffectPass techPass = technique.GetPassByIndex(i);
-                        if (useTexture && materialTexture.IsValid)
-                        {
-                            materialTexture.AsShaderResource().SetResource(ModelSource.Textures[(int) material.TexuteIndex]);
-                        }
                         techPass.Apply(target);
-                        target.VertexShader.SetConstantBuffer(0, _viewProjConstantBuffer);
                         target.VertexShader.SetShaderResource(0, _boneCalculator.BoneSrv);
-                        target.PixelShader.SetConstantBuffer(0, material.PixelConstantBuffer0);
                         target.DrawIndexed(material.IndexNum, material.IndexStart, 0);
                     }
                 }

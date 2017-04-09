@@ -10,6 +10,7 @@ using PMMEditor.MVVM;
 using Reactive.Bindings.Extensions;
 using SharpDX;
 using SharpDX.DXGI;
+using SharpDX.Mathematics.Interop;
 using SharpDX.WIC;
 using Direct3D11 = SharpDX.Direct3D11;
 
@@ -161,7 +162,7 @@ namespace PMMEditor.Models.Graphics
 
             public int? TexuteIndex { get; set; }
 
-            public Direct3D11.Buffer PixelConstantBuffer0 { get; set; }
+            public RawColor4 Diffuse { get; set; }
         }
 
         private struct Vertex
@@ -199,17 +200,14 @@ namespace PMMEditor.Models.Graphics
             int preIndex = 0;
             foreach (var material in Model.Materials)
             {
-                var diffuse = new Color4(new Color3(material.Diffuse.R, material.Diffuse.G, material.Diffuse.B),
-                                         material.Diffuse.A);
+                var diffuse = new RawColor4(material.Diffuse.R, material.Diffuse.G,
+                                            material.Diffuse.B, material.Diffuse.A);
                 Materials.Add(new Material
                 {
                     IndexNum = (int) material.FaceVertexCount,
                     IndexStart = preIndex,
                     TexuteIndex = material.TextureIndex,
-                    PixelConstantBuffer0 =
-                        Direct3D11.Buffer.Create(_device, Direct3D11.BindFlags.ConstantBuffer, ref diffuse, 0,
-                                                 Direct3D11.ResourceUsage.Immutable)
-                                  .AddTo(_d3DObjectCompositeDisposable2)
+                    Diffuse = diffuse
                 });
                 preIndex += (int) material.FaceVertexCount;
             }
@@ -256,7 +254,7 @@ namespace PMMEditor.Models.Graphics
                         Position = new Vector4(_.Position.X, _.Position.Y, _.Position.Z, 1.0f),
                         Weight = _.Sdef == null ? createBoneWeight(_.BdefN) : new Vector4(),
                         Idx = _.Sdef == null ? createBoneIndex(_.BdefN) : new Int4(),
-                        UV = new Vector2(_.UV.X, _.UV.Y),
+                        UV = new Vector2(_.UV.X, _.UV.Y)
                     }).ToArray(),
                     new Direct3D11.BufferDescription
                     {

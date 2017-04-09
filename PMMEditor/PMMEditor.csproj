@@ -314,7 +314,7 @@
     <Content Include="InfrastructureAssemblies\Microsoft.Expression.Interactions.dll" />
     <Content Include="InfrastructureAssemblies\System.Windows.Interactivity.dll" />
     <Content Include="Resources\BoneRenderingShader.hlsl" />
-    <Content Include="Resources\TestShader.hlsl" />
+    <Content Include="Resources\TestShader.fx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\MMW\Documents\" />

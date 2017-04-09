@@ -8,10 +8,7 @@ struct VS_INPUT
 };
 
 // 頂点シェーダ
-cbuffer vscbMesh0 : register(b0)
-{
-  float4x4 g_viewProjectionMatrix;
-}
+float4x4 g_viewProjectionMatrix : VIEWPROJECTION;
 Texture2D boneTex : register(t0);
 float4x4 GetBoneMatrix(int index)
 {
@@ -50,11 +47,7 @@ VS_OUTPUT VS(VS_INPUT input)
 
 // ピクセルシェーダ
 
-cbuffer vscbMesh0 : register(b0)
-{
-  float4 g_diffuseColor;
-}
-
+float4 g_diffuseColor : DIFFUSE;
 Texture2D MaterialTexture : MATERIALTEXTURE;
 
 SamplerState TextureSamp
@@ -69,10 +62,22 @@ void PS(in float4 pos : SV_POSITION, in float2 uv : TEXCOORD0, out float4 oColor
   
   if (useTexute)
   {
-    color = MaterialTexture.Sample(TextureSamp, uv);
+    color *= MaterialTexture.Sample(TextureSamp, uv);
   }
   oColor = color;
 }
+BlendState Blend
+{
+  AlphaToCoverageEnable = True;
+  BlendEnable[0] = True;
+  SrcBlend[0] = SRC_ALPHA;
+  DestBlend[0] = INV_SRC_ALPHA;
+  BlendOp[0] = ADD;
+  SrcBlendAlpha[0] = ONE;
+  DestBlendAlpha[0] = ONE;
+  BlendOpAlpha[0] = MAX;
+
+};
 
 technique11 WithTex <
   bool UseTexture = true;
@@ -80,6 +85,9 @@ technique11 WithTex <
 {
   pass P0
   {
+  
+    SetBlendState(Blend, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xFFFFFFFF);
+
     SetVertexShader(CompileShader(vs_4_0, VS()));
     SetGeometryShader(NULL);
     SetPixelShader(CompileShader(ps_4_0, PS(true)));
