@@ -24,7 +24,7 @@ namespace PMMEditor.Models
             Logger = logger;
             FrameControlModel = new FrameControlModel();
             MmdModelList = new MmdModelList(Logger);
-            GraphicsModel = new GraphicsModel(MmdModelList).AddTo(CompositeDisposables);
+            GraphicsModel = new GraphicsModel(Logger, MmdModelList).AddTo(CompositeDisposables);
             Camera = new CameraControlModel(this).AddTo(CompositeDisposables);
         }
 

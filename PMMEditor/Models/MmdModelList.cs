@@ -19,6 +19,7 @@ namespace PMMEditor.Models
     {
         private readonly List<int> _drawOrder = new List<int>();
         private readonly ILogger _logger;
+        private readonly object _syncObject = new object();
 
         public MmdModelList(ILogger logger)
         {
@@ -72,7 +73,10 @@ namespace PMMEditor.Models
                 model.Set(blob);
                 if (model.IsInitialized)
                 {
-                    _list.Add(model);
+                    lock (_syncObject)
+                    {
+                        _list.Add(model);
+                    }
                 }
             }).ContinueOnlyOnFaultedErrorLog(_logger);
         }

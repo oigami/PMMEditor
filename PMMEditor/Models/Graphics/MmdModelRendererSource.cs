@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
+using PMMEditor.Log;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models.MMDModel;
 using PMMEditor.MVVM;
@@ -80,7 +81,7 @@ namespace PMMEditor.Models.Graphics
 
     public sealed class MmdModelRendererSource : BindableBase, IDisposable
     {
-        public MmdModelRendererSource(MmdModelModel model, Direct3D11.Device device)
+        public MmdModelRendererSource(ILogger logger, MmdModelModel model, Direct3D11.Device device)
         {
             Model = model;
             _device = device ?? throw new ArgumentNullException(nameof(device));
@@ -90,7 +91,7 @@ namespace PMMEditor.Models.Graphics
             {
                 CreateData();
                 IsInitialized = true;
-            });
+            }).ContinueOnlyOnFaultedErrorLog(logger);
         }
 
         public int BoneCount { get; }
@@ -219,7 +220,7 @@ namespace PMMEditor.Models.Graphics
             {
                 int typeSize = Utilities.SizeOf<Vertex>();
 
-                Int4 createBoneIndex(IList<PmxStruct.Bdef> bdef)
+                Int4 CreateBoneIndex(IList<PmxStruct.Bdef> bdef)
                 {
                     switch (bdef.Count)
                     {
@@ -234,7 +235,7 @@ namespace PMMEditor.Models.Graphics
                     throw new ArgumentException(nameof(bdef));
                 }
 
-                Vector4 createBoneWeight(IList<PmxStruct.Bdef> bdef)
+                Vector4 CreateBoneWeight(IList<PmxStruct.Bdef> bdef)
                 {
                     switch (bdef.Count)
                     {
@@ -254,8 +255,8 @@ namespace PMMEditor.Models.Graphics
                     Model.Vertices.Select(_ => new Vertex
                     {
                         Position = new Vector4(_.Position.X, _.Position.Y, _.Position.Z, 1.0f),
-                        Weight = _.Sdef == null ? createBoneWeight(_.BdefN) : new Vector4(),
-                        Idx = _.Sdef == null ? createBoneIndex(_.BdefN) : new Int4(),
+                        Weight = _.Sdef == null ? CreateBoneWeight(_.BdefN) : new Vector4(),
+                        Idx = _.Sdef == null ? CreateBoneIndex(_.BdefN) : new Int4(),
                         UV = new Vector2(_.UV.X, _.UV.Y)
                     }).ToArray(),
                     new Direct3D11.BufferDescription

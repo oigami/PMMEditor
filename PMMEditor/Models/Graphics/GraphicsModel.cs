@@ -1,4 +1,5 @@
-﻿using PMMEditor.MVVM;
+﻿using PMMEditor.Log;
+using PMMEditor.MVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using SharpDX.Direct3D;
@@ -8,9 +9,12 @@ namespace PMMEditor.Models.Graphics
 {
     public class GraphicsModel : BindableDisposableBase
     {
-        public GraphicsModel(MmdModelList mmdModelList)
+        private readonly ILogger _logger;
+
+        public GraphicsModel(ILogger logger, MmdModelList mmdModelList)
         {
-            MmdModelSource = mmdModelList.List.ToReadOnlyReactiveCollection(_ => new MmdModelRendererSource(_, Device))
+            _logger = logger;
+            MmdModelSource = mmdModelList.List.ToReadOnlyReactiveCollection(_ => new MmdModelRendererSource(_logger, _, Device))
                                          .AddTo(CompositeDisposables);
         }
 
