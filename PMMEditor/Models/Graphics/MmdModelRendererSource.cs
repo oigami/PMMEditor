@@ -220,8 +220,16 @@ namespace PMMEditor.Models.Graphics
             {
                 int typeSize = Utilities.SizeOf<Vertex>();
 
-                Int4 CreateBoneIndex(IList<PmxStruct.Bdef> bdef)
+                // TODO: SDEF の対応
+                // 現在はBDEF2へ変換している
+
+                Int4 CreateBoneIndex(PmxStruct.Sdef sdef, IList<PmxStruct.Bdef> bdef)
                 {
+                    if (sdef != null)
+                    {
+                        return new Int4(sdef.BoneIndex[0], sdef.BoneIndex[1], 0, 0);
+                    }
+
                     switch (bdef.Count)
                     {
                         case 1:
@@ -235,8 +243,13 @@ namespace PMMEditor.Models.Graphics
                     throw new ArgumentException(nameof(bdef));
                 }
 
-                Vector4 CreateBoneWeight(IList<PmxStruct.Bdef> bdef)
+                Vector4 CreateBoneWeight(PmxStruct.Sdef sdef, IList<PmxStruct.Bdef> bdef)
                 {
+                    if (sdef != null)
+                    {
+                        return new Vector4(sdef.Weight, 1.0f - sdef.Weight, 0, 0);
+                    }
+
                     switch (bdef.Count)
                     {
                         case 1:
@@ -255,8 +268,8 @@ namespace PMMEditor.Models.Graphics
                     Model.Vertices.Select(_ => new Vertex
                     {
                         Position = new Vector4(_.Position.X, _.Position.Y, _.Position.Z, 1.0f),
-                        Weight = _.Sdef == null ? CreateBoneWeight(_.BdefN) : new Vector4(),
-                        Idx = _.Sdef == null ? CreateBoneIndex(_.BdefN) : new Int4(),
+                        Weight = CreateBoneWeight(_.Sdef, _.BdefN),
+                        Idx = CreateBoneIndex(_.Sdef, _.BdefN),
                         UV = new Vector2(_.UV.X, _.UV.Y)
                     }).ToArray(),
                     new Direct3D11.BufferDescription
