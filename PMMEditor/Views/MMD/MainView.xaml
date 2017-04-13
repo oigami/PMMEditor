@@ -23,6 +23,7 @@
       MessageKey="Transition"
       Messenger="{Binding Messenger, Mode=OneWay}">
       <io:TransitionInteractionMessageAction
+        InvokeActionOnlyWhenWindowIsActive="False"
         Mode="Modal"
         WindowType="{x:Type views:ExceptionDialog}" />
     </io:InteractionMessageTrigger>
