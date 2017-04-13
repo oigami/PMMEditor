@@ -178,6 +178,8 @@ namespace PMMEditor.ViewModels.Graphics
             context.OutputMerger.DepthStencilState = depthState;
         }
 
+        public void Render(Render2DArgs args) { }
+
         public void UpdateTask() { }
         public void Update() { }
     }

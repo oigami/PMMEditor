@@ -8,6 +8,7 @@ using PMMEditor.ViewModels.Graphics;
 using PMMEditor.Views.Timeline;
 using Reactive.Bindings.Extensions;
 using SharpDX;
+using SharpDX.Direct2D1;
 
 namespace PMMEditor.Views.Graphics
 {
@@ -65,5 +66,14 @@ namespace PMMEditor.Views.Graphics
                 child.Render(new RenderArgs(Device.ImmediateContext, viewProj));
             }
         }
+
+        protected override void Render2D()
+        {
+            foreach (var child in Children)
+            {
+                child.Render(new Render2DArgs(D2DRenderTarget));
+            }
+        }
     }
+
 }

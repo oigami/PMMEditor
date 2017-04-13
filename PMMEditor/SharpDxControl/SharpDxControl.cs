@@ -251,6 +251,8 @@ namespace PMMEditor.SharpDxControl
         }
 
         protected abstract void Render();
+        protected abstract void Render2D();
+
         protected virtual void ResetRenderTarget() { }
 
         private void OnRendering(object sender, EventArgs e)
@@ -432,6 +434,7 @@ namespace PMMEditor.SharpDxControl
 
             Render();
             D2DRenderTarget.BeginDraw();
+            Render2D();
             D2DRenderTarget.EndDraw();
 
             context.Flush();

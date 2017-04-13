@@ -15,6 +15,7 @@ using Direct3D = SharpDX.Direct3D;
 using PMMEditor.Models.Graphics;
 using PMMEditor.Models.MMDModel;
 using PMMEditor.MVVM;
+using Direct2D1 = SharpDX.Direct2D1;
 using SharpDX.Direct3D11;
 
 namespace PMMEditor.ViewModels.Graphics
@@ -37,6 +38,16 @@ namespace PMMEditor.ViewModels.Graphics
         public Matrix ViewProj { get; }
     }
 
+    public struct Render2DArgs
+    {
+        public Direct2D1.RenderTarget D2DRenderTarget { get; }
+
+        public Render2DArgs(Direct2D1.RenderTarget d2DRenderTarget)
+        {
+            D2DRenderTarget = d2DRenderTarget;
+        }
+    }
+
     public interface IRenderer : IInitializable
     {
         void UpdateTask();
@@ -44,6 +55,8 @@ namespace PMMEditor.ViewModels.Graphics
         void Update();
 
         void Render(RenderArgs args);
+
+        void Render(Render2DArgs args);
     }
 
 
@@ -299,6 +312,8 @@ namespace PMMEditor.ViewModels.Graphics
 
             BoneRenderer.Render(args);
         }
+
+        public void Render(Render2DArgs args) { }
 
         public void UpdateTask()
         {
