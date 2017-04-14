@@ -20,7 +20,7 @@ namespace PMMEditor.SharpDxControl
                     Windowed = true,
                     SwapEffect = SwapEffect.Discard,
                     DeviceWindowHandle = NativeMethods.GetDesktopWindow(),
-                    PresentationInterval = PresentInterval.Default
+                    PresentationInterval = PresentInterval.Immediate
                 };
                 D3DDevice.ResetEx(ref presentParams);
             }
@@ -33,7 +33,7 @@ namespace PMMEditor.SharpDxControl
                 Windowed = true,
                 SwapEffect = SwapEffect.Discard,
                 DeviceWindowHandle = NativeMethods.GetDesktopWindow(),
-                PresentationInterval = PresentInterval.Default
+                PresentationInterval = PresentInterval.Immediate
             };
             const CreateFlags createFlags =
                 CreateFlags.HardwareVertexProcessing | CreateFlags.Multithreaded | CreateFlags.FpuPreserve;
