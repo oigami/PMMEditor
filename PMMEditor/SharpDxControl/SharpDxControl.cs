@@ -216,6 +216,9 @@ namespace PMMEditor.SharpDxControl
         private DepthStencilView _depthStencilView;
         private DepthStencilState _depthStencilState;
         private RenderTargetView _renderTarget;
+        private float _actualWidth;
+        private float _actualheight;
+
 
         private readonly Stopwatch _renderTimer = new Stopwatch();
 
@@ -332,6 +335,9 @@ namespace PMMEditor.SharpDxControl
                 return;
             }
 
+            _actualWidth = width;
+            _actualheight = height;
+
             _d3DSurface.ClearRenderTarget();
             _d3DRenderTargetCompositeDisposable.Dispose();
             _d3DRenderTargetCompositeDisposable = new CompositeDisposable();
@@ -429,8 +435,7 @@ namespace PMMEditor.SharpDxControl
             SharpDX.Direct3D11.DeviceContext context = Device.ImmediateContext;
             context.ClearDepthStencilView(_depthStencilView, DepthStencilClearFlags.Depth, 1.0f, 0);
             context.ClearRenderTargetView(_renderTarget, new RawColor4(0, 0, 0, 0));
-            context.OutputMerger.SetDepthStencilState(_depthStencilState);
-            context.OutputMerger.SetRenderTargets(_depthStencilView, _renderTarget);
+            SetRenderTarget(context);
 
             Render();
             D2DRenderTarget.BeginDraw();
@@ -438,6 +443,13 @@ namespace PMMEditor.SharpDxControl
             D2DRenderTarget.EndDraw();
 
             context.Flush();
+        }
+
+        protected void SetRenderTarget(SharpDX.Direct3D11.DeviceContext context)
+        {
+            context.Rasterizer.SetViewport(0, 0, _actualWidth, _actualheight);
+            context.OutputMerger.SetDepthStencilState(_depthStencilState);
+            context.OutputMerger.SetRenderTargets(_depthStencilView, _renderTarget);
         }
 
         protected virtual void Dispose(bool disposing)
