@@ -66,25 +66,26 @@ namespace PMMEditor.Views.Graphics
 
         protected override void Render()
         {
+            Matrix viewProj = View * Projection;
+            Device device = Device;
+            Parallel.ForEach(Children, x => x.UpdateTask());
 
-            Task.WhenAll(Children.Select(x => Task.Run(() => x.UpdateTask()))).Wait();
             foreach (var child in Children)
             {
                 child.Update();
             }
 
-            Matrix viewProj = View * Projection;
 
-            Task.WhenAll(Children.Indexed().Select(x => Task.Run(() =>
+            Parallel.ForEach(Children.Indexed(), x =>
             {
                 var (child, i) = x;
                 SetRenderTarget(_deviceContexts[i]);
                 child.Render(new RenderArgs(_deviceContexts[i], viewProj));
                 _commandLists[i] = _deviceContexts[i].FinishCommandList(false);
-            }))).Wait();
+            });
             foreach (var command in _commandLists)
             {
-                Device.ImmediateContext.ExecuteCommandList(command, false);
+                device.ImmediateContext.ExecuteCommandList(command, false);
                 command.Dispose();
             }
         }
