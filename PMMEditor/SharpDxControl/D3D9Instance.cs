@@ -7,8 +7,18 @@ namespace PMMEditor.SharpDxControl
     {
         public readonly Direct3DEx D3DContext;
         public readonly DeviceEx D3DDevice;
+        private static IntPtr _windowHandle;
 
-        public static D3D9Instance Instance { get; } = new D3D9Instance();
+        public static D3D9Instance Instance { get; private set; }
+
+        public static IntPtr WindowHandle
+        {
+            get { return _windowHandle; }
+            set {
+                _windowHandle = value;
+                Instance = new D3D9Instance();
+            }
+        }
 
         public void CheckDeviceLost()
         {
@@ -32,14 +42,14 @@ namespace PMMEditor.SharpDxControl
             {
                 Windowed = true,
                 SwapEffect = SwapEffect.Discard,
-                DeviceWindowHandle = NativeMethods.GetDesktopWindow(),
+                DeviceWindowHandle = IntPtr.Zero,
                 PresentationInterval = PresentInterval.Immediate
             };
             const CreateFlags createFlags =
                 CreateFlags.HardwareVertexProcessing | CreateFlags.Multithreaded | CreateFlags.FpuPreserve;
 
             D3DContext = new Direct3DEx();
-            D3DDevice = new DeviceEx(D3DContext, 0, DeviceType.Hardware, IntPtr.Zero, createFlags, presentParams);
+            D3DDevice = new DeviceEx(D3DContext, 0, DeviceType.Hardware, WindowHandle, createFlags, presentParams);
         }
     }
 }

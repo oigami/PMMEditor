@@ -22,6 +22,13 @@ namespace PMMEditor.Views
         public MainWindow()
         {
             InitializeComponent();
+            Loaded += MainWindow_Loaded;
+        }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            SharpDxControl.D3D9Instance.WindowHandle = (new System.Windows.Interop.WindowInteropHelper(this)).Handle;
+            Loaded -= MainWindow_Loaded;
         }
     }
 }

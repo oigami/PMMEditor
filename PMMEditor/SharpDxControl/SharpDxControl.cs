@@ -309,6 +309,10 @@ namespace PMMEditor.SharpDxControl
 
         private void CreateAndBindTarget()
         {
+            if (D3D9Instance.Instance == null)
+            {
+                return;
+            }
             if (Device == null)
             {
                 return;

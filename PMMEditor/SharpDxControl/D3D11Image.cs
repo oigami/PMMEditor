@@ -88,6 +88,10 @@ namespace PMMEditor.SharpDxControl
 
             IntPtr handle = GetSharedHandle(target);
             Debug.Assert(handle != IntPtr.Zero);
+            if (D3D9Instance.Instance == null)
+            {
+                return;
+            }
 
             _renderTarget = new Texture(D3D9Instance.Instance.D3DDevice,
                                         target.Description.Width, target.Description.Height, 1,
