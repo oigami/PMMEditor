@@ -199,26 +199,6 @@ namespace PMMEditor.ViewModels.Graphics
             ShaderBytecode shaderBytes = ShaderBytecode.Compile(shaderSource, "fx_5_0", ShaderFlags.Debug);
             _effect = new Effect(_device, shaderBytes);
 
-            for (int j = 0; j < _effect.Description.TechniqueCount; j++)
-            {
-                EffectTechnique technique = _effect.GetTechniqueByIndex(j);
-                _techniques.Add(new Technique
-                {
-                    EffectTechnique = technique
-                });
-
-                for (int k = 0; k < technique.Description.AnnotationCount; k++)
-                {
-                    EffectVariable variable = technique.GetAnnotationByIndex(k);
-                    if (variable.Description.Name == "UseTexture")
-                    {
-                        _techniques[j].UseTexture = variable.AsScalar().GetBool()
-                            ? Technique.UseTextureFlag.True
-                            : Technique.UseTextureFlag.False;
-                    }
-                }
-            }
-
             U Cast<T, U>(T variable, Func<T, U> func)
                 where T : EffectVariable
                 where U : EffectVariable
@@ -229,6 +209,23 @@ namespace PMMEditor.ViewModels.Graphics
                 }
 
                 return func(variable) ?? throw new ArgumentException();
+            }
+
+            for (int j = 0; j < _effect.Description.TechniqueCount; j++)
+            {
+                EffectTechnique technique = _effect.GetTechniqueByIndex(j);
+                _techniques.Add(new Technique
+                {
+                    EffectTechnique = technique
+                });
+
+                EffectScalarVariable variable = Cast(technique.GetAnnotationByName("UseTexture"), x => x.AsScalar());
+                if (variable?.IsValid == true)
+                {
+                    _techniques[j].UseTexture = variable.GetBool()
+                        ? Technique.UseTextureFlag.True
+                        : Technique.UseTextureFlag.False;
+                }
             }
 
             _myEffect.MaterialTexture = Cast(_effect.GetVariableBySemantic("MATERIALTEXTURE"), x => x.AsShaderResource());
@@ -245,7 +242,6 @@ namespace PMMEditor.ViewModels.Graphics
                 new InputElement("BONE_WEIGHT", 0, Format.R32G32B32A32_Float, 32, 0),
                 new InputElement("TEXCOORD", 0, Format.R32G32_Float, 48, 0)
             });
-
 
             _isInternalInitialized.Value = true;
         }
