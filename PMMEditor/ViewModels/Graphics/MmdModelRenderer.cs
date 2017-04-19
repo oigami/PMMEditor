@@ -276,7 +276,11 @@ namespace PMMEditor.ViewModels.Graphics
 
             target.InputAssembler.PrimitiveTopology = Direct3D.PrimitiveTopology.TriangleList;
             _boneCalculator.Update(target, _nowFrame.Value);
-            target.VertexShader.SetShaderResource(0, _boneCalculator.BoneSrv);
+            EffectShaderResourceVariable boneTex = _effect.GetVariableBySemantic("BONE_TEXTURE").AsShaderResource();
+            if (boneTex?.IsValid == true)
+            {
+                boneTex.SetResource(_boneCalculator.BoneSrv);
+            }
             _myEffect.ViewProj?.SetMatrix(m);
             foreach (var material in ModelSource.Materials)
             {
@@ -304,12 +308,12 @@ namespace PMMEditor.ViewModels.Graphics
                     {
                         EffectPass techPass = technique.GetPassByIndex(i);
                         techPass.Apply(target);
-                        target.VertexShader.SetShaderResource(0, _boneCalculator.BoneSrv);
                         target.DrawIndexed(material.IndexNum, material.IndexStart, 0);
                     }
                 }
             }
 
+            target.VertexShader.SetShaderResource(0, _boneCalculator.BoneSrv);
             BoneRenderer.Render(args);
         }
 

@@ -9,7 +9,7 @@ struct VS_INPUT
 
 // 頂点シェーダ
 float4x4 g_viewProjectionMatrix : VIEWPROJECTION;
-Texture2D boneTex : register(t0);
+Texture2D boneTex : BONE_TEXTURE;
 float4x4 GetBoneMatrix(int index)
 {
   int4 vPos = int4(index * 4, 0, 0, 0);
