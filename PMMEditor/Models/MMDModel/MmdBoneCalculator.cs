@@ -90,7 +90,7 @@ namespace PMMEditor.Models.MMDModel
             {
                 PmxStruct.Bone.IKData ik = ikBone.IK;
 
-                Matrix targetMatrix = CalcBoneModelLocalMatrix(j);
+                Vector3 targetMatrix = CalcBoneModelLocalPosition(j);
                 foreach (var i in Enumerable.Range(0, ik.Iterations))
                 {
                     foreach (var ikLink in ik.IKLinks)
@@ -98,15 +98,15 @@ namespace PMMEditor.Models.MMDModel
                         int attentionIndex = ikLink.BoneIndex;
                         MmdModelModel.Bone bone = bones[attentionIndex];
 
-                        Matrix effectorMatrix = CalcBoneModelLocalMatrix(ik.TargetBoneIndex);
+                        Vector3 effectorMatrix = CalcBoneModelLocalPosition(ik.TargetBoneIndex);
 
                         Matrix inverseCoord = Matrix.Invert(CalcBoneModelLocalMatrix(attentionIndex));
 
                         Vector3 localEffectorDir =
-                            Vector3.TransformCoordinate(effectorMatrix.TranslationVector,
+                            Vector3.TransformCoordinate(effectorMatrix,
                                                         inverseCoord);
                         Vector3 localTargetDir =
-                            Vector3.TransformCoordinate(targetMatrix.TranslationVector,
+                            Vector3.TransformCoordinate(targetMatrix,
                                                         inverseCoord);
 
                         localEffectorDir.Normalize();
@@ -181,6 +181,20 @@ namespace PMMEditor.Models.MMDModel
             for (int parent = bones[index].ParentIndex; parent != -1; parent = bones[parent].ParentIndex)
             {
                 res *= bones[parent].BoneMatBoneLocal;
+            }
+
+            return res;
+        }
+
+        private Vector3 CalcBoneModelLocalPosition(int index)
+        {
+            ObservableCollection<MmdModelModel.Bone> bones = _model.BoneKeyList;
+            Vector3 res = bones[index].BoneMatBoneLocal.TranslationVector;
+
+            for (int parent = bones[index].ParentIndex; parent != -1; parent = bones[parent].ParentIndex)
+            {
+                Matrix mat = bones[parent].BoneMatBoneLocal;
+                Vector3.Transform(ref res, ref mat, out res);
             }
 
             return res;
