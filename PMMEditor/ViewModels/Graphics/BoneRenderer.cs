@@ -150,7 +150,22 @@ namespace PMMEditor.ViewModels.Graphics
             IsInitialized = this.ObserveProperty(_ => _.IsInternalInitialized).ToReadOnlyReactiveProperty();
             _model = model;
             _device = device;
-            Task.Run(() => InitializeInternal());
+
+            // TODO: エラー時の処理
+            Task.Run(() =>
+            {
+                if (GraphicsModel.FeatureThreading.supportsConcurrentResources)
+                {
+                    InitializeInternal();
+                }
+                else
+                {
+                    lock (GraphicsModel.SyncObject)
+                    {
+                        InitializeInternal();
+                    }
+                }
+            });
         }
 
         public void Initialize(Direct3D11.Device device) { }

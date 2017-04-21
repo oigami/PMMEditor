@@ -19,7 +19,7 @@ namespace PMMEditor.ViewModels.Graphics
         {
             _model = model.GraphicsModel;
             CameraControl = new CameraControlViewModel(model.Camera);
-            Device = _model.Device;
+            Device = GraphicsModel.Device;
             NowFrame = model.FrameControlModel.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty()
                             .AddTo(CompositeDisposables);
             Items = _model.MmdModelSource.ToReadOnlyReactiveCollection(_ => (IRenderer) new MmdModelRenderer(model, _),

@@ -89,7 +89,17 @@ namespace PMMEditor.Models.Graphics
             BoneCount = Model.BoneKeyList.Count;
             Task.Run(() =>
             {
-                CreateData();
+                if (GraphicsModel.FeatureThreading.supportsConcurrentResources)
+                {
+                    CreateData();
+                }
+                else
+                {
+                    lock (GraphicsModel.SyncObject)
+                    {
+                        CreateData();
+                    }
+                }
                 IsInitialized = true;
             }).ContinueOnlyOnFaultedErrorLog(logger);
         }

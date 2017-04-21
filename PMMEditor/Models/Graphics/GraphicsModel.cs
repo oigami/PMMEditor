@@ -14,12 +14,32 @@ namespace PMMEditor.Models.Graphics
         public GraphicsModel(ILogger logger, MmdModelList mmdModelList)
         {
             _logger = logger;
-            MmdModelSource = mmdModelList.List.ToReadOnlyReactiveCollection(_ => new MmdModelRendererSource(_logger, _, Device))
+            MmdModelSource = mmdModelList.List.ToReadOnlyReactiveCollection(
+                _ => new MmdModelRendererSource(_logger, _, Device))
                                          .AddTo(CompositeDisposables);
         }
 
-        public Direct3D11.Device Device { get; } = new Direct3D11.Device(DriverType.Hardware,
+        public static Direct3D11.Device Device { get; } = new Direct3D11.Device(DriverType.Hardware,
                                                                          Direct3D11.DeviceCreationFlags.BgraSupport);
+
+        public static object SyncObject { get; } = new object();
+
+        private static (bool, bool)? _featureThreadingSuppert { get; set; }
+
+        public static (bool supportsConcurrentResources, bool supportsCommandLists) FeatureThreading
+        {
+            get
+            {
+                if (_featureThreadingSuppert != null)
+                {
+                    return ((bool, bool)) _featureThreadingSuppert;
+                }
+
+                Device.CheckThreadingSupport(out bool a, out bool b);
+                _featureThreadingSuppert = (a, b);
+                return ((bool, bool)) _featureThreadingSuppert;
+            }
+        }
 
         public ReadOnlyReactiveCollection<MmdModelRendererSource> MmdModelSource { get; }
     }

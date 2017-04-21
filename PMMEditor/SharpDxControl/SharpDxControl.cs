@@ -10,6 +10,7 @@ using System.Reactive.Disposables;
 using System.Windows;
 using System.Windows.Interactivity;
 using System.Windows.Media;
+using PMMEditor.Models.Graphics;
 using Reactive.Bindings.Extensions;
 using SharpDX;
 using SharpDX.Mathematics.Interop;
@@ -228,6 +229,16 @@ namespace PMMEditor.SharpDxControl
         private Query _query;
         private Texture2D _sharedTargetTexture;
 
+        /// <summary>
+        /// レンダリング時に同時にdeviceによるリソース作成が出来るかどうか
+        /// </summary>
+        private bool _useConcurrentCreates = true;
+
+        /// <summary>
+        /// 遅延コンテキストが使えるかどうか
+        /// </summary>
+        private bool _useDefferdContext = false;
+
         protected static bool IsInDesignMode
             => (bool) DesignerProperties.IsInDesignModeProperty.GetMetadata(typeof(DependencyObject)).DefaultValue;
 
@@ -325,6 +336,8 @@ namespace PMMEditor.SharpDxControl
             {
                 return;
             }
+
+            device.CheckThreadingSupport(out _useConcurrentCreates, out _useDefferdContext);
 
             _query = new Query(device, new QueryDescription
             {
@@ -438,13 +451,8 @@ namespace PMMEditor.SharpDxControl
             CompositionTarget.Rendering -= OnRendering;
         }
 
-        private void CallRender()
+        private void Rendering()
         {
-            if (D2DRenderTarget == null)
-            {
-                return;
-            }
-
             SharpDX.Direct3D11.DeviceContext context = Device.ImmediateContext;
 
             // 速度維持のために一つ前のフレームを描画する
@@ -471,7 +479,26 @@ namespace PMMEditor.SharpDxControl
                     break;
                 }
             }
+        }
 
+        private void CallRender()
+        {
+            if (D2DRenderTarget == null)
+            {
+                return;
+            }
+
+            if (_useConcurrentCreates)
+            {
+                Rendering();
+            }
+            else
+            {
+                lock (GraphicsModel.SyncObject)
+                {
+                    Rendering();
+                }
+            }
         }
 
         protected void SetRenderTarget(SharpDX.Direct3D11.DeviceContext context)
