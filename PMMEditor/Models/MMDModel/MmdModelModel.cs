@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PMMEditor.Log;
 using PMMEditor.MMDFileParser;
+using PMMEditor.Models.Graphics;
 using PMMEditor.MVVM;
 using SharpDX;
 using Quaternion = System.Numerics.Quaternion;
@@ -26,9 +27,10 @@ namespace PMMEditor.Models.MMDModel
             private set { SetProperty(ref _isInitialized, value); }
         }
 
-        public MmdModelModel(ILogger logger)
+        public MmdModelModel(ILogger logger, IMmdModelRendererSource source)
         {
             _logger = logger;
+            Source = source;
         }
 
         #region ボーン構造体
@@ -132,7 +134,9 @@ namespace PMMEditor.Models.MMDModel
 
         #endregion
 
-        public List<(PmxStruct.Bone, int)> IKList;
+        public IMmdModelRendererSource Source { get; private set; }
+
+        public List<(PmxStruct.Bone, int)> IKList { get; private set; }
 
         public List<PmxStruct.Material> Materials { get; set; }
 
@@ -175,6 +179,7 @@ namespace PMMEditor.Models.MMDModel
                 NameEnglish = data.EnglishName;
                 IKList = data.Bones.Indexed().Where(_ => (_.Item1.Flags & PmxStruct.Bone.Flag.IkFlag) != 0).ToList();
                 CreateBones(modelData, data.Bones);
+                Source?.Initialize(this);
                 IsInitialized = true;
             }
             catch (Exception e)

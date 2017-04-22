@@ -70,16 +70,16 @@ namespace PMMEditor.ViewModels.Graphics
         public ShaderResourceView BoneSrv { get; private set; }
 
         public MmdModelBoneCalculatorSRV(
-            MmdModelRendererSource model, BoneFrameControlModel controller, Direct3D11.Device device)
+            IMmdModelRendererSource model, BoneFrameControlModel controller, Direct3D11.Device device)
         {
             _device = device;
             _controller = controller;
             CreateData(model);
         }
 
-        private void CreateData(MmdModelRendererSource model)
+        private void CreateData(IMmdModelRendererSource model)
         {
-            int boneNum = model.BoneCount * 2;
+            int boneNum = model.Model.BoneKeyList.Count * 2;
             _outputArr = new Matrix[boneNum];
             _boneTexture2D = new Texture2D(
                 _device,
@@ -124,7 +124,7 @@ namespace PMMEditor.ViewModels.Graphics
 
     public class MmdModelRenderer : BindableDisposableBase, IRenderer
     {
-        public MmdModelRendererSource ModelSource { get; }
+        public IMmdModelRendererSource ModelSource { get; }
 
         private readonly Model _model;
         private MmdModelBoneCalculatorSRV _boneCalculator;
@@ -163,14 +163,14 @@ namespace PMMEditor.ViewModels.Graphics
         private MyEffect _myEffect;
         private readonly List<Technique> _techniques = new List<Technique>();
 
-        public MmdModelRenderer(Model model, MmdModelRendererSource sourceModel)
+        public MmdModelRenderer(Model model, IMmdModelRendererSource sourceModel)
         {
             _model = model;
             ModelSource = sourceModel;
             _nowFrame = model.FrameControlModel.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty()
                              .AddTo(CompositeDisposables);
             IsInitialized =
-                new[] { ModelSource.ObserveProperty(_ => _.IsInitialized), _isInternalInitialized }
+                new[] { _isInternalInitialized }
                     .CombineLatestValuesAreAllTrue()
                     .ToReadOnlyReactiveProperty()
                     .AddTo(CompositeDisposables);
@@ -251,6 +251,7 @@ namespace PMMEditor.ViewModels.Graphics
         public void Initialize(Direct3D11.Device device)
         {
             _device = device;
+            // TODO:エラー処理
             Task.Run(() => InitializeInternal());
         }
 
@@ -267,7 +268,7 @@ namespace PMMEditor.ViewModels.Graphics
             // シェーダの設定
             target.InputAssembler.InputLayout = _inputLayout;
 
-            target.InputAssembler.SetVertexBuffers(0, ModelSource.VertexBufferBinding);
+            ModelSource.SetVertexBuffer(target);
             ModelSource.SetIndexBuffer(target);
 
             target.InputAssembler.PrimitiveTopology = Direct3D.PrimitiveTopology.TriangleList;

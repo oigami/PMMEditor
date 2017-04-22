@@ -28,7 +28,7 @@ namespace PMMEditor.ViewModels.Graphics
         }
 
         public readonly ReadOnlyReactiveProperty<bool> IsInitialized;
-        private readonly MmdModelRendererSource _model;
+        private readonly IMmdModelRendererSource _model;
         private readonly Direct3D11.Device _device;
         private int _numVertex;
         private Direct3D11.DepthStencilState _boneRenderDepthState;
@@ -145,7 +145,7 @@ namespace PMMEditor.ViewModels.Graphics
             IsInternalInitialized = true;
         }
 
-        public BoneRenderer(MmdModelRendererSource model, Direct3D11.Device device)
+        public BoneRenderer(IMmdModelRendererSource model, Direct3D11.Device device)
         {
             IsInitialized = this.ObserveProperty(_ => _.IsInternalInitialized).ToReadOnlyReactiveProperty();
             _model = model;

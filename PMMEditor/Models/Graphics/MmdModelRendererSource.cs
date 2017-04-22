@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -79,32 +80,54 @@ namespace PMMEditor.Models.Graphics
         }
     }
 
-    public sealed class MmdModelRendererSource : BindableBase, IDisposable
+    public class MMDModelMaterial
     {
-        public MmdModelRendererSource(ILogger logger, MmdModelModel model, Direct3D11.Device device)
+        public int IndexStart { get; set; }
+
+        public int IndexNum { get; set; }
+
+        public int? TexuteIndex { get; set; }
+
+        public RawColor4 Diffuse { get; set; }
+    }
+
+    public interface IMmdModelRendererSource
+    {
+        void Initialize(MmdModelModel model);
+        MmdModelModel Model { get; }
+
+        List<MMDModelMaterial> Materials { get; }
+
+        List<Direct3D11.ShaderResourceView> Textures { get; }
+
+        void SetIndexBuffer(Direct3D11.DeviceContext context);
+
+        void SetVertexBuffer(Direct3D11.DeviceContext context);
+    }
+
+    public sealed class MmdModelRendererSource : BindableBase, IDisposable, IMmdModelRendererSource
+    {
+        public MmdModelRendererSource(ILogger logger, Direct3D11.Device device)
+        {
+            _device = device ?? throw new ArgumentNullException(nameof(device));
+        }
+
+        public void Initialize(MmdModelModel model)
         {
             Model = model;
-            _device = device ?? throw new ArgumentNullException(nameof(device));
-
-            BoneCount = Model.BoneKeyList.Count;
-            Task.Run(() =>
+            if (GraphicsModel.FeatureThreading.supportsConcurrentResources)
             {
-                if (GraphicsModel.FeatureThreading.supportsConcurrentResources)
+                CreateData();
+            }
+            else
+            {
+                lock (GraphicsModel.SyncObject)
                 {
                     CreateData();
                 }
-                else
-                {
-                    lock (GraphicsModel.SyncObject)
-                    {
-                        CreateData();
-                    }
-                }
-                IsInitialized = true;
-            }).ContinueOnlyOnFaultedErrorLog(logger);
+            }
+            IsInitialized = true;
         }
-
-        public int BoneCount { get; }
 
         private CompositeDisposable _d3DObjectCompositeDisposable2 = new CompositeDisposable();
         private readonly Direct3D11.Device _device;
@@ -121,17 +144,16 @@ namespace PMMEditor.Models.Graphics
 
         #endregion
 
-        public MmdModelModel Model { get; }
+        public MmdModelModel Model { get; private set; }
 
         #region VertexBufferBinding変更通知プロパティ
 
         private Direct3D11.Buffer _verteBuffer;
         private Direct3D11.VertexBufferBinding _vertexBufferBinding;
 
-        public Direct3D11.VertexBufferBinding VertexBufferBinding
+        public void SetVertexBuffer(Direct3D11.DeviceContext context)
         {
-            get { return _vertexBufferBinding; }
-            private set { SetProperty(ref _vertexBufferBinding, value); }
+            context.InputAssembler.SetVertexBuffers(0, _vertexBufferBinding);
         }
 
         #endregion
@@ -151,9 +173,9 @@ namespace PMMEditor.Models.Graphics
 
         #region Materials変更通知プロパティ
 
-        private List<Material> _materials;
+        private List<MMDModelMaterial> _materials;
 
-        public List<Material> Materials
+        public List<MMDModelMaterial> Materials
         {
             get { return _materials; }
             private set { SetProperty(ref _materials, value); }
@@ -167,16 +189,6 @@ namespace PMMEditor.Models.Graphics
 
         #endregion
 
-        public class Material
-        {
-            public int IndexStart { get; set; }
-
-            public int IndexNum { get; set; }
-
-            public int? TexuteIndex { get; set; }
-
-            public RawColor4 Diffuse { get; set; }
-        }
 
         private struct Vertex
         {
@@ -195,7 +207,7 @@ namespace PMMEditor.Models.Graphics
             _d3DObjectCompositeDisposable2.Dispose();
             _d3DObjectCompositeDisposable2 = new CompositeDisposable();
             IsInitialized = false;
-            VertexBufferBinding = new Direct3D11.VertexBufferBinding();
+            _vertexBufferBinding = new Direct3D11.VertexBufferBinding();
             _indexBuffer = null;
             Materials = null;
         }
@@ -209,13 +221,13 @@ namespace PMMEditor.Models.Graphics
         {
             OnUnload();
 
-            Materials = new List<Material>(Model.Materials.Count);
+            Materials = new List<MMDModelMaterial>(Model.Materials.Count);
             int preIndex = 0;
             foreach (var material in Model.Materials)
             {
                 var diffuse = new RawColor4(material.Diffuse.R, material.Diffuse.G,
                                             material.Diffuse.B, material.Diffuse.A);
-                Materials.Add(new Material
+                Materials.Add(new MMDModelMaterial
                 {
                     IndexNum = (int) material.FaceVertexCount,
                     IndexStart = preIndex,
@@ -290,7 +302,7 @@ namespace PMMEditor.Models.Graphics
                         StructureByteStride = typeSize
                     }).AddTo(_d3DObjectCompositeDisposable2);
 
-                VertexBufferBinding = new Direct3D11.VertexBufferBinding(_verteBuffer, typeSize, 0);
+                _vertexBufferBinding = new Direct3D11.VertexBufferBinding(_verteBuffer, typeSize, 0);
 
                 // 頂点インデックス生成
                 int maxIndex = Model.Indices.Max();

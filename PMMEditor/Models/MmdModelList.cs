@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Livet;
 using PMMEditor.Log;
 using PMMEditor.MMDFileParser;
+using PMMEditor.Models.Graphics;
 using PMMEditor.Models.MMDModel;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -69,7 +70,7 @@ namespace PMMEditor.Models
         {
             Task.Run(() =>
             {
-                var model = new MmdModelModel(_logger);
+                var model = new MmdModelModel(_logger, new MmdModelRendererSource(_logger, GraphicsModel.Device));
                 model.Set(blob);
                 if (model.IsInitialized)
                 {
@@ -100,7 +101,7 @@ namespace PMMEditor.Models
                _list.Clear();
                foreach (var item in list.Select((data, i) => new { data, i }))
                {
-                   var model = new MmdModelModel(_logger);
+                   var model = new MmdModelModel(_logger, new MmdModelRendererSource(_logger, GraphicsModel.Device));
                    model.Set(new FileBlob(item.data.Path), item.data);
                    _list.Add(model);
                    order.Add(item.data.DrawOrder, item.i);
