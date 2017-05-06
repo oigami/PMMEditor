@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using PMMEditor.ECS;
 using PMMEditor.Log;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models.Graphics;
@@ -15,9 +16,9 @@ using Vector3 = System.Numerics.Vector3;
 
 namespace PMMEditor.Models.MMDModel
 {
-    public class MmdModelModel : BindableBase
+    public class MmdModelModel : Component
     {
-        private readonly ILogger _logger;
+        private ILogger _logger;
 
         private bool _isInitialized;
 
@@ -27,10 +28,9 @@ namespace PMMEditor.Models.MMDModel
             private set { SetProperty(ref _isInitialized, value); }
         }
 
-        public MmdModelModel(ILogger logger, IMmdModelRendererSource source)
+        public void Initialize(ILogger logger)
         {
             _logger = logger;
-            Source = source;
         }
 
         #region ボーン構造体
@@ -179,7 +179,6 @@ namespace PMMEditor.Models.MMDModel
                 NameEnglish = data.EnglishName;
                 IKList = data.Bones.Indexed().Where(_ => (_.Item1.Flags & PmxStruct.Bone.Flag.IkFlag) != 0).ToList();
                 CreateBones(modelData, data.Bones);
-                Source?.Initialize(this);
                 IsInitialized = true;
             }
             catch (Exception e)

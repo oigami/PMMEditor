@@ -15,6 +15,7 @@ using Livet.Messaging;
 using Livet.Messaging.IO;
 using PMMEditor.Log;
 using PMMEditor.Models;
+using PMMEditor.Models.MMDModel;
 using PMMEditor.MVVM;
 using PMMEditor.ViewModels.Documents;
 using PMMEditor.ViewModels.Graphics;
@@ -64,7 +65,7 @@ namespace PMMEditor.ViewModels.MMD
                                                                                     _ =>
                                                                                         (TimelineViewModelBase)
                                                                                         new BoneTimelineViewModel(
-                                                                                        model, _))
+                                                                                        model, _.GetComponent<MmdModelModel>()))
                                                                                 .AddTo(CompositeDisposable);
             ModelAndCameraList =
                 new ObservableCollection<TimelineViewModelBase>
@@ -80,7 +81,7 @@ namespace PMMEditor.ViewModels.MMD
                     .ToReactiveProperty().AddTo(CompositeDisposable);
             ModelDeleteCommand = IsCharacterModelMode.ToReactiveCommand().AddTo(CompositeDisposable);
 
-            ModelDeleteCommand.Subscribe(_ => _model.MmdModelList.Delete(((BoneTimelineViewModel) SelectedModel).Model))
+            ModelDeleteCommand.Subscribe(_ => _model.MmdModelList.Delete(((BoneTimelineViewModel) SelectedModel).Model.GameObject))
                               .AddTo(CompositeDisposable);
 
             ModelLoadCommand = new ViewModelCommand(() =>

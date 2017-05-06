@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using PMMEditor.ECS;
 using PMMEditor.Log;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models.Graphics;
@@ -17,6 +18,7 @@ namespace PMMEditor.Models
 {
     public class Model : BindableDisposableBase
     {
+        public static ECSystem System = new ECSystem();
         public ILogger Logger { get; }
 
         public Model(ILogger logger)

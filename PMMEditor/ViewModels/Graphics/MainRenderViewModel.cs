@@ -11,18 +11,15 @@ namespace PMMEditor.ViewModels.Graphics
 {
     public class MainRenderViewModel : DocumentViewModelBase
     {
-        private readonly GraphicsModel _model;
-
         public CameraControlViewModel CameraControl { get; }
 
         public MainRenderViewModel(Model model)
         {
-            _model = model.GraphicsModel;
             CameraControl = new CameraControlViewModel(model.Camera);
             Device = GraphicsModel.Device;
             NowFrame = model.FrameControlModel.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty()
                             .AddTo(CompositeDisposables);
-            Items = _model.MmdModelSource.ToReadOnlyReactiveCollection(_ => (IRenderer) new MmdModelRenderer(model, _),
+            Items = model.MmdModelList.List.ToReadOnlyReactiveCollection(_ => (IRenderer) new MmdModelRenderer(model, _.GetComponent<MmdModelRendererSource>()),
                                                                        UIDispatcherScheduler.Default)
                           .AddTo(CompositeDisposables);
             LookAtXResetCommand = new ListenerCommand<float>(_ => CameraControl.LookAtX = _);

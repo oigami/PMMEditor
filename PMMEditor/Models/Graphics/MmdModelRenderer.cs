@@ -1,24 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Livet;
-using PMMEditor.Models;
+using PMMEditor.ECS;
+using PMMEditor.Models.MMDModel;
+using PMMEditor.MVVM;
+using PMMEditor.ViewModels.Graphics;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using SharpDX;
 using SharpDX.D3DCompiler;
+using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using Direct3D11 = SharpDX.Direct3D11;
 using Direct3D = SharpDX.Direct3D;
-using PMMEditor.Models.Graphics;
-using PMMEditor.Models.MMDModel;
-using PMMEditor.MVVM;
 using Direct2D1 = SharpDX.Direct2D1;
-using SharpDX.Direct3D11;
 
-namespace PMMEditor.ViewModels.Graphics
+namespace PMMEditor.Models.Graphics
 {
     public interface IInitializable
     {
@@ -27,13 +24,13 @@ namespace PMMEditor.ViewModels.Graphics
 
     public struct RenderArgs
     {
-        public RenderArgs(DeviceContext context, Matrix viewProj)
+        public RenderArgs(Direct3D11.DeviceContext context, Matrix viewProj)
         {
             Context = context;
             ViewProj = viewProj;
         }
 
-        public DeviceContext Context { get; }
+        public Direct3D11.DeviceContext Context { get; }
 
         public Matrix ViewProj { get; }
     }
@@ -105,7 +102,7 @@ namespace PMMEditor.ViewModels.Graphics
             _controller.Update();
         }
 
-        public void Update(DeviceContext context, int nowFrame)
+        public void Update(Direct3D11.DeviceContext context, int nowFrame)
         {
             MmdModelBoneCalculator calclator = _controller.BoneCalculator;
             calclator.WorldBones.CopyTo(_outputArr, 0);
@@ -122,7 +119,7 @@ namespace PMMEditor.ViewModels.Graphics
         }
     }
 
-    public class MmdModelRenderer : BindableDisposableBase, IRenderer
+    public class MmdModelRenderer : ComponentDisposable, IRenderer
     {
         public IMmdModelRendererSource ModelSource { get; }
 
@@ -135,7 +132,7 @@ namespace PMMEditor.ViewModels.Graphics
         private readonly ReadOnlyReactiveProperty<int> _nowFrame;
         private readonly ReactiveProperty<bool> _isInternalInitialized = new ReactiveProperty<bool>(false);
         private BoneFrameControlModel _boneFrameController;
-        private Effect _effect;
+        private Direct3D11.Effect _effect;
 
         public class Technique
         {
@@ -197,7 +194,7 @@ namespace PMMEditor.ViewModels.Graphics
             }
 
             ShaderBytecode shaderBytes = ShaderBytecode.Compile(shaderSource, "fx_5_0", ShaderFlags.Debug);
-            _effect = new Effect(_device, shaderBytes);
+            _effect = new Direct3D11.Effect(_device, shaderBytes);
 
             U Cast<T, U>(T variable, Func<T, U> func)
                 where T : EffectVariable
@@ -237,10 +234,10 @@ namespace PMMEditor.ViewModels.Graphics
             ShaderBytecode inputSignature = pass.Description.Signature;
             _inputLayout = new InputLayout(_device, inputSignature, new[]
             {
-                new InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
-                new InputElement("BONE_INDEX", 0, Format.R32G32B32A32_SInt, 16, 0),
-                new InputElement("BONE_WEIGHT", 0, Format.R32G32B32A32_Float, 32, 0),
-                new InputElement("TEXCOORD", 0, Format.R32G32_Float, 48, 0)
+                new Direct3D11.InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
+                new Direct3D11.InputElement("BONE_INDEX", 0, Format.R32G32B32A32_SInt, 16, 0),
+                new Direct3D11.InputElement("BONE_WEIGHT", 0, Format.R32G32B32A32_Float, 32, 0),
+                new Direct3D11.InputElement("TEXCOORD", 0, Format.R32G32_Float, 48, 0)
             });
 
             _isInternalInitialized.Value = true;
@@ -262,7 +259,7 @@ namespace PMMEditor.ViewModels.Graphics
                 return;
             }
 
-            DeviceContext target = args.Context;
+            Direct3D11.DeviceContext target = args.Context;
             Matrix m = args.ViewProj;
 
             // シェーダの設定
@@ -281,10 +278,10 @@ namespace PMMEditor.ViewModels.Graphics
             _myEffect.ViewProj?.SetMatrix(m);
             foreach (var material in ModelSource.Materials)
             {
-                bool useTexture = material.TexuteIndex != null;
+                bool useTexture = material.MainTexture != null;
                 if (useTexture)
                 {
-                    _myEffect.MaterialTexture?.SetResource(ModelSource.Textures[(int) material.TexuteIndex]);
+                    _myEffect.MaterialTexture?.SetResource(material.MainTexture);
                 }
 
                 _myEffect.Diffuse?.Set(material.Diffuse);
@@ -326,6 +323,6 @@ namespace PMMEditor.ViewModels.Graphics
             _boneCalculator.UpdateBone();
         }
 
-        public void Update() { }
+        public override void Update() { }
     }
 }

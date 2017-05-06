@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Livet;
+using PMMEditor.ECS;
 using PMMEditor.Log;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models.Graphics;
@@ -27,17 +28,17 @@ namespace PMMEditor.Models
             _logger = logger;
         }
 
-        private readonly ObservableCollection<MmdModelModel> _list = new ObservableCollection<MmdModelModel>();
-        private ReadOnlyObservableCollection<MmdModelModel> _readOnlyList;
+        private readonly ObservableCollection<Entity> _list = new ObservableCollection<Entity>();
+        private ReadOnlyObservableCollection<Entity> _readOnlyList;
 
-        public ReadOnlyObservableCollection<MmdModelModel> List =>
-            _readOnlyList ?? (_readOnlyList = new ReadOnlyObservableCollection<MmdModelModel>(_list));
+        public ReadOnlyObservableCollection<Entity> List =>
+            _readOnlyList ?? (_readOnlyList = new ReadOnlyObservableCollection<Entity>(_list));
 
         #region NameList変更通知プロパティ
 
-        public IEnumerable<string> NameList => List.Select(i => i.Name);
+        public IEnumerable<string> NameList => List.Select(i => i.GetComponent<MmdModelModel>().Name);
 
-        public IEnumerable<string> NameEnglishList => List.Select(i => i.NameEnglish);
+        public IEnumerable<string> NameEnglishList => List.Select(i => i.GetComponent<MmdModelModel>().NameEnglish);
 
         #endregion
 
@@ -48,7 +49,7 @@ namespace PMMEditor.Models
             _list.Clear();
         }
 
-        public void Delete(MmdModelModel model)
+        public void Delete(Entity model)
         {
             _list.Remove(model);
         }
@@ -70,13 +71,18 @@ namespace PMMEditor.Models
         {
             Task.Run(() =>
             {
-                var model = new MmdModelModel(_logger, new MmdModelRendererSource(_logger, GraphicsModel.Device));
+                Entity entity = Model.System.CreateEntity();
+                MmdModelModel model = entity.AddComponent<MmdModelModel>();
+                model.Initialize(_logger);
                 model.Set(blob);
+                MmdModelRendererSource rendererSource = entity.AddComponent<MmdModelRendererSource>();
+                rendererSource.Initialize(_logger, GraphicsModel.Device);
+
                 if (model.IsInitialized)
                 {
                     lock (_syncObject)
                     {
-                        _list.Add(model);
+                        _list.Add(entity);
                     }
                 }
             }).ContinueOnlyOnFaultedErrorLog(_logger);
@@ -101,9 +107,13 @@ namespace PMMEditor.Models
                _list.Clear();
                foreach (var item in list.Select((data, i) => new { data, i }))
                {
-                   var model = new MmdModelModel(_logger, new MmdModelRendererSource(_logger, GraphicsModel.Device));
+                   Entity entity = Model.System.CreateEntity();
+                   MmdModelModel model = entity.AddComponent<MmdModelModel>();
+                   model.Initialize(_logger);
                    model.Set(new FileBlob(item.data.Path), item.data);
-                   _list.Add(model);
+                   MmdModelRendererSource rendererSource = entity.AddComponent<MmdModelRendererSource>();
+                   rendererSource.Initialize(_logger, GraphicsModel.Device);
+                   _list.Add(entity);
                    order.Add(item.data.DrawOrder, item.i);
                }
                foreach (var i in order)

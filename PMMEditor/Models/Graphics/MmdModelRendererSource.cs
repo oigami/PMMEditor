@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
+using PMMEditor.ECS;
 using PMMEditor.Log;
 using PMMEditor.MMDFileParser;
 using PMMEditor.Models.MMDModel;
@@ -80,20 +81,8 @@ namespace PMMEditor.Models.Graphics
         }
     }
 
-    public class MMDModelMaterial
-    {
-        public int IndexStart { get; set; }
-
-        public int IndexNum { get; set; }
-
-        public int? TexuteIndex { get; set; }
-
-        public RawColor4 Diffuse { get; set; }
-    }
-
     public interface IMmdModelRendererSource
     {
-        void Initialize(MmdModelModel model);
         MmdModelModel Model { get; }
 
         List<MMDModelMaterial> Materials { get; }
@@ -105,16 +94,12 @@ namespace PMMEditor.Models.Graphics
         void SetVertexBuffer(Direct3D11.DeviceContext context);
     }
 
-    public sealed class MmdModelRendererSource : BindableBase, IDisposable, IMmdModelRendererSource
+    public sealed class MmdModelRendererSource : Component, IDisposable, IMmdModelRendererSource
     {
-        public MmdModelRendererSource(ILogger logger, Direct3D11.Device device)
+        public void Initialize(ILogger logger, Direct3D11.Device device)
         {
             _device = device ?? throw new ArgumentNullException(nameof(device));
-        }
-
-        public void Initialize(MmdModelModel model)
-        {
-            Model = model;
+            Model = GameObject.GetComponent<MmdModelModel>();
             if (GraphicsModel.FeatureThreading.supportsConcurrentResources)
             {
                 CreateData();
@@ -130,7 +115,7 @@ namespace PMMEditor.Models.Graphics
         }
 
         private CompositeDisposable _d3DObjectCompositeDisposable2 = new CompositeDisposable();
-        private readonly Direct3D11.Device _device;
+        private Direct3D11.Device _device;
 
         #region IsInitialized変更通知プロパティ
 
@@ -222,6 +207,19 @@ namespace PMMEditor.Models.Graphics
             OnUnload();
 
             Materials = new List<MMDModelMaterial>(Model.Materials.Count);
+
+            // テクスチャ読み込み
+            foreach (var texturePath in Model.TextureFilePath)
+            {
+                BitmapSource bitmap =
+                    TextureLoader.LoadBitmap(Path.Combine(Path.GetDirectoryName(Model.FilePath) ?? "", texturePath));
+
+                Direct3D11.Texture2D texture = TextureLoader.CreateTexture2DFromBitmap(_device, bitmap);
+                var textureView = new Direct3D11.ShaderResourceView(_device, texture);
+                Textures.Add(textureView);
+            }
+
+            // 材質生成
             int preIndex = 0;
             foreach (var material in Model.Materials)
             {
@@ -231,7 +229,7 @@ namespace PMMEditor.Models.Graphics
                 {
                     IndexNum = (int) material.FaceVertexCount,
                     IndexStart = preIndex,
-                    TexuteIndex = material.TextureIndex,
+                    MainTexture = material.TextureIndex != null ? Textures[(int) material.TextureIndex] : null,
                     Diffuse = diffuse
                 });
                 preIndex += (int) material.FaceVertexCount;
@@ -341,16 +339,6 @@ namespace PMMEditor.Models.Graphics
                 }
                 _indexBuffer.AddTo(_d3DObjectCompositeDisposable2);
 
-                // テクスチャ読み込み
-                foreach (var texturePath in Model.TextureFilePath)
-                {
-                    BitmapSource bitmap =
-                        TextureLoader.LoadBitmap(Path.Combine(Path.GetDirectoryName(Model.FilePath) ?? "", texturePath));
-
-                    Direct3D11.Texture2D texture = TextureLoader.CreateTexture2DFromBitmap(_device, bitmap);
-                    var textureView = new Direct3D11.ShaderResourceView(_device, texture);
-                    Textures.Add(textureView);
-                }
             }
 
             OnLoad();

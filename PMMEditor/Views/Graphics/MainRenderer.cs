@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Markup;
+using PMMEditor.Models.Graphics;
 using PMMEditor.ViewModels.Graphics;
 using PMMEditor.Views.Timeline;
 using Reactive.Bindings.Extensions;

@@ -14,8 +14,6 @@ namespace PMMEditor.Models.Graphics
         public GraphicsModel(ILogger logger, MmdModelList mmdModelList)
         {
             _logger = logger;
-            MmdModelSource = mmdModelList.List.ToReadOnlyReactiveCollection(_ => _.Source)
-                                         .AddTo(CompositeDisposables);
         }
 
         public static Direct3D11.Device Device { get; } = new Direct3D11.Device(DriverType.Hardware,
@@ -41,6 +39,5 @@ namespace PMMEditor.Models.Graphics
             }
         }
 
-        public ReadOnlyReactiveCollection<IMmdModelRendererSource> MmdModelSource { get; }
     }
 }

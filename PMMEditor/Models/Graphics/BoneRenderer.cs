@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using PMMEditor.MMDFileParser;
-using PMMEditor.Models.Graphics;
 using PMMEditor.MVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -14,7 +10,7 @@ using SharpDX.Direct3D;
 using SharpDX.DXGI;
 using Direct3D11 = SharpDX.Direct3D11;
 
-namespace PMMEditor.ViewModels.Graphics
+namespace PMMEditor.Models.Graphics
 {
     public class BoneRenderer : BindableDisposableBase, IRenderer
     {

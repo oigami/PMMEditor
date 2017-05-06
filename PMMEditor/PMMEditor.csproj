@@ -70,6 +70,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ECS\Component.cs" />
+    <Compile Include="ECS\Entity.cs" />
+    <Compile Include="ECS\Shader.cs" />
+    <Compile Include="ECS\System.cs" />
+    <Compile Include="ECS\MeshFilter.cs" />
+    <Compile Include="ECS\Renderer.cs" />
     <Compile Include="Log\Logger.cs" />
     <Compile Include="MMDFileParser\MmdFileKind.cs" />
     <Compile Include="MMDFileParser\MmdFileReaderBase.cs" />
@@ -108,7 +114,7 @@
     <Compile Include="ViewModels\Documents\BoneTimelineViewModel.cs" />
     <Compile Include="ViewModels\Documents\CameraLightAccessoryViewModel.cs" />
     <Compile Include="ViewModels\Documents\ReadOnlyMultiCollection.cs" />
-    <Compile Include="ViewModels\Graphics\BoneRenderer.cs" />
+    <Compile Include="Models\Graphics\BoneRenderer.cs" />
     <Compile Include="ViewModels\Graphics\MainRenderViewModel.cs" />
     <Compile Include="ViewModels\Documents\TimelineViewModelBase.cs" />
     <Compile Include="ViewModels\Documents\DocumentViewModelBase.cs" />
@@ -123,7 +129,7 @@
       <DependentUpon>ExceptionDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Graphics\MmdModelItemsControl.cs" />
-    <Compile Include="ViewModels\Graphics\MmdModelRenderer.cs" />
+    <Compile Include="Models\Graphics\MmdModelRenderer.cs" />
     <Compile Include="ViewModels\Panes\AccessoryViewModel.cs" />
     <Compile Include="ViewModels\Panes\CameraViewModel.cs" />
     <Compile Include="ViewModels\Panes\ModelViewModel.cs" />
