@@ -18,7 +18,7 @@ namespace PMMEditor.Views.MMD
     /// <summary>
     /// RenderView.xaml の相互作用ロジック
     /// </summary>
-    public partial class RenderView : UserControl
+    public partial class RenderView
     {
         public RenderView()
         {

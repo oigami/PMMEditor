@@ -133,7 +133,7 @@ namespace PMMEditor.Models
             p.FrameNumber = nowIndex.Key + diff;
         }
 
-        private void MoveAll(IEnumerable<KeyValuePair<int, T>> nowIndex, int diff)
+        private void MoveAll(IList<KeyValuePair<int, T>> nowIndex, int diff)
         {
             foreach (var item in nowIndex)
             {
@@ -500,7 +500,7 @@ namespace PMMEditor.Models
         /// <returns>
         /// <see cref = "T:System.Collections.ICollection" /> へのアクセスを同期するために使用できるオブジェクト。
         /// </returns>
-        public object SyncRoot { get; } = null;
+        public object SyncRoot { get; } = new object();
 
         /// <summary>
         /// <see cref = "T:System.Collections.ICollection" /> へのアクセスが同期されている (スレッド セーフである) かどうかを示す値を取得します。

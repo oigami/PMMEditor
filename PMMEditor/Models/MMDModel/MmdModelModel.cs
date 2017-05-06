@@ -155,7 +155,7 @@ namespace PMMEditor.Models.MMDModel
                 string filePath = blob.Path;
                 byte[] fileData = blob.Data;
                 MmdFileKind kind = blob.Kind;
-                PmxStruct data = null;
+                PmxStruct data;
                 switch (kind)
                 {
                     case MmdFileKind.Pmd:
@@ -203,7 +203,7 @@ namespace PMMEditor.Models.MMDModel
             {
                 PmmStruct.ModelData.BoneInitFrame boneInitFrame =
                     modelData?.BoneInitFrames
-                              .Zip(modelData?.BoneName, (x, y) => (bone: x, name: y))
+                              .Zip(modelData.BoneName, (x, y) => (bone: x, name: y))
                               .First(t => t.name == item.Name).bone;
                 return CreateBone(item, id, bones, keyFrame, boneInitFrame);
             }));

@@ -18,7 +18,7 @@ namespace PMMEditor.Views.MMD
     /// <summary>
     /// ModelManipulation.xaml の相互作用ロジック
     /// </summary>
-    public partial class ModelManipulation : UserControl
+    public partial class ModelManipulation
     {
         public ModelManipulation()
         {

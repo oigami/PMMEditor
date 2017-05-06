@@ -18,7 +18,7 @@ namespace PMMEditor.Views.MMD
     /// <summary>
     /// ViewAndPlay.xaml の相互作用ロジック
     /// </summary>
-    public partial class ViewAndPlay : UserControl
+    public partial class ViewAndPlay
     {
         public ViewAndPlay()
         {

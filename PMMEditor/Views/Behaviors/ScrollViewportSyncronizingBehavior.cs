@@ -80,7 +80,7 @@ namespace PMMEditor.Views.Behaviors
 
         protected override void OnCleanup()
         {
-            if (AssociatedObject is ScrollViewer sv)
+            if (AssociatedObject is ScrollViewer)
             {
                 RemoveEvent(ScrollViewer.HorizontalOffsetProperty);
                 RemoveEvent(ScrollViewer.VerticalOffsetProperty);

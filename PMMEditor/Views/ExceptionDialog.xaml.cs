@@ -17,7 +17,7 @@ namespace PMMEditor.Views
     /// <summary>
     /// ExceptionDialog.xaml の相互作用ロジック
     /// </summary>
-    public partial class ExceptionDialog : Window
+    public partial class ExceptionDialog
     {
         public ExceptionDialog()
         {

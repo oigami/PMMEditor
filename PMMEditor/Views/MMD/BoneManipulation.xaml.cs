@@ -18,7 +18,7 @@ namespace PMMEditor.Views.MMD
     /// <summary>
     /// BoneManipulation.xaml の相互作用ロジック
     /// </summary>
-    public partial class BoneManipulation : UserControl
+    public partial class BoneManipulation
     {
         public BoneManipulation()
         {

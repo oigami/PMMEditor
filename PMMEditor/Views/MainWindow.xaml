@@ -2,17 +2,15 @@
   x:Class="PMMEditor.Views.MainWindow"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:behaviors="http://schemas.livet-mvvm.net/2011/wpf"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:local="clr-namespace:PMMEditor.Views"
+  xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:mmd="clr-namespace:PMMEditor.ViewModels.MMD"
   xmlns:mmdv="clr-namespace:PMMEditor.Views.MMD"
   xmlns:mmw="clr-namespace:PMMEditor.ViewModels.MMW"
   xmlns:mmwv="clr-namespace:PMMEditor.Views.MMW"
-  xmlns:viewModels="clr-namespace:PMMEditor.ViewModels"
   xmlns:vm="clr-namespace:PMMEditor.ViewModels"
-  xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-  xmlns:behaviors="http://schemas.livet-mvvm.net/2011/wpf"
   Title="MainWindow"
   mc:Ignorable="d">
 
@@ -20,14 +18,13 @@
     <vm:MainWindowViewModel />
   </Window.DataContext>
   <i:Interaction.Triggers>
-    <i:EventTrigger
-      EventName="ContentRendered">
+    <i:EventTrigger EventName="ContentRendered">
       <behaviors:LivetCallMethodAction
         MethodName="Initialize"
         MethodTarget="{Binding}" />
     </i:EventTrigger>
-     <i:EventTrigger EventName="Closed">
-      <behaviors:DataContextDisposeAction/>
+    <i:EventTrigger EventName="Closed">
+      <behaviors:DataContextDisposeAction />
     </i:EventTrigger>
   </i:Interaction.Triggers>
   <Window.Resources>

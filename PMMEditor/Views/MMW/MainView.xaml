@@ -8,8 +8,6 @@
   xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
   xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:v="clr-namespace:PMMEditor.Views"
-  xmlns:vm="clr-namespace:PMMEditor.ViewModels"
   xmlns:vmDocuments="clr-namespace:PMMEditor.ViewModels.Documents"
   xmlns:vmPanes="clr-namespace:PMMEditor.ViewModels.Panes"
   xmlns:timeline="clr-namespace:PMMEditor.Views.Timeline"

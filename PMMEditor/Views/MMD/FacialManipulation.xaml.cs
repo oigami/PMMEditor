@@ -18,7 +18,7 @@ namespace PMMEditor.Views.MMD
     /// <summary>
     /// FacialManipulation.xaml の相互作用ロジック
     /// </summary>
-    public partial class FacialManipulation : UserControl
+    public partial class FacialManipulation
     {
         public FacialManipulation()
         {

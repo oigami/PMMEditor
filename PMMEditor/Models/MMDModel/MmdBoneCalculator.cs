@@ -26,11 +26,9 @@ namespace PMMEditor.Models.MMDModel
         private readonly MmdModelModel _model;
 
         private void CalcBoneWorld(
-            MmdModelModel.Bone me, Matrix parent,
             ref Matrix[] inOutWorlds)
         {
-            ObservableCollection<MmdModelModel.Bone> bones = _model.BoneKeyList;
-            foreach (var bone in bones)
+            foreach (var bone in _model.BoneKeyList)
             {
                 inOutWorlds[bone.Index] = bone.InverseInitMatModelLocal * inOutWorlds[bone.Index];
             }
@@ -65,7 +63,7 @@ namespace PMMEditor.Models.MMDModel
             UpdateInverseKinematics();
             CalcBoneModelLocalMatrix(bones[0], Matrix.Identity, ref _modelLocalBones2);
             ModelLocalBones.CopyTo(WorldBones, 0);
-            CalcBoneWorld(bones[0], Matrix.Identity, ref _worldBones);
+            CalcBoneWorld(ref _worldBones);
         }
 
         private void UpdateForwardKinematics(IList<MmdModelModel.BoneKeyFrame> nowBoneKeyFrame)

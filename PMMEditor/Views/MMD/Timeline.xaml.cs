@@ -18,7 +18,7 @@ namespace PMMEditor.Views.MMD
     /// <summary>
     /// Timeline.xaml の相互作用ロジック
     /// </summary>
-    public partial class Timeline : UserControl
+    public partial class Timeline
     {
         public Timeline()
         {
