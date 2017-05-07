@@ -19,9 +19,13 @@ namespace PMMEditor.ViewModels.Graphics
             Device = GraphicsModel.Device;
             NowFrame = model.FrameControlModel.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty()
                             .AddTo(CompositeDisposables);
-            Items = model.MmdModelList.List.ToReadOnlyReactiveCollection(_ => (IRenderer) new MmdModelRenderer(model, _.GetComponent<MmdModelRendererSource>()),
-                                                                       UIDispatcherScheduler.Default)
-                          .AddTo(CompositeDisposables);
+            Items = model.MmdModelList.List.ToReadOnlyReactiveCollection(_ =>
+            {
+                MmdModelRenderer renderer = _.AddComponent<MmdModelRenderer>();
+                renderer.Initialize(model);
+                return (IRenderer) renderer;
+            }, UIDispatcherScheduler.Default)
+                         .AddTo(CompositeDisposables);
             LookAtXResetCommand = new ListenerCommand<float>(_ => CameraControl.LookAtX = _);
             LookAtYResetCommand = new ListenerCommand<float>(_ => CameraControl.LookAtY = _);
             LookAtZResetCommand = new ListenerCommand<float>(_ => CameraControl.LookAtZ = _);
@@ -45,7 +49,7 @@ namespace PMMEditor.ViewModels.Graphics
 
         public ReadOnlyReactiveCollection<IRenderer> Items { get; set; }
 
-        public Device Device { get; private set; }
+        public Device Device { get; }
 
         public ListenerCommand<float> LookAtXResetCommand { get; }
 

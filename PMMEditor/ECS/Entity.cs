@@ -28,13 +28,27 @@ namespace PMMEditor.ECS
 
         public void RemoveComponents<T>() where T : Component
         {
+            foreach (var disposable in _components.Where(x => x is T))
+            {
+                disposable.Dispose();
+            }
+
             _components.RemoveAll(x => x is T);
         }
 
         public void RemoveComponent(Component component)
         {
-            _components.Remove(component);
+            if (_components.Remove(component))
+            {
+                component.Dispose();
+            }
         }
+
+        public Component GetComponent(Type type)
+        {
+            return _components.Find(type.IsInstanceOfType);
+        }
+
 
         public T GetComponent<T>() where T : Component
         {

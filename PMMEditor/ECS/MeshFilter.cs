@@ -17,7 +17,7 @@ namespace PMMEditor.ECS
         public int Offset { get; set; }
     }
 
-    public class MeshFilter
+    public class MeshFilter : Component
     {
         public Direct3D11.VertexBufferBinding Vertices { get; set; }
 

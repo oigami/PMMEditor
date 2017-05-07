@@ -134,8 +134,6 @@ namespace PMMEditor.Models.MMDModel
 
         #endregion
 
-        public IMmdModelRendererSource Source { get; private set; }
-
         public List<(PmxStruct.Bone, int)> IKList { get; private set; }
 
         public List<PmxStruct.Material> Materials { get; set; }

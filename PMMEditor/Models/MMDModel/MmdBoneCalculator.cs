@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PMMEditor.ECS;
 using PMMEditor.MMDFileParser;
 using PMMEditor.MVVM;
 using SharpDX;
@@ -13,7 +14,7 @@ using Vector3 = SharpDX.Vector3;
 
 namespace PMMEditor.Models.MMDModel
 {
-    public class MmdModelBoneCalculator : BindableBase
+    public class MmdModelBoneCalculator : Component
     {
         public MmdModelBoneCalculator(MmdModelModel model)
         {

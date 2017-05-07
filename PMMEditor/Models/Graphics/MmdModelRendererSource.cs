@@ -344,28 +344,14 @@ namespace PMMEditor.Models.Graphics
             OnLoad();
         }
 
-        #region IDisposable Support
-
-        private bool _disposedValue;
-
-        private void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
-            if (!_disposedValue)
+            if (disposing)
             {
-                if (disposing)
-                {
-                    _d3DObjectCompositeDisposable2.Dispose();
-                    _d3DObjectCompositeDisposable2 = null;
-                }
-                _disposedValue = true;
+                _d3DObjectCompositeDisposable2.Dispose();
+                _d3DObjectCompositeDisposable2 = null;
             }
+            base.Dispose(disposing);
         }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        #endregion
     }
 }

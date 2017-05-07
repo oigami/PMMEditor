@@ -119,17 +119,17 @@ namespace PMMEditor.Models.Graphics
         }
     }
 
-    public class MmdModelRenderer : ComponentDisposable, IRenderer
+    public class MmdModelRenderer : Component, IRenderer
     {
-        public IMmdModelRendererSource ModelSource { get; }
+        private IMmdModelRendererSource ModelSource { get; set; }
 
-        private readonly Model _model;
+        private Model _model;
         private MmdModelBoneCalculatorSRV _boneCalculator;
         private Direct3D11.Device _device;
 
         private InputLayout _inputLayout;
 
-        private readonly ReadOnlyReactiveProperty<int> _nowFrame;
+        private ReadOnlyReactiveProperty<int> _nowFrame;
         private readonly ReactiveProperty<bool> _isInternalInitialized = new ReactiveProperty<bool>(false);
         private BoneFrameControlModel _boneFrameController;
         private Direct3D11.Effect _effect;
@@ -160,10 +160,10 @@ namespace PMMEditor.Models.Graphics
         private MyEffect _myEffect;
         private readonly List<Technique> _techniques = new List<Technique>();
 
-        public MmdModelRenderer(Model model, IMmdModelRendererSource sourceModel)
+        public void Initialize(Model model)
         {
             _model = model;
-            ModelSource = sourceModel;
+            ModelSource = GameObject.GetComponent(typeof(IMmdModelRendererSource)) as IMmdModelRendererSource;
             _nowFrame = model.FrameControlModel.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty()
                              .AddTo(CompositeDisposables);
             IsInitialized =
@@ -173,7 +173,7 @@ namespace PMMEditor.Models.Graphics
                     .AddTo(CompositeDisposables);
         }
 
-        public ReadOnlyReactiveProperty<bool> IsInitialized { get; }
+        public ReadOnlyReactiveProperty<bool> IsInitialized { get; private set; }
 
         private void InitializeInternal()
         {
