@@ -11,9 +11,16 @@ namespace PMMEditor.ECS
     {
         private readonly List<Component> _components = new List<Component>();
 
+        private readonly ECSystem _system;
         internal Entity(ECSystem system)
         {
+            _system = system;
+        }
 
+        public void Destroy()
+        {
+            RemoveComponents<Component>();
+            _system.DestroyEntity(this);
         }
 
         public T AddComponent<T>() where T : Component, new()
@@ -23,6 +30,7 @@ namespace PMMEditor.ECS
                 GameObject = this
             };
             _components.Add(component);
+            _system.AddComponent(component);
             return component;
         }
 

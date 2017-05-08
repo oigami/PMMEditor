@@ -11,9 +11,24 @@ namespace PMMEditor.ECS
     {
         internal static Device Device { get; set; }
 
+        private List<Entity> _entity = new List<Entity>();
+        private List<Entity> _newEntitiy = new List<Entity>();
+
         public Entity CreateEntity()
         {
-            return new Entity(this);
+            var entity = new Entity(this);
+            _newEntitiy.Add(entity);
+            return entity;
+        }
+
+        public void DestroyEntity(Entity entity)
+        {
+            _entity.Remove(entity);
+            _newEntitiy.Remove(entity);
+            foreach (var component in entity.GetComponents<Component>())
+            {
+                RemoveComponent(component);
+            }
         }
 
         internal void AddComponent(Component component)
