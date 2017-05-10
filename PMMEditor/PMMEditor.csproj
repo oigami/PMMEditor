@@ -71,6 +71,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ECS\Component.cs" />
+    <Compile Include="ECS\ECObject.cs" />
     <Compile Include="ECS\Entity.cs" />
     <Compile Include="ECS\Shader.cs" />
     <Compile Include="ECS\System.cs" />

@@ -7,7 +7,7 @@ using PMMEditor.MVVM;
 
 namespace PMMEditor.ECS
 {
-    public class Entity
+    public class Entity : ECObject
     {
         private readonly List<Component> _components = new List<Component>();
 
@@ -17,7 +17,7 @@ namespace PMMEditor.ECS
             _system = system;
         }
 
-        public void Destroy()
+        protected override void OnDestroyInternal()
         {
             RemoveComponents<Component>();
             _system.DestroyEntity(this);

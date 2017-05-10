@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
@@ -88,10 +89,6 @@ namespace PMMEditor.Models.Graphics
         List<MMDModelMaterial> Materials { get; }
 
         List<Direct3D11.ShaderResourceView> Textures { get; }
-
-        void SetIndexBuffer(Direct3D11.DeviceContext context);
-
-        void SetVertexBuffer(Direct3D11.DeviceContext context);
     }
 
     public sealed class MmdModelRendererSource : Component, IDisposable, IMmdModelRendererSource
@@ -114,7 +111,6 @@ namespace PMMEditor.Models.Graphics
             IsInitialized = true;
         }
 
-        private CompositeDisposable _d3DObjectCompositeDisposable2 = new CompositeDisposable();
         private Direct3D11.Device _device;
 
         #region IsInitialized変更通知プロパティ
@@ -130,31 +126,6 @@ namespace PMMEditor.Models.Graphics
         #endregion
 
         public MmdModelModel Model { get; private set; }
-
-        #region VertexBufferBinding変更通知プロパティ
-
-        private Direct3D11.Buffer _verteBuffer;
-        private Direct3D11.VertexBufferBinding _vertexBufferBinding;
-
-        public void SetVertexBuffer(Direct3D11.DeviceContext context)
-        {
-            context.InputAssembler.SetVertexBuffers(0, _vertexBufferBinding);
-        }
-
-        #endregion
-
-        #region IndexBuffer変更通知プロパティ
-
-        private Direct3D11.Buffer _indexBuffer;
-
-        private Format _indexFormat;
-
-        public void SetIndexBuffer(Direct3D11.DeviceContext context)
-        {
-            context.InputAssembler.SetIndexBuffer(_indexBuffer, _indexFormat, 0);
-        }
-
-        #endregion
 
         #region Materials変更通知プロパティ
 
@@ -189,11 +160,7 @@ namespace PMMEditor.Models.Graphics
 
         private void OnUnload()
         {
-            _d3DObjectCompositeDisposable2.Dispose();
-            _d3DObjectCompositeDisposable2 = new CompositeDisposable();
             IsInitialized = false;
-            _vertexBufferBinding = new Direct3D11.VertexBufferBinding();
-            _indexBuffer = null;
             Materials = null;
         }
 
@@ -219,9 +186,56 @@ namespace PMMEditor.Models.Graphics
                 Textures.Add(textureView);
             }
 
+            // メッシュ生成
+            if (Model.Vertices.Count > 0)
+            {
+                GameObject.AddComponent<MeshFilter>().Mesh = CreateMesh();
+            }
+
+            OnLoad();
+        }
+
+        private Mesh CreateMesh()
+        {
+            // TODO: SDEF の対応
+            // 現在はBDEF2へ変換している
+            BoneWeight CreateBoneWeight(PmxStruct.Sdef sdef, IList<PmxStruct.Bdef> bdef)
+            {
+                if (sdef != null)
+                {
+                    return new BoneWeight(sdef.BoneIndex[0], sdef.Weight,
+                        sdef.BoneIndex[1], 1.0f - sdef.Weight);
+                }
+
+                switch (bdef.Count)
+                {
+                    case 1:
+                        return new BoneWeight(bdef[0].BoneIndex, bdef[0].Weight);
+                    case 2:
+                        return new BoneWeight(bdef[0].BoneIndex, bdef[0].Weight,
+                                              bdef[1].BoneIndex, bdef[1].Weight);
+                    case 4:
+                        return new BoneWeight(bdef[0].BoneIndex, bdef[0].Weight,
+                                              bdef[1].BoneIndex, bdef[1].Weight,
+                                              bdef[2].BoneIndex, bdef[2].Weight,
+                                              bdef[3].BoneIndex, bdef[3].Weight);
+                    default:
+                        throw new ArgumentException(nameof(bdef));
+                }
+            }
+
+            var mesh = new Mesh
+            {
+                Vertices = Model.Vertices.Select(x => new Vector3(x.Position.X, x.Position.Y, x.Position.Z)).ToArray(),
+                BoneWeights = Model.Vertices.Select(x => CreateBoneWeight(x.Sdef, x.BdefN)).ToArray(),
+                UV = Model.Vertices.Select(x => new Vector2(x.UV.X, x.UV.Y)).ToArray(),
+
+                SubMeshCount = Model.Materials.Count
+            };
+
             // 材質生成
             int preIndex = 0;
-            foreach (var material in Model.Materials)
+            foreach (var (material, i) in Model.Materials.Indexed())
             {
                 var diffuse = new RawColor4(material.Diffuse.R, material.Diffuse.G,
                                             material.Diffuse.B, material.Diffuse.A);
@@ -232,126 +246,13 @@ namespace PMMEditor.Models.Graphics
                     MainTexture = material.TextureIndex != null ? Textures[(int) material.TextureIndex] : null,
                     Diffuse = diffuse
                 });
-                preIndex += (int) material.FaceVertexCount;
+                var faceCount = (int) material.FaceVertexCount;
+                mesh.SetTriangles(Model.Indices.GetRange(preIndex, faceCount).ToArray(), i);
+                preIndex += faceCount;
             }
 
-            // 頂点データ生成
-            if (Model.Vertices.Count > 0)
-            {
-                int typeSize = Utilities.SizeOf<Vertex>();
+            return mesh;
 
-                // TODO: SDEF の対応
-                // 現在はBDEF2へ変換している
-
-                Int4 CreateBoneIndex(PmxStruct.Sdef sdef, IList<PmxStruct.Bdef> bdef)
-                {
-                    if (sdef != null)
-                    {
-                        return new Int4(sdef.BoneIndex[0], sdef.BoneIndex[1], 0, 0);
-                    }
-
-                    switch (bdef.Count)
-                    {
-                        case 1:
-                            return new Int4(bdef[0].BoneIndex, 0, 0, 0);
-                        case 2:
-                            return new Int4(bdef[0].BoneIndex, bdef[1].BoneIndex, 0, 0);
-                        case 4:
-                            return new Int4(bdef[0].BoneIndex, bdef[1].BoneIndex, bdef[2].BoneIndex, bdef[3].BoneIndex);
-                    }
-
-                    throw new ArgumentException(nameof(bdef));
-                }
-
-                Vector4 CreateBoneWeight(PmxStruct.Sdef sdef, IList<PmxStruct.Bdef> bdef)
-                {
-                    if (sdef != null)
-                    {
-                        return new Vector4(sdef.Weight, 1.0f - sdef.Weight, 0, 0);
-                    }
-
-                    switch (bdef.Count)
-                    {
-                        case 1:
-                            return new Vector4(bdef[0].Weight, 0, 0, 0);
-                        case 2:
-                            return new Vector4(bdef[0].Weight, bdef[1].Weight, 0, 0);
-                        case 4:
-                            return new Vector4(bdef[0].Weight, bdef[1].Weight, bdef[2].Weight, bdef[3].Weight);
-                    }
-
-                    throw new ArgumentException(nameof(bdef));
-                }
-
-                _verteBuffer = Direct3D11.Buffer.Create(
-                    _device,
-                    Model.Vertices.Select(_ => new Vertex
-                    {
-                        Position = new Vector4(_.Position.X, _.Position.Y, _.Position.Z, 1.0f),
-                        Weight = CreateBoneWeight(_.Sdef, _.BdefN),
-                        Idx = CreateBoneIndex(_.Sdef, _.BdefN),
-                        UV = new Vector2(_.UV.X, _.UV.Y)
-                    }).ToArray(),
-                    new Direct3D11.BufferDescription
-                    {
-                        SizeInBytes = typeSize * Model.Vertices.Count,
-                        Usage = Direct3D11.ResourceUsage.Immutable,
-                        BindFlags = Direct3D11.BindFlags.VertexBuffer,
-                        StructureByteStride = typeSize
-                    }).AddTo(_d3DObjectCompositeDisposable2);
-
-                _vertexBufferBinding = new Direct3D11.VertexBufferBinding(_verteBuffer, typeSize, 0);
-
-                // 頂点インデックス生成
-                int maxIndex = Model.Indices.Max();
-
-                int indexSize = sizeof(ushort);
-                _indexFormat = Format.R16_UInt;
-                if (ushort.MaxValue < maxIndex)
-                {
-                    indexSize = sizeof(int);
-                    _indexFormat = Format.R32_UInt;
-                }
-                else if (maxIndex < byte.MaxValue)
-                {
-                    indexSize = sizeof(byte);
-                    _indexFormat = Format.R8_UInt;
-                }
-                int indexNum = Model.Indices.Count;
-                var bufferDescription = new Direct3D11.BufferDescription
-                {
-                    SizeInBytes = indexSize * indexNum,
-                    Usage = Direct3D11.ResourceUsage.Immutable,
-                    BindFlags = Direct3D11.BindFlags.IndexBuffer,
-                    StructureByteStride = indexSize
-                };
-                if (indexSize == sizeof(int))
-                {
-                    _indexBuffer = Direct3D11.Buffer.Create(_device, Model.Indices.ToArray(), bufferDescription);
-                }
-                else if (indexSize == sizeof(short))
-                {
-                    _indexBuffer = Direct3D11.Buffer.Create(_device, Model.Indices.Select(x => (ushort) x).ToArray(), bufferDescription);
-                }
-                else
-                {
-                    _indexBuffer = Direct3D11.Buffer.Create(_device, Model.Indices.Select(x => (byte) x).ToArray(), bufferDescription);
-                }
-                _indexBuffer.AddTo(_d3DObjectCompositeDisposable2);
-
-            }
-
-            OnLoad();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _d3DObjectCompositeDisposable2.Dispose();
-                _d3DObjectCompositeDisposable2 = null;
-            }
-            base.Dispose(disposing);
         }
     }
 }

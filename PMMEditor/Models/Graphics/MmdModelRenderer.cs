@@ -119,7 +119,7 @@ namespace PMMEditor.Models.Graphics
         }
     }
 
-    public class MmdModelRenderer : Component, IRenderer
+    public class MmdModelRenderer : Renderer, IRenderer
     {
         private IMmdModelRendererSource ModelSource { get; set; }
 
@@ -164,6 +164,7 @@ namespace PMMEditor.Models.Graphics
         {
             _model = model;
             ModelSource = GameObject.GetComponent(typeof(IMmdModelRendererSource)) as IMmdModelRendererSource;
+            Mesh = GameObject.GetComponent<MeshFilter>()?.Mesh ?? Mesh;
             _nowFrame = model.FrameControlModel.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty()
                              .AddTo(CompositeDisposables);
             IsInitialized =
@@ -254,7 +255,7 @@ namespace PMMEditor.Models.Graphics
 
         public void Render(RenderArgs args)
         {
-            if (!IsInitialized.Value)
+            if (!IsInitialized.Value || Mesh == null)
             {
                 return;
             }
@@ -265,8 +266,7 @@ namespace PMMEditor.Models.Graphics
             // シェーダの設定
             target.InputAssembler.InputLayout = _inputLayout;
 
-            ModelSource.SetVertexBuffer(target);
-            ModelSource.SetIndexBuffer(target);
+            Mesh.SetBuffer(target);
 
             target.InputAssembler.PrimitiveTopology = Direct3D.PrimitiveTopology.TriangleList;
             _boneCalculator.Update(target, _nowFrame.Value);
@@ -324,5 +324,10 @@ namespace PMMEditor.Models.Graphics
         }
 
         public override void Update() { }
+
+        internal override void Render()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -53,6 +53,8 @@ namespace PMMEditor.ECS
 
     public abstract class Renderer : Component
     {
+        internal Mesh Mesh { get; set; }
+
         public List<MMDModelMaterial> SharedMaterials { get; set; }
 
         internal abstract void Render();

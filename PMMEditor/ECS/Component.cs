@@ -8,11 +8,18 @@ using PMMEditor.MVVM;
 
 namespace PMMEditor.ECS
 {
-    public class Component : BindableDisposableBase
+    public class Component : ECObject
     {
         private Entity _gameObject;
 
         protected Component() { }
+
+        protected virtual void OnDestroy() { }
+
+        protected override void OnDestroyInternal()
+        {
+            OnDestroy();
+        }
 
         public Entity GameObject
         {

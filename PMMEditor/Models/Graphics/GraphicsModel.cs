@@ -1,4 +1,5 @@
-﻿using PMMEditor.Log;
+﻿using PMMEditor.ECS;
+using PMMEditor.Log;
 using PMMEditor.MVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -10,6 +11,11 @@ namespace PMMEditor.Models.Graphics
     public class GraphicsModel : BindableDisposableBase
     {
         private readonly ILogger _logger;
+
+        static GraphicsModel()
+        {
+            ECSystem.Device = Device;
+        }
 
         public GraphicsModel(ILogger logger, MmdModelList mmdModelList)
         {
