@@ -73,7 +73,12 @@ namespace PMMEditor.ECS
             public int[] Triangles { get; set; }
         }
 
-        private readonly List<SubMesh> _subMeshes = new List<SubMesh>();
+        private readonly List<SubMesh> _subMeshes = new List<SubMesh>(1);
+
+        public Mesh()
+        {
+            _subMeshes.Add(new SubMesh());
+        }
 
         private Vector3[] _vertices;
         private Vector2[] _uv;
@@ -218,20 +223,7 @@ namespace PMMEditor.ECS
                 }), typeSize, 0);
 
             // 頂点インデックス生成
-            int maxIndex = _subMeshes.SelectMany(x => x.Triangles).Max();
-
-            int indexSize = sizeof(ushort);
-            var indexFormat = Format.R16_UInt;
-            if (ushort.MaxValue < maxIndex)
-            {
-                indexSize = sizeof(int);
-                indexFormat = Format.R32_UInt;
-            }
-            else if (maxIndex < byte.MaxValue)
-            {
-                indexSize = sizeof(byte);
-                indexFormat = Format.R8_UInt;
-            }
+            int indexSize = GetIndexElementSize();
 
             var bufferDescription = new Direct3D11.BufferDescription
             {
@@ -241,21 +233,25 @@ namespace PMMEditor.ECS
             };
 
             Direct3D11.Buffer indexBuffer;
+            Format indexFormat;
             if (indexSize == sizeof(int))
             {
-                int[] index = _subMeshes.SelectMany(x => x.Triangles).ToArray();
+                indexFormat = Format.R32_UInt;
+                int[] index = CreateTrianglesInt();
                 bufferDescription.SizeInBytes = indexSize * index.Length;
                 indexBuffer = Direct3D11.Buffer.Create(ECSystem.Device, index, bufferDescription);
             }
             else if (indexSize == sizeof(ushort))
             {
-                ushort[] index = _subMeshes.SelectMany(x => x.Triangles).Select(x => (ushort) x).ToArray();
+                indexFormat = Format.R16_UInt;
+                ushort[] index = CreateTrianglesUShort();
                 bufferDescription.SizeInBytes = indexSize * index.Length;
                 indexBuffer = Direct3D11.Buffer.Create(ECSystem.Device, index, bufferDescription);
             }
             else
             {
-                byte[] index = _subMeshes.SelectMany(x => x.Triangles).Select(x => (byte) x).ToArray();
+                indexFormat = Format.R8_UInt;
+                byte[] index = CreateTrianglesByte();
                 bufferDescription.SizeInBytes = indexSize * index.Length;
                 indexBuffer = Direct3D11.Buffer.Create(ECSystem.Device, index, bufferDescription);
             }
@@ -277,6 +273,22 @@ namespace PMMEditor.ECS
             }
         }
 
+        private int GetIndexElementSize()
+        {
+            int maxIndex = _subMeshes.SelectMany(x => x.Triangles).Max();
+
+            int indexSize = sizeof(ushort);
+            if (ushort.MaxValue < maxIndex)
+            {
+                indexSize = sizeof(int);
+            }
+            else if (maxIndex <= byte.MaxValue)
+            {
+                indexSize = sizeof(byte);
+            }
+            return indexSize;
+        }
+
         private int[] CreateTrianglesInt()
         {
             return _subMeshes.SelectMany(x => x.Triangles).Select(x => x).ToArray();
@@ -285,6 +297,11 @@ namespace PMMEditor.ECS
         private ushort[] CreateTrianglesUShort()
         {
             return _subMeshes.SelectMany(x => x.Triangles).Select(x => (ushort) x).ToArray();
+        }
+
+        private byte[] CreateTrianglesByte()
+        {
+            return _subMeshes.SelectMany(x => x.Triangles).Select(x => (byte) x).ToArray();
         }
 
         private void ClearData() { }
@@ -356,8 +373,10 @@ namespace PMMEditor.ECS
         protected override void OnDestroyInternal()
         {
             _gData.Vertices.Buffer?.Dispose();
+            _gData.Vertices = new Direct3D11.VertexBufferBinding();
+
             _gData.Indices.Buffer?.Dispose();
-            throw new NotImplementedException();
+            _gData.Indices = new IndexBufferBinding();
         }
     }
 

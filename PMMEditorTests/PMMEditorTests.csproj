@@ -38,6 +38,7 @@
     <CodeAnalysisRuleSet>..\PMMEditor\PMMEditor.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
   </ItemGroup>
   <Choose>
@@ -57,6 +58,7 @@
     <Compile Include="Models\PmdParserTests.cs" />
     <Compile Include="Models\PmmReaderTests.cs" />
     <Compile Include="Models\PmxParsesrTests.cs" />
+    <Compile Include="Models\MeshTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
