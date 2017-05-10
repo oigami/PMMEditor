@@ -86,8 +86,6 @@ namespace PMMEditor.Models.Graphics
     {
         MmdModelModel Model { get; }
 
-        List<MMDModelMaterial> Materials { get; }
-
         List<Direct3D11.ShaderResourceView> Textures { get; }
     }
 
@@ -127,24 +125,7 @@ namespace PMMEditor.Models.Graphics
 
         public MmdModelModel Model { get; private set; }
 
-        #region Materials変更通知プロパティ
-
-        private List<MMDModelMaterial> _materials;
-
-        public List<MMDModelMaterial> Materials
-        {
-            get { return _materials; }
-            private set { SetProperty(ref _materials, value); }
-        }
-
-        #endregion
-
-        #region Materials変更通知プロパティ
-
         public List<Direct3D11.ShaderResourceView> Textures { get; } = new List<Direct3D11.ShaderResourceView>();
-
-        #endregion
-
 
         private struct Vertex
         {
@@ -161,7 +142,6 @@ namespace PMMEditor.Models.Graphics
         private void OnUnload()
         {
             IsInitialized = false;
-            Materials = null;
         }
 
         private void OnLoad()
@@ -172,8 +152,6 @@ namespace PMMEditor.Models.Graphics
         private void CreateData()
         {
             OnUnload();
-
-            Materials = new List<MMDModelMaterial>(Model.Materials.Count);
 
             // テクスチャ読み込み
             foreach (var texturePath in Model.TextureFilePath)
@@ -186,6 +164,7 @@ namespace PMMEditor.Models.Graphics
                 Textures.Add(textureView);
             }
 
+            GameObject.AddComponent<MmdModelRenderer>();
             // メッシュ生成
             if (Model.Vertices.Count > 0)
             {
@@ -234,22 +213,24 @@ namespace PMMEditor.Models.Graphics
             };
 
             // 材質生成
+            MmdModelRenderer renderer = GameObject.GetComponent<MmdModelRenderer>();
+            var materials = new Material[Model.Materials.Count];
             int preIndex = 0;
             foreach (var (material, i) in Model.Materials.Indexed())
             {
                 var diffuse = new RawColor4(material.Diffuse.R, material.Diffuse.G,
                                             material.Diffuse.B, material.Diffuse.A);
-                Materials.Add(new MMDModelMaterial
+                materials[i] = new Material
                 {
-                    IndexNum = (int) material.FaceVertexCount,
-                    IndexStart = preIndex,
                     MainTexture = material.TextureIndex != null ? Textures[(int) material.TextureIndex] : null,
                     Diffuse = diffuse
-                });
+                };
                 var faceCount = (int) material.FaceVertexCount;
                 mesh.SetTriangles(Model.Indices.GetRange(preIndex, faceCount).ToArray(), i);
                 preIndex += faceCount;
             }
+
+            renderer.SharedMaterials = materials;
 
             return mesh;
 

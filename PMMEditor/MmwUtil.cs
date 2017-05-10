@@ -16,5 +16,12 @@ namespace PMMEditor
         {
             return self.Select((v, i) => (v, i));
         }
+
+        public static IEnumerable<(T, TU)> ZipTuple<T, TU>(
+            this IEnumerable<T> self,
+            IEnumerable<TU> other)
+        {
+            return self.Zip(other, (a, b) => (a, b));
+        }
     }
 }

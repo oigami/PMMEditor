@@ -257,12 +257,12 @@ namespace PMMEditor.ECS
             }
             _gData.Indices = new IndexBufferBinding(indexBuffer, indexFormat, 0);
 
-            _gData.IndexRanges.Clear();
-            int cnt = 0;
-            foreach (var item in _subMeshes)
+            _gData.IndexRanges = new IndexRange[_subMeshes.Count];
+            int cntTriangles = 0;
+            foreach (var (item, i) in _subMeshes.Indexed())
             {
-                _gData.IndexRanges.Add(new IndexRange(cnt, item.Triangles.Length));
-                cnt += item.Triangles.Length;
+                _gData.IndexRanges[i] = new IndexRange(cntTriangles, item.Triangles.Length);
+                cntTriangles += item.Triangles.Length;
             }
 
             _requireUploadData = false;
@@ -319,13 +319,13 @@ namespace PMMEditor.ECS
         {
             public IndexRange(int indexStart, int indexCount)
             {
-                IndexStart = indexStart;
-                IndexCount = indexCount;
+                Start = indexStart;
+                Count = indexCount;
             }
 
-            public int IndexStart { get; }
+            public int Start { get; }
 
-            public int IndexCount { get; }
+            public int Count { get; }
         }
 
         internal class GData
@@ -333,12 +333,7 @@ namespace PMMEditor.ECS
             private Direct3D11.VertexBufferBinding _vertices;
             private IndexBufferBinding _indices;
 
-            public GData()
-            {
-                IndexRanges = new List<IndexRange>(16);
-            }
-
-            internal List<IndexRange> IndexRanges { get; }
+            internal IndexRange[] IndexRanges { get; set; }
 
             internal Direct3D11.VertexBufferBinding Vertices
             {

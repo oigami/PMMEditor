@@ -6,12 +6,8 @@ using SharpDX.Mathematics.Interop;
 
 namespace PMMEditor.ECS
 {
-    public class MMDModelMaterial
+    public class Material
     {
-        public int IndexStart { get; set; }
-
-        public int IndexNum { get; set; }
-
         public ShaderResourceView MainTexture { get; set; }
 
         public RawColor4 Diffuse { get; set; }
@@ -55,7 +51,7 @@ namespace PMMEditor.ECS
     {
         internal Mesh Mesh { get; set; }
 
-        public List<MMDModelMaterial> SharedMaterials { get; set; }
+        public Material[] SharedMaterials { get; set; }
 
         internal abstract void Render();
     }

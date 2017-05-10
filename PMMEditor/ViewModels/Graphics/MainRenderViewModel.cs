@@ -21,7 +21,7 @@ namespace PMMEditor.ViewModels.Graphics
                             .AddTo(CompositeDisposables);
             Items = model.MmdModelList.List.ToReadOnlyReactiveCollection(_ =>
             {
-                MmdModelRenderer renderer = _.AddComponent<MmdModelRenderer>();
+                MmdModelRenderer renderer = _.GetComponent<MmdModelRenderer>();
                 renderer.Initialize(model);
                 return (IRenderer) renderer;
             }, UIDispatcherScheduler.Default)

@@ -276,8 +276,15 @@ namespace PMMEditor.Models.Graphics
                 boneTex.SetResource(_boneCalculator.BoneSrv);
             }
             _myEffect.ViewProj?.SetMatrix(m);
-            foreach (var material in ModelSource.Materials)
+            Mesh.IndexRange[] indexRanges = Mesh.InternalData.IndexRanges;
+            if (indexRanges.Length != SharedMaterials.Length)
             {
+                throw new InvalidOperationException();
+            }
+
+            foreach (var (material, j) in SharedMaterials.Indexed())
+            {
+                Mesh.IndexRange indexRange = indexRanges[j];
                 bool useTexture = material.MainTexture != null;
                 if (useTexture)
                 {
@@ -302,7 +309,7 @@ namespace PMMEditor.Models.Graphics
                     {
                         EffectPass techPass = technique.GetPassByIndex(i);
                         techPass.Apply(target);
-                        target.DrawIndexed(material.IndexNum, material.IndexStart, 0);
+                        target.DrawIndexed(indexRange.Count, indexRange.Start, 0);
                     }
                 }
             }
