@@ -354,9 +354,6 @@
     <PackageReference Include="SharpDX.Direct3D9">
       <Version>3.1.1</Version>
     </PackageReference>
-    <PackageReference Include="SharpDX.Mathematics">
-      <Version>3.1.1</Version>
-    </PackageReference>
     <PackageReference Include="System.ValueTuple">
       <Version>4.3.0</Version>
     </PackageReference>

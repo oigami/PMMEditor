@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+using PMMEditor.Models.MMDModel;
 using SharpDX;
 using SharpDX.DXGI;
 using Direct3D11 = SharpDX.Direct3D11;

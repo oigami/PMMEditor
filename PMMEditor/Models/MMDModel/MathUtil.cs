@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using SharpDX;
-
+using Matrix = System.Numerics.Matrix4x4;
 namespace PMMEditor.Models.MMDModel
 {
     public struct EulerAngles
@@ -75,17 +75,17 @@ namespace PMMEditor.Models.MMDModel
 
         Matrix CreateX()
         {
-            return Matrix.RotationX(X);
+            return Matrix.CreateRotationX(X);
         }
 
         Matrix CreateY()
         {
-            return Matrix.RotationY(Y);
+            return Matrix.CreateRotationY(Y);
         }
 
         Matrix CreateZ()
         {
-            return Matrix.RotationZ(Z);
+            return Matrix.CreateRotationZ(Z);
         }
 
         private Type _type;
@@ -128,11 +128,44 @@ namespace PMMEditor.Models.MMDModel
         }
     }
 
-    public static class MathUtil
+    public struct Int3
     {
-        public static float Radians(float degree)
+        public int X, Y, Z;
+
+        public Int3(int nowX = 0, int nowY = 0, int nowZ = 0)
         {
-            return degree / 180.0f * (float) Math.PI;
+            X = nowX;
+            Y = nowY;
+            Z = nowZ;
         }
     }
+
+    public struct Int4
+    {
+        public int X, Y, Z, W;
+
+        public Int4(int nowX = 0, int nowY = 0, int nowZ = 0, int nowW = 0)
+        {
+            X = nowX;
+            Y = nowY;
+            Z = nowZ;
+            W = nowW;
+        }
+    }
+
+    public static class MathUtil
+    {
+        public static float DegreeToRadian(float angle)
+        {
+            return (float) Math.PI * angle / 180.0f;
+        }
+
+        public static Vector3 DegreeToRadian(Vector3 vec)
+        {
+            return new Vector3(DegreeToRadian(vec.X),
+                               DegreeToRadian(vec.Y),
+                               DegreeToRadian(vec.Z));
+        }
+    }
+
 }

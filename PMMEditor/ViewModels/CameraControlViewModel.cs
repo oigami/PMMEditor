@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using Livet.Commands;
 using PMMEditor.Models;
+using PMMEditor.Models.MMDModel;
 using PMMEditor.MVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using SharpDX;
-using MathUtil = PMMEditor.Models.MathUtil;
 
 namespace PMMEditor.ViewModels
 {
@@ -49,10 +49,9 @@ namespace PMMEditor.ViewModels
             }
 
             Vector3 res = Vector3.Zero;
-            for (int i = 0; i < 3; i++)
-            {
-                res[i] = float.Parse(s[i].Trim());
-            }
+            res.X = float.Parse(s[0].Trim());
+            res.Y = float.Parse(s[1].Trim());
+            res.Z = float.Parse(s[2].Trim());
 
             return res;
         }
@@ -82,61 +81,74 @@ namespace PMMEditor.ViewModels
 
         public ReactiveProperty<float> Distance { get; set; }
 
-        private void SetLookAt(int index, float value)
+        private void SetLookAt(Vector3 value)
         {
-            if (Math.Abs(Model.LookAt[index] - value) > 1e-5f)
-            {
-                Vector3 tmp = Model.LookAt;
-                tmp[index] = value;
-                Model.LookAt = tmp;
-            }
         }
 
         public float LookAtX
         {
             get { return Model.LookAt.X; }
-            set { SetLookAt(0, value); }
+            set
+            {
+                Vector3 tmp = Model.LookAt;
+                tmp.X = value;
+                Model.LookAt = tmp;
+            }
         }
 
         public float LookAtY
         {
             get { return Model.LookAt.Y; }
-            set { SetLookAt(1, value); }
+            set
+            {
+                Vector3 tmp = Model.LookAt;
+                tmp.Y = value;
+                Model.LookAt = tmp;
+            }
         }
 
         public float LookAtZ
         {
             get { return Model.LookAt.Z; }
-            set { SetLookAt(2, value); }
-        }
-
-
-        private void SetRotate(int index, float value)
-        {
-            if (Math.Abs(Model.Rotate[index] - value) > 1e-5f)
+            set
             {
-                Vector3 tmp = Model.Rotate;
-                tmp[index] = value;
-                Model.Rotate = tmp;
+                Vector3 tmp = Model.LookAt;
+                tmp.Z = value;
+                Model.LookAt = tmp;
             }
         }
 
         public float RotateX
         {
             get { return Model.Rotate.X; }
-            set { SetRotate(0, value); }
+            set
+            {
+                Vector3 tmp = Model.Rotate;
+                tmp.X = value;
+                Model.Rotate = tmp;
+            }
         }
 
         public float RotateY
         {
             get { return Model.Rotate.Y; }
-            set { SetRotate(1, value); }
+            set
+            {
+                Vector3 tmp = Model.Rotate;
+                tmp.Y = value;
+                Model.Rotate = tmp;
+            }
         }
 
         public float RotateZ
         {
             get { return Model.Rotate.Z; }
-            set { SetRotate(2, value); }
+            set
+            {
+                Vector3 tmp = Model.Rotate;
+                tmp.Z = value;
+                Model.Rotate = tmp;
+            }
         }
 
         #region ResetFrontCommand
@@ -145,7 +157,7 @@ namespace PMMEditor.ViewModels
 
         public ListenerCommand<CameraData> ResetCameraCommand
             => _resetCameraCommand ?? (_resetCameraCommand = new ListenerCommand<CameraData>(
-                _ => Model.SetView(_.LookAt, MathUtil.DegreesToRadians(_.Rotate), _.Distance)));
+                _ => Model.SetView(_.LookAt, MathUtil.DegreeToRadian(_.Rotate), _.Distance)));
 
         #endregion
     }

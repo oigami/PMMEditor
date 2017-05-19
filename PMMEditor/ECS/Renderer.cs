@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.Mathematics.Interop;
@@ -36,7 +37,7 @@ namespace PMMEditor.ECS
             VariableCast(nameID, x => x.AsScalar()).Set(value);
         }
 
-        public void SetMatrix(int nameID, Matrix matrix)
+        public void SetMatrix(int nameID, Matrix4x4 matrix)
         {
             VariableCast(nameID, x => x.AsMatrix())?.SetMatrix(matrix);
         }

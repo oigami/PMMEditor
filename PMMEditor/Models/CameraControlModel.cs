@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
@@ -12,19 +13,11 @@ using SharpDX;
 
 namespace PMMEditor.Models
 {
-    public static class MathUtil
-    {
-        public static Vector3 DegreesToRadians(Vector3 vec)
-        {
-            return new Vector3(SharpDX.MathUtil.DegreesToRadians(vec.X),
-                               SharpDX.MathUtil.DegreesToRadians(vec.Y),
-                               SharpDX.MathUtil.DegreesToRadians(vec.Z));
-        }
-    }
+
 
     public class CameraControlModel : BindableDisposableBase
     {
-        private Matrix _view;
+        private Matrix4x4 _view;
         private float _distance;
         private Vector3 _rotate;
 
@@ -49,6 +42,7 @@ namespace PMMEditor.Models
         }
 
         private Vector3 _lookAt;
+        private Matrix4x4 _perspective = Matrix4x4.CreatePerspectiveFieldOfView((float) Math.PI / 3, 1.4f, 1f, 100000f);
 
         public float Distance
         {
@@ -89,9 +83,12 @@ namespace PMMEditor.Models
             }
         }
 
-        public Matrix Perspective { get; set; } = Matrix.PerspectiveFovLH((float) Math.PI / 3, 1.4f, 1f, 10000000f);
+        public ref Matrix4x4 Perspective
+        {
+            get { return ref _perspective; }
+        }
 
-        public Matrix View
+        public Matrix4x4 View
         {
             get
             {
@@ -111,8 +108,8 @@ namespace PMMEditor.Models
 
         public void Transform(Vector2 addLookAt)
         {
-            Matrix w = Matrix.RotationX(-Rotate.X) * Matrix.RotationY(-Rotate.Y);
-            Vector4 add = Vector3.Transform(new Vector3(addLookAt.X, addLookAt.Y, 0), w);
+            Matrix4x4 w = Matrix4x4.CreateRotationX(-Rotate.X) * Matrix4x4.CreateRotationY(-Rotate.Y);
+            Vector3 add = Vector3.Transform(new Vector3(addLookAt.X, addLookAt.Y, 0), w);
             LookAt += new Vector3(add.X, add.Y, add.Z);
         }
 
@@ -129,6 +126,9 @@ namespace PMMEditor.Models
 
         public CameraControlModel(Model model)
         {
+            // 左手座標系に変換
+            _perspective.M33 *= -1;
+            _perspective.M34 *= -1;
             Clear();
             model.FrameControlModel.ObserveProperty(_ => _.NowFrame).Subscribe(_ =>
             {
@@ -144,20 +144,20 @@ namespace PMMEditor.Models
             }).AddTo(CompositeDisposables);
         }
 
-        public Matrix CreateProjection()
+        public Matrix4x4 CreateProjection()
         {
             return Perspective;
         }
 
-        private Matrix CreateView()
+        private Matrix4x4 CreateView()
         {
-            Matrix w = Matrix.Translation(-LookAt);
-            w *= Matrix.RotationY(Rotate.Y) * Matrix.RotationX(Rotate.X);
+            Matrix4x4 w = Matrix4x4.CreateTranslation(-LookAt);
+            w *= Matrix4x4.CreateRotationY(Rotate.Y) * Matrix4x4.CreateRotationX(Rotate.X);
 
-            return w * Matrix.Translation(0, 0, Distance);
+            return w * Matrix4x4.CreateTranslation(0, 0, Distance);
         }
 
-        public Matrix CreateViewProj()
+        public Matrix4x4 CreateViewProj()
         {
             return CreateView() * CreateProjection();
         }

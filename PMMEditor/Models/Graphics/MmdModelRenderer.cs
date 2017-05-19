@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using PMMEditor.ECS;
@@ -24,7 +25,7 @@ namespace PMMEditor.Models.Graphics
 
     public struct RenderArgs
     {
-        public RenderArgs(Direct3D11.DeviceContext context, Matrix viewProj)
+        public RenderArgs(Direct3D11.DeviceContext context, Matrix4x4 viewProj)
         {
             Context = context;
             ViewProj = viewProj;
@@ -32,7 +33,7 @@ namespace PMMEditor.Models.Graphics
 
         public Direct3D11.DeviceContext Context { get; }
 
-        public Matrix ViewProj { get; }
+        public Matrix4x4 ViewProj { get; }
     }
 
     public struct Render2DArgs
@@ -61,7 +62,7 @@ namespace PMMEditor.Models.Graphics
     {
         private readonly CompositeDisposable _compositeDisposables = new CompositeDisposable();
         private Direct3D11.Texture2D _boneTexture2D;
-        private Matrix[] _outputArr;
+        private Matrix4x4[] _outputArr;
         private BoneFrameControlModel _controller;
 
         public Direct3D11.ShaderResourceView BoneSrv { get; private set; }
@@ -83,7 +84,7 @@ namespace PMMEditor.Models.Graphics
         {
             Direct3D11.Device device = GraphicsModel.Device;
             int boneNum = model.Model.BoneKeyList.Count * 2;
-            _outputArr = new Matrix[boneNum];
+            _outputArr = new Matrix4x4[boneNum];
             _boneTexture2D = new Direct3D11.Texture2D(
                 device,
                 new Direct3D11.Texture2DDescription
@@ -273,7 +274,7 @@ namespace PMMEditor.Models.Graphics
             }
 
             Direct3D11.DeviceContext target = args.Context;
-            Matrix m = args.ViewProj;
+            Matrix4x4 m = args.ViewProj;
 
             // シェーダの設定
             target.InputAssembler.InputLayout = _inputLayout;

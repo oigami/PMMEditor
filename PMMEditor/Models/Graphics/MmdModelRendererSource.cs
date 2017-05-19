@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using PMMEditor.ECS;

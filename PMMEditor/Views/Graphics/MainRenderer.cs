@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Markup;
@@ -21,22 +22,22 @@ namespace PMMEditor.Views.Graphics
         public ItemCollection Children { get; } = new ItemCollection();
 
         public static readonly DependencyProperty ViewProperty =
-            DependencyProperty.Register(nameof(View), typeof(Matrix), typeof(MainRenderer),
-                                        new FrameworkPropertyMetadata(default(Matrix)));
+            DependencyProperty.Register(nameof(View), typeof(Matrix4x4), typeof(MainRenderer),
+                                        new FrameworkPropertyMetadata(default(Matrix4x4)));
 
-        public Matrix View
+        public Matrix4x4 View
         {
-            get { return (Matrix) GetValue(ViewProperty); }
+            get { return (Matrix4x4) GetValue(ViewProperty); }
             set { SetValue(ViewProperty, value); }
         }
 
         public static readonly DependencyProperty ProjectionProperty =
-            DependencyProperty.Register(nameof(Projection), typeof(Matrix), typeof(MainRenderer),
-                                        new FrameworkPropertyMetadata(default(Matrix)));
+            DependencyProperty.Register(nameof(Projection), typeof(Matrix4x4), typeof(MainRenderer),
+                                        new FrameworkPropertyMetadata(default(Matrix4x4)));
 
-        public Matrix Projection
+        public Matrix4x4 Projection
         {
-            get { return (Matrix) GetValue(ProjectionProperty); }
+            get { return (Matrix4x4) GetValue(ProjectionProperty); }
             set { SetValue(ProjectionProperty, value); }
         }
     }
@@ -67,7 +68,7 @@ namespace PMMEditor.Views.Graphics
 
         protected override void Render()
         {
-            Matrix viewProj = View * Projection;
+            Matrix4x4 viewProj = View * Projection;
             Device device = Device;
             Parallel.ForEach(Children, x => x.UpdateTask());
 
