@@ -19,6 +19,7 @@ namespace PMMEditor.ECS
         protected override void OnDestroyInternal()
         {
             OnDestroy();
+            GameObject.As()?.RemoveComponent(this);
         }
 
         public Entity GameObject

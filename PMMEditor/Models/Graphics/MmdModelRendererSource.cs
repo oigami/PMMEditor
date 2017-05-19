@@ -89,7 +89,7 @@ namespace PMMEditor.Models.Graphics
         List<Direct3D11.ShaderResourceView> Textures { get; }
     }
 
-    public sealed class MmdModelRendererSource : Component, IDisposable, IMmdModelRendererSource
+    public sealed class MmdModelRendererSource : Component, IMmdModelRendererSource
     {
         public void Initialize(ILogger logger, Direct3D11.Device device)
         {

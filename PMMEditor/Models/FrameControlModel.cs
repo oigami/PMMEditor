@@ -6,12 +6,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using PMMEditor.MVVM;
+using Component = PMMEditor.ECS.Component;
 
 namespace PMMEditor.Models
 {
     public interface IFrameControlModel : INotifyPropertyChanged
     {
         int NowFrame { get; }
+    }
+
+    public class FrameControlFilter : Component
+    {
+        public IFrameControlModel ControlModel { get; set; }
     }
 
     public class FrameControlModel : BindableBase, IFrameControlModel

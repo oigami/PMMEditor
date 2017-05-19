@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using PMMEditor.ECS;
 using PMMEditor.Models.MMDModel;
@@ -9,7 +10,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using SharpDX;
 using SharpDX.D3DCompiler;
-using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using Direct3D11 = SharpDX.Direct3D11;
 using Direct3D = SharpDX.Direct3D;
@@ -57,44 +57,50 @@ namespace PMMEditor.Models.Graphics
     }
 
 
-    public class MmdModelBoneCalculatorSRV : BindableDisposableBase
+    public class MmdModelBoneCalculatorSRV : Component
     {
-        private readonly Direct3D11.Device _device;
-        private Texture2D _boneTexture2D;
+        private readonly CompositeDisposable _compositeDisposables = new CompositeDisposable();
+        private Direct3D11.Texture2D _boneTexture2D;
         private Matrix[] _outputArr;
-        private readonly BoneFrameControlModel _controller;
+        private BoneFrameControlModel _controller;
 
-        public ShaderResourceView BoneSrv { get; private set; }
+        public Direct3D11.ShaderResourceView BoneSrv { get; private set; }
 
-        public MmdModelBoneCalculatorSRV(
-            IMmdModelRendererSource model, BoneFrameControlModel controller, Direct3D11.Device device)
+        protected override void OnDestroy()
         {
-            _device = device;
-            _controller = controller;
-            CreateData(model);
+            base.OnDestroy();
+            _compositeDisposables.Dispose();
+        }
+
+        public MmdModelBoneCalculatorSRV Initialize()
+        {
+            _controller = GameObject.GetComponent<BoneFrameControlModel>();
+            CreateData(GameObject.GetComponent(typeof(IMmdModelRendererSource)) as IMmdModelRendererSource);
+            return this;
         }
 
         private void CreateData(IMmdModelRendererSource model)
         {
+            Direct3D11.Device device = GraphicsModel.Device;
             int boneNum = model.Model.BoneKeyList.Count * 2;
             _outputArr = new Matrix[boneNum];
-            _boneTexture2D = new Texture2D(
-                _device,
-                new Texture2DDescription
+            _boneTexture2D = new Direct3D11.Texture2D(
+                device,
+                new Direct3D11.Texture2DDescription
                 {
-                    CpuAccessFlags = CpuAccessFlags.None,
-                    OptionFlags = ResourceOptionFlags.None,
-                    BindFlags = BindFlags.ShaderResource,
+                    CpuAccessFlags = Direct3D11.CpuAccessFlags.None,
+                    OptionFlags = Direct3D11.ResourceOptionFlags.None,
+                    BindFlags = Direct3D11.BindFlags.ShaderResource,
                     ArraySize = 1,
                     MipLevels = 1,
                     Width = Math.Min(boneNum * 4, 1024),
                     Height = (boneNum * 4 + 1024 - 1) / 1024,
-                    Usage = ResourceUsage.Default,
+                    Usage = Direct3D11.ResourceUsage.Default,
                     SampleDescription = new SampleDescription(1, 0),
                     Format = Format.R32G32B32A32_Float
-                }).AddTo(CompositeDisposables);
-            BoneSrv = new ShaderResourceView(_device, _boneTexture2D)
-                .AddTo(CompositeDisposables);
+                }).AddTo(_compositeDisposables);
+            BoneSrv = new Direct3D11.ShaderResourceView(device, _boneTexture2D)
+                .AddTo(_compositeDisposables);
         }
 
         public void UpdateBone()
@@ -107,7 +113,7 @@ namespace PMMEditor.Models.Graphics
             MmdModelBoneCalculator calclator = _controller.BoneCalculator;
             calclator.WorldBones.CopyTo(_outputArr, 0);
             calclator.ModelLocalBones.CopyTo(_outputArr, calclator.WorldBones.Length);
-            context.UpdateSubresource(_outputArr, _boneTexture2D, 0, 16 * 1024, 16 * 1024, new ResourceRegion
+            context.UpdateSubresource(_outputArr, _boneTexture2D, 0, 16 * 1024, 16 * 1024, new Direct3D11.ResourceRegion
             {
                 Left = 0,
                 Top = 0,
@@ -127,16 +133,15 @@ namespace PMMEditor.Models.Graphics
         private MmdModelBoneCalculatorSRV _boneCalculator;
         private Direct3D11.Device _device;
 
-        private InputLayout _inputLayout;
+        private Direct3D11.InputLayout _inputLayout;
 
         private ReadOnlyReactiveProperty<int> _nowFrame;
         private readonly ReactiveProperty<bool> _isInternalInitialized = new ReactiveProperty<bool>(false);
-        private BoneFrameControlModel _boneFrameController;
         private Direct3D11.Effect _effect;
 
         public class Technique
         {
-            public EffectTechnique EffectTechnique { get; set; }
+            public Direct3D11.EffectTechnique EffectTechnique { get; set; }
 
             public enum UseTextureFlag
             {
@@ -150,15 +155,22 @@ namespace PMMEditor.Models.Graphics
 
         private struct MyEffect
         {
-            public EffectMatrixVariable ViewProj { get; set; }
+            public Direct3D11.EffectMatrixVariable ViewProj { get; set; }
 
-            public EffectShaderResourceVariable MaterialTexture { get; set; }
+            public Direct3D11.EffectShaderResourceVariable MaterialTexture { get; set; }
 
-            public EffectVectorVariable Diffuse { get; set; }
+            public Direct3D11.EffectVectorVariable Diffuse { get; set; }
         }
 
         private MyEffect _myEffect;
         private readonly List<Technique> _techniques = new List<Technique>();
+        private readonly CompositeDisposable _compositeDisposables = new CompositeDisposable();
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            _compositeDisposables.Dispose();
+        }
 
         public void Initialize(Model model)
         {
@@ -166,22 +178,22 @@ namespace PMMEditor.Models.Graphics
             ModelSource = GameObject.GetComponent(typeof(IMmdModelRendererSource)) as IMmdModelRendererSource;
             Mesh = GameObject.GetComponent<MeshFilter>()?.Mesh ?? Mesh;
             _nowFrame = model.FrameControlModel.ObserveProperty(_ => _.NowFrame).ToReadOnlyReactiveProperty()
-                             .AddTo(CompositeDisposables);
+                             .AddTo(_compositeDisposables);
             IsInitialized =
                 new[] { _isInternalInitialized }
                     .CombineLatestValuesAreAllTrue()
                     .ToReadOnlyReactiveProperty()
-                    .AddTo(CompositeDisposables);
+                    .AddTo(_compositeDisposables);
         }
 
         public ReadOnlyReactiveProperty<bool> IsInitialized { get; private set; }
 
         private void InitializeInternal()
         {
-            _boneFrameController = new BoneFrameControlModel(_model.FrameControlModel, ModelSource.Model);
-            _boneCalculator = new MmdModelBoneCalculatorSRV(ModelSource, _boneFrameController, _device)
-                .AddTo(CompositeDisposables);
-            BoneRenderer = new BoneRenderer(ModelSource, _device).AddTo(CompositeDisposables);
+            GameObject.AddComponent<FrameControlFilter>().ControlModel = _model.FrameControlModel;
+            GameObject.AddComponent<BoneFrameControlModel>().Initialize();
+            _boneCalculator = GameObject.AddComponent<MmdModelBoneCalculatorSRV>().Initialize();
+            BoneRenderer = new BoneRenderer(ModelSource, _device).AddTo(_compositeDisposables);
 
             byte[] shaderSource = Resource1.TestShader;
             // UTF-8 BOMチェック
@@ -198,8 +210,8 @@ namespace PMMEditor.Models.Graphics
             _effect = new Direct3D11.Effect(_device, shaderBytes);
 
             U Cast<T, U>(T variable, Func<T, U> func)
-                where T : EffectVariable
-                where U : EffectVariable
+                where T : Direct3D11.EffectVariable
+                where U : Direct3D11.EffectVariable
             {
                 if (variable?.IsValid != true)
                 {
@@ -211,13 +223,13 @@ namespace PMMEditor.Models.Graphics
 
             for (int j = 0; j < _effect.Description.TechniqueCount; j++)
             {
-                EffectTechnique technique = _effect.GetTechniqueByIndex(j);
+                Direct3D11.EffectTechnique technique = _effect.GetTechniqueByIndex(j);
                 _techniques.Add(new Technique
                 {
                     EffectTechnique = technique
                 });
 
-                EffectScalarVariable variable = Cast(technique.GetAnnotationByName("UseTexture"), x => x.AsScalar());
+                Direct3D11.EffectScalarVariable variable = Cast(technique.GetAnnotationByName("UseTexture"), x => x.AsScalar());
                 if (variable?.IsValid == true)
                 {
                     _techniques[j].UseTexture = variable.GetBool()
@@ -231,9 +243,9 @@ namespace PMMEditor.Models.Graphics
             _myEffect.Diffuse = Cast(_effect.GetVariableBySemantic("DIFFUSE"), x => x.AsVector());
 
             // インプットレイアウト生成
-            EffectPass pass = _effect.GetTechniqueByIndex(0).GetPassByIndex(0);
+            Direct3D11.EffectPass pass = _effect.GetTechniqueByIndex(0).GetPassByIndex(0);
             ShaderBytecode inputSignature = pass.Description.Signature;
-            _inputLayout = new InputLayout(_device, inputSignature, new[]
+            _inputLayout = new Direct3D11.InputLayout(_device, inputSignature, new[]
             {
                 new Direct3D11.InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
                 new Direct3D11.InputElement("BONE_INDEX", 0, Format.R32G32B32A32_SInt, 16, 0),
@@ -270,7 +282,7 @@ namespace PMMEditor.Models.Graphics
 
             target.InputAssembler.PrimitiveTopology = Direct3D.PrimitiveTopology.TriangleList;
             _boneCalculator.Update(target, _nowFrame.Value);
-            EffectShaderResourceVariable boneTex = _effect.GetVariableBySemantic("BONE_TEXTURE").AsShaderResource();
+            Direct3D11.EffectShaderResourceVariable boneTex = _effect.GetVariableBySemantic("BONE_TEXTURE").AsShaderResource();
             if (boneTex?.IsValid == true)
             {
                 boneTex.SetResource(_boneCalculator.BoneSrv);
@@ -295,7 +307,7 @@ namespace PMMEditor.Models.Graphics
 
                 foreach (var item in _techniques)
                 {
-                    EffectTechnique technique = item.EffectTechnique;
+                    Direct3D11.EffectTechnique technique = item.EffectTechnique;
                     if (item.UseTexture == Technique.UseTextureFlag.False && useTexture)
                     {
                         continue;
@@ -307,7 +319,7 @@ namespace PMMEditor.Models.Graphics
 
                     for (int i = 0; i < technique.Description.PassCount; ++i)
                     {
-                        EffectPass techPass = technique.GetPassByIndex(i);
+                        Direct3D11.EffectPass techPass = technique.GetPassByIndex(i);
                         techPass.Apply(target);
                         target.DrawIndexed(indexRange.Count, indexRange.Start, 0);
                     }

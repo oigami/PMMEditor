@@ -11,6 +11,14 @@ namespace PMMEditor.ECS
     {
         private readonly List<Component> _components = new List<Component>();
 
+        private bool _isExsits = true;
+
+        /// <summary>
+        /// 生存時に自身のオブジェクトを返します。すでに破壊されているときはnullを返します。
+        /// </summary>
+        /// <returns></returns>
+        public Entity As() => _isExsits ? this : null;
+
         private readonly ECSystem _system;
         internal Entity(ECSystem system)
         {
@@ -19,7 +27,8 @@ namespace PMMEditor.ECS
 
         protected override void OnDestroyInternal()
         {
-            RemoveComponents<Component>();
+            _isExsits = false;
+            _components.ForEach(Destroy);
             _system.DestroyEntity(this);
         }
 
@@ -34,22 +43,14 @@ namespace PMMEditor.ECS
             return component;
         }
 
-        public void RemoveComponents<T>() where T : Component
+        internal void RemoveComponents<T>() where T : Component
         {
-            foreach (var disposable in _components.Where(x => x is T))
-            {
-                disposable.Dispose();
-            }
-
             _components.RemoveAll(x => x is T);
         }
 
-        public void RemoveComponent(Component component)
+        internal void RemoveComponent(Component component)
         {
-            if (_components.Remove(component))
-            {
-                component.Dispose();
-            }
+            _components.Remove(component);
         }
 
         public Component GetComponent(Type type)

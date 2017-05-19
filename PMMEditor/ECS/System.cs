@@ -21,14 +21,10 @@ namespace PMMEditor.ECS
             return entity;
         }
 
-        public void DestroyEntity(Entity entity)
+        internal void DestroyEntity(Entity entity)
         {
             _entity.Remove(entity);
             _newEntitiy.Remove(entity);
-            foreach (var component in entity.GetComponents<Component>())
-            {
-                RemoveComponent(component);
-            }
         }
 
         internal void AddComponent(Component component)

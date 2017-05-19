@@ -7,7 +7,7 @@ using PMMEditor.MVVM;
 
 namespace PMMEditor.ECS
 {
-    public abstract class ECObject : BindableDisposableBase
+    public abstract class ECObject : BindableBase
     {
         protected abstract void OnDestroyInternal();
 

@@ -6,34 +6,44 @@ using System.Reactive.Disposables;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using PMMEditor.ECS;
 using PMMEditor.MVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 
 namespace PMMEditor.Models.MMDModel
 {
-    public class BoneFrameControlModel : BindableDisposableBase
+    public class BoneFrameControlModel : Component
     {
         private ObservableCollection<MmdModelModel.Bone> _boneList;
+        private readonly CompositeDisposable _compositeDisposables = new CompositeDisposable();
 
         public ObservableCollection<MmdModelModel.BoneKeyFrame> NowBoneKeyFrame { get; } =
             new ObservableCollection<MmdModelModel.BoneKeyFrame>();
 
-        public MmdModelBoneCalculator BoneCalculator { get; }
+        public MmdModelBoneCalculator BoneCalculator { get; private set; }
 
-        public readonly IFrameControlModel _frameControlModel;
+        public IFrameControlModel _frameControlModel;
 
-        public BoneFrameControlModel(IFrameControlModel nowFrame, MmdModelModel model)
+        protected override void OnDestroy()
         {
-            _frameControlModel = nowFrame;
+            base.OnDestroy();
+            _compositeDisposables.Dispose();
+        }
+
+        public BoneFrameControlModel Initialize()
+        {
+            _frameControlModel = GameObject.GetComponent<FrameControlFilter>().ControlModel;
+            MmdModelModel model = GameObject.GetComponent<MmdModelModel>();
             _boneList = model.BoneKeyList;
-            CompositeDisposables.Add(Disposable.Create(() => _boneList = null));
+            _compositeDisposables.Add(Disposable.Create(() => _boneList = null));
 
             BoneCalculator = new MmdModelBoneCalculator(model);
             BoneCalculator.InitBoneCalc();
+            return this;
         }
 
-        public void Update()
+        public override void Update()
         {
             ResizeList();
             foreach (var i in Enumerable.Range(0, _boneList.Count))
