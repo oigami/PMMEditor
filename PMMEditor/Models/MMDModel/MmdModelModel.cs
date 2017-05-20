@@ -88,13 +88,11 @@ namespace PMMEditor.Models.MMDModel
 
             public PmxStruct.Bone.Flag Type { get; set; }
 
-            public Matrix4x4 InitMatBoneLocal { get; set; }
+            public Vector3 InitMatBoneLocal { get; set; }
 
-            public Matrix4x4 BoneMatModelLocal { get; set; }
+            public Vector3 InitMatModelLocal { get; set; }
 
-            public Matrix4x4 InitMatModelLocal { get; set; }
-
-            public Matrix4x4 InverseInitMatModelLocal { get; set; }
+            public Vector3 InverseInitMatModelLocal { get; set; }
 
             public Matrix4x4 BoneMatBoneLocal { get; set; }
 
@@ -247,11 +245,8 @@ namespace PMMEditor.Models.MMDModel
             outputBone.TailChildIndex = (item.Flags & PmxStruct.Bone.Flag.Connection) != 0
                 ? item.ConnectionBoneIndex
                 : -1;
-            Matrix4x4 modelLocalInitMat = Matrix4x4.CreateTranslation(item.Position);
-            outputBone.InitMatModelLocal =
-                outputBone.BoneMatModelLocal = modelLocalInitMat; // モデルローカル座標系
-            Matrix4x4.Invert(modelLocalInitMat, out Matrix4x4 tmp);
-            outputBone.InverseInitMatModelLocal = tmp;
+            outputBone.InitMatModelLocal = item.Position;
+            outputBone.InverseInitMatModelLocal = Vector3.Negate(item.Position);
 
             var list = new KeyFrameList<BoneKeyFrame, KeyInterpolationMethod>(item.Name);
             outputBone.KeyFrameList = list;

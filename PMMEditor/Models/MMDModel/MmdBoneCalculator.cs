@@ -31,7 +31,7 @@ namespace PMMEditor.Models.MMDModel
         {
             foreach (var bone in _model.BoneKeyList)
             {
-                inOutWorlds[bone.Index] = bone.InverseInitMatModelLocal * inOutWorlds[bone.Index];
+                inOutWorlds[bone.Index] = bone.InverseInitMatModelLocal.Mul(inOutWorlds[bone.Index]);
             }
         }
 
@@ -77,8 +77,9 @@ namespace PMMEditor.Models.MMDModel
                 Vector3 pos = data.Position;
                 Quaternion q = data.Quaternion;
 
-                bones[i].BoneMatBoneLocal = Matrix4x4.CreateFromQuaternion(new Quaternion(q.X, q.Y, q.Z, q.W))
-                                            * Matrix4x4.CreateTranslation(pos.X, pos.Y, pos.Z) * bones[i].InitMatBoneLocal;
+                Matrix4x4 mat = Matrix4x4.CreateFromQuaternion(new Quaternion(q.X, q.Y, q.Z, q.W));
+                mat.Translation = pos + bones[i].InitMatBoneLocal;
+                bones[i].BoneMatBoneLocal = mat;
             }
         }
 
@@ -225,18 +226,18 @@ namespace PMMEditor.Models.MMDModel
 
         public void InitBoneCalc()
         {
-            InitBoneCalc(_model.BoneKeyList[0], Matrix4x4.Identity);
+            InitBoneCalc(_model.BoneKeyList[0], Vector3.Zero);
             foreach (var i in _model.BoneKeyList)
             {
-                i.BoneMatBoneLocal = i.InitMatBoneLocal;
+                i.BoneMatBoneLocal = Matrix4x4.CreateTranslation(i.InitMatBoneLocal);
             }
         }
 
-        private void InitBoneCalc(MmdModelModel.Bone me, Matrix4x4 parentoffsetMat)
+        private void InitBoneCalc(MmdModelModel.Bone me, Vector3 parentoffsetMat)
         {
             while (true)
             {
-                me.InitMatBoneLocal = me.InitMatModelLocal * parentoffsetMat;
+                me.InitMatBoneLocal = me.InitMatModelLocal + parentoffsetMat;
                 if (me.SiblingIndex != -1)
                 {
                     InitBoneCalc(_model.BoneKeyList[me.SiblingIndex], parentoffsetMat);

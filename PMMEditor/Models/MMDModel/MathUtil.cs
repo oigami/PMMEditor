@@ -5,7 +5,6 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using Matrix = System.Numerics.Matrix4x4;
 namespace PMMEditor.Models.MMDModel
 {
     public struct EulerAngles
@@ -28,7 +27,7 @@ namespace PMMEditor.Models.MMDModel
             return false;
         }
 
-        bool CreateXYZ(Matrix rot)
+        bool CreateXYZ(Matrix4x4 rot)
         {
             float tmp = rot.M13;
             if (IsGimballock(tmp))
@@ -43,7 +42,7 @@ namespace PMMEditor.Models.MMDModel
             return true;
         }
 
-        bool CreateYZX(Matrix rot)
+        bool CreateYZX(Matrix4x4 rot)
         {
             float tmp = rot.M21;
             if (IsGimballock(tmp))
@@ -58,7 +57,7 @@ namespace PMMEditor.Models.MMDModel
             return true;
         }
 
-        bool CreateZXY(Matrix rot)
+        bool CreateZXY(Matrix4x4 rot)
         {
             float tmp = rot.M32;
             if (IsGimballock(tmp))
@@ -73,19 +72,19 @@ namespace PMMEditor.Models.MMDModel
             return true;
         }
 
-        Matrix CreateX()
+        Matrix4x4 CreateX()
         {
-            return Matrix.CreateRotationX(X);
+            return Matrix4x4.CreateRotationX(X);
         }
 
-        Matrix CreateY()
+        Matrix4x4 CreateY()
         {
-            return Matrix.CreateRotationY(Y);
+            return Matrix4x4.CreateRotationY(Y);
         }
 
-        Matrix CreateZ()
+        Matrix4x4 CreateZ()
         {
-            return Matrix.CreateRotationZ(Z);
+            return Matrix4x4.CreateRotationZ(Z);
         }
 
         private Type _type;
@@ -97,7 +96,7 @@ namespace PMMEditor.Models.MMDModel
         public float Z { get; set; }
 
 
-        public EulerAngles(Matrix rot) : this()
+        public EulerAngles(Matrix4x4 rot) : this()
         {
             if (!CreateXYZ(rot))
             {
@@ -111,7 +110,7 @@ namespace PMMEditor.Models.MMDModel
             }
         }
 
-        public Matrix CreateMatrix()
+        public Matrix4x4 CreateMatrix()
         {
             switch (_type)
             {
@@ -124,7 +123,7 @@ namespace PMMEditor.Models.MMDModel
             }
 
             Debug.Assert(false);
-            return Matrix.Identity;
+            return Matrix4x4.Identity;
         }
     }
 
@@ -165,6 +164,27 @@ namespace PMMEditor.Models.MMDModel
             return new Vector3(DegreeToRadian(vec.X),
                                DegreeToRadian(vec.Y),
                                DegreeToRadian(vec.Z));
+        }
+
+        /// <summary>
+        /// translationを行列に変換し、matとの積行列を返します。
+        /// <para>
+        /// returns: Matrix4x4.CreateTranslation(translation) * mat
+        /// </para>
+        /// </summary>
+        /// <param name="translation"></param>
+        /// <param name="mat"></param>
+        /// <returns> Matrix4x4.CreateTranslation(translation) * mat </returns>
+        public static Matrix4x4 Mul(this Vector3 translation, Matrix4x4 mat)
+        {
+            var tmp = new Vector3
+            {
+                X = Vector3.Dot(translation, new Vector3(mat.M11, mat.M21, mat.M31)),
+                Y = Vector3.Dot(translation, new Vector3(mat.M12, mat.M22, mat.M32)),
+                Z = Vector3.Dot(translation, new Vector3(mat.M13, mat.M23, mat.M33))
+            };
+            mat.Translation += tmp;
+            return mat;
         }
     }
 
