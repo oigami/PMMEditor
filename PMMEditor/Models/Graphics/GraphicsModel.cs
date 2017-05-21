@@ -12,11 +12,6 @@ namespace PMMEditor.Models.Graphics
     {
         private readonly ILogger _logger;
 
-        static GraphicsModel()
-        {
-            ECSystem.Device = Device;
-        }
-
         public GraphicsModel(ILogger logger, MmdModelList mmdModelList)
         {
             _logger = logger;

@@ -8,30 +8,23 @@
   xmlns:graphics1="clr-namespace:PMMEditor.Views.Graphics"
   xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:sharpDxControl="clr-namespace:PMMEditor.SharpDxControl"
   d:DataContext="{d:DesignInstance graphics:MainRenderViewModel}"
   d:DesignHeight="300"
   d:DesignWidth="300"
   mc:Ignorable="d">
   <Grid>
-
-    <graphics1:MmdModelItemsControl
+    <sharpDxControl:SharpDxControl
+      VerticalAlignment="Center"
+      D3DHeight="600"
+      D3DWidth="800"
       Device="{Binding Device}"
-      ItemsSource="{Binding Items}">
-      <graphics1:MmdModelItemsControl.ItemsPanel>
-        <ControlTemplate>
-          <graphics1:MainRenderer
-            VerticalAlignment="Center"
-            D3DHeight="600"
-            D3DWidth="800"
-            Stretch="Uniform">
-            <i:Interaction.Behaviors>
-              <behaviors:DefaultCameraMouseControlBehavior CameraControl="{Binding CameraControl.Model}" />
-            </i:Interaction.Behaviors>
-          </graphics1:MainRenderer>
-        </ControlTemplate>
-      </graphics1:MmdModelItemsControl.ItemsPanel>
-    </graphics1:MmdModelItemsControl>
-
+      RenderTextureQueue="{Binding RenderTextureQueue}"
+      Stretch="Uniform">
+      <i:Interaction.Behaviors>
+        <behaviors:DefaultCameraMouseControlBehavior CameraControl="{Binding CameraControl.Model}" />
+      </i:Interaction.Behaviors>
+    </sharpDxControl:SharpDxControl>
   </Grid>
 </UserControl>
 

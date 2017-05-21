@@ -2,6 +2,7 @@
 using Livet.Commands;
 using PMMEditor.Models;
 using PMMEditor.Models.Graphics;
+using PMMEditor.SharpDxControl;
 using PMMEditor.ViewModels.Documents;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -50,6 +51,8 @@ namespace PMMEditor.ViewModels.Graphics
         public ReadOnlyReactiveCollection<IRenderer> Items { get; set; }
 
         public Device Device { get; }
+
+        public RenderTextureQueue RenderTextureQueue => Model.System.RenderTextureQueue;
 
         public ListenerCommand<float> LookAtXResetCommand { get; }
 

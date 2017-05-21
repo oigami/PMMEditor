@@ -70,9 +70,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ECS\Camera.cs" />
     <Compile Include="ECS\Component.cs" />
     <Compile Include="ECS\ECObject.cs" />
+    <Compile Include="ECS\ECSRenderer.cs" />
     <Compile Include="ECS\Entity.cs" />
+    <Compile Include="ECS\RenderTexture.cs" />
     <Compile Include="ECS\Shader.cs" />
     <Compile Include="ECS\System.cs" />
     <Compile Include="ECS\MeshFilter.cs" />
@@ -102,6 +105,7 @@
     <Compile Include="Models\MMDModel\BoneFrameControlModel.cs" />
     <Compile Include="Models\MMDModel\MathUtil.cs" />
     <Compile Include="Models\MMDModel\MmdBoneCalculator.cs" />
+    <Compile Include="Models\Thread\ThreadQueue.cs" />
     <Compile Include="MVVM\BindableBase.cs" />
     <Compile Include="Resource1.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -110,6 +114,7 @@
     </Compile>
     <Compile Include="SharpDxControl\D3D11Image.cs" />
     <Compile Include="SharpDxControl\D3D9Instance.cs" />
+    <Compile Include="SharpDxControl\RenderTextureQueue.cs" />
     <Compile Include="SharpDxControl\SharpDxControl.cs" />
     <Compile Include="ViewModels\CameraControlViewModel.cs" />
     <Compile Include="ViewModels\Documents\BoneTimelineViewModel.cs" />
@@ -129,7 +134,6 @@
     <Compile Include="Views\ExceptionDialog.xaml.cs">
       <DependentUpon>ExceptionDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Graphics\MmdModelItemsControl.cs" />
     <Compile Include="Models\Graphics\MmdModelRenderer.cs" />
     <Compile Include="ViewModels\Panes\AccessoryViewModel.cs" />
     <Compile Include="ViewModels\Panes\CameraViewModel.cs" />
@@ -141,7 +145,6 @@
     <Compile Include="Views\Graphics\MainCameraView.xaml.cs">
       <DependentUpon>MainCameraView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Graphics\MainRenderer.cs" />
     <Compile Include="Models\Graphics\MmdModelRendererSource.cs" />
     <Compile Include="Views\MMD\RenderView.xaml.cs">
       <DependentUpon>RenderView.xaml</DependentUpon>

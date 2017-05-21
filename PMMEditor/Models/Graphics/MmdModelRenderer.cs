@@ -18,11 +18,6 @@ using Direct2D1 = SharpDX.Direct2D1;
 
 namespace PMMEditor.Models.Graphics
 {
-    public interface IInitializable
-    {
-        void Initialize(Direct3D11.Device device);
-    }
-
     public struct RenderArgs
     {
         public RenderArgs(Direct3D11.DeviceContext context, Matrix4x4 viewProj)
@@ -46,7 +41,7 @@ namespace PMMEditor.Models.Graphics
         }
     }
 
-    public interface IRenderer : IInitializable
+    public interface IRenderer
     {
         void UpdateTask();
 
@@ -62,7 +57,6 @@ namespace PMMEditor.Models.Graphics
     {
         private readonly CompositeDisposable _compositeDisposables = new CompositeDisposable();
         private Direct3D11.Texture2D _boneTexture2D;
-        private Matrix4x4[] _outputArr;
         private BoneFrameControlModel _controller;
 
         public Direct3D11.ShaderResourceView BoneSrv { get; private set; }
@@ -84,7 +78,6 @@ namespace PMMEditor.Models.Graphics
         {
             Direct3D11.Device device = GraphicsModel.Device;
             int boneNum = model.Model.BoneKeyList.Count * 2;
-            _outputArr = new Matrix4x4[boneNum];
             _boneTexture2D = new Direct3D11.Texture2D(
                 device,
                 new Direct3D11.Texture2DDescription
@@ -104,25 +97,26 @@ namespace PMMEditor.Models.Graphics
                 .AddTo(_compositeDisposables);
         }
 
-        public void UpdateBone()
+        public void UpdateBone(Matrix4x4[] OutputArr)
         {
             _controller.Update();
+            MmdModelBoneCalculator calclator = _controller.BoneCalculator;
+            calclator.WorldBones.CopyTo(OutputArr, 0);
+            calclator.ModelLocalBones.CopyTo(OutputArr, calclator.WorldBones.Length);
         }
 
-        public void Update(Direct3D11.DeviceContext context, int nowFrame)
+        public void Update(Direct3D11.DeviceContext context, Matrix4x4[] copyBoneData)
         {
-            MmdModelBoneCalculator calclator = _controller.BoneCalculator;
-            calclator.WorldBones.CopyTo(_outputArr, 0);
-            calclator.ModelLocalBones.CopyTo(_outputArr, calclator.WorldBones.Length);
-            context.UpdateSubresource(_outputArr, _boneTexture2D, 0, 16 * 1024, 16 * 1024, new Direct3D11.ResourceRegion
-            {
-                Left = 0,
-                Top = 0,
-                Right = _boneTexture2D.Description.Width,
-                Bottom = _boneTexture2D.Description.Height,
-                Front = 0,
-                Back = 1
-            });
+            context.UpdateSubresource(copyBoneData, _boneTexture2D, 0, 16 * 1024, 16 * 1024,
+                                      new Direct3D11.ResourceRegion
+                                      {
+                                          Left = 0,
+                                          Top = 0,
+                                          Right = _boneTexture2D.Description.Width,
+                                          Bottom = _boneTexture2D.Description.Height,
+                                          Front = 0,
+                                          Back = 1
+                                      });
         }
     }
 
@@ -185,6 +179,8 @@ namespace PMMEditor.Models.Graphics
                     .CombineLatestValuesAreAllTrue()
                     .ToReadOnlyReactiveProperty()
                     .AddTo(_compositeDisposables);
+            _device = GraphicsModel.Device;
+            InitializeInternal();
         }
 
         public ReadOnlyReactiveProperty<bool> IsInitialized { get; private set; }
@@ -192,7 +188,7 @@ namespace PMMEditor.Models.Graphics
         private void InitializeInternal()
         {
             GameObject.AddComponent<FrameControlFilter>().ControlModel = _model.FrameControlModel;
-            GameObject.AddComponent<BoneFrameControlModel>().Initialize();
+            GameObject.AddComponent<BoneFrameControlModel>();
             _boneCalculator = GameObject.AddComponent<MmdModelBoneCalculatorSRV>().Initialize();
             BoneRenderer = new BoneRenderer(ModelSource, _device).AddTo(_compositeDisposables);
 
@@ -230,7 +226,8 @@ namespace PMMEditor.Models.Graphics
                     EffectTechnique = technique
                 });
 
-                Direct3D11.EffectScalarVariable variable = Cast(technique.GetAnnotationByName("UseTexture"), x => x.AsScalar());
+                Direct3D11.EffectScalarVariable variable = Cast(technique.GetAnnotationByName("UseTexture"),
+                                                                x => x.AsScalar());
                 if (variable?.IsValid == true)
                 {
                     _techniques[j].UseTexture = variable.GetBool()
@@ -259,22 +256,81 @@ namespace PMMEditor.Models.Graphics
 
         public BoneRenderer BoneRenderer { get; set; }
 
-        public void Initialize(Direct3D11.Device device)
+        public void Render(RenderArgs args) { }
+
+        public void Render(Render2DArgs args) { }
+
+        private RenderData _nowUpdateData;
+
+        public override void UpdateTask()
         {
-            _device = device;
-            // TODO:エラー処理
-            Task.Run(() => InitializeInternal());
+            if (IsInitialized?.Value != true)
+            {
+                return;
+            }
+
+            lock (_freeRenderDatas)
+            {
+                if (_freeRenderDatas.Count == 0)
+                {
+                    _nowUpdateData = new RenderData
+                    {
+                        BoneData = new Matrix4x4[ModelSource.Model.BoneKeyList.Count * 2]
+                    };
+                }
+                else
+                {
+                    _nowUpdateData = _freeRenderDatas.Dequeue();
+                }
+            }
+            _boneCalculator.UpdateBone(_nowUpdateData.BoneData);
         }
 
-        public void Render(RenderArgs args)
+        public override void Update()
         {
-            if (!IsInitialized.Value || Mesh == null)
+            if (_nowUpdateData == null)
+            {
+                return;
+            }
+
+            _nowUpdateData.ViewProj = Camera.Main.View * Camera.Main.Projection;
+        }
+
+        private class RenderData
+        {
+            public Matrix4x4 ViewProj { get; set; }
+
+            public Matrix4x4[] BoneData { get; set; }
+        }
+
+        private readonly Queue<RenderData> _freeRenderDatas = new Queue<RenderData>();
+
+        internal override object DequeueRenderData()
+        {
+            return _nowUpdateData;
+        }
+
+        internal override void EnqueueRenderData(object obj)
+        {
+            _freeRenderDatas.Enqueue((RenderData) obj);
+        }
+
+
+        internal override void Render(ECSystem.RendererArgs args)
+        {
+            if (IsInitialized?.Value != true || Mesh == null)
+            {
+                return;
+            }
+
+            var data = (RenderData) args.RenderData;
+            if (data == null)
             {
                 return;
             }
 
             Direct3D11.DeviceContext target = args.Context;
-            Matrix4x4 m = args.ViewProj;
+            Matrix4x4 m = data.ViewProj;
 
             // シェーダの設定
             target.InputAssembler.InputLayout = _inputLayout;
@@ -282,8 +338,9 @@ namespace PMMEditor.Models.Graphics
             Mesh.SetBuffer(target);
 
             target.InputAssembler.PrimitiveTopology = Direct3D.PrimitiveTopology.TriangleList;
-            _boneCalculator.Update(target, _nowFrame.Value);
-            Direct3D11.EffectShaderResourceVariable boneTex = _effect.GetVariableBySemantic("BONE_TEXTURE").AsShaderResource();
+            _boneCalculator.Update(target, data.BoneData);
+            Direct3D11.EffectShaderResourceVariable boneTex =
+                _effect.GetVariableBySemantic("BONE_TEXTURE").AsShaderResource();
             if (boneTex?.IsValid == true)
             {
                 boneTex.SetResource(_boneCalculator.BoneSrv);
@@ -328,26 +385,7 @@ namespace PMMEditor.Models.Graphics
             }
 
             target.VertexShader.SetShaderResource(0, _boneCalculator.BoneSrv);
-            BoneRenderer.Render(args);
-        }
-
-        public void Render(Render2DArgs args) { }
-
-        public void UpdateTask()
-        {
-            if (!IsInitialized.Value)
-            {
-                return;
-            }
-
-            _boneCalculator.UpdateBone();
-        }
-
-        public override void Update() { }
-
-        internal override void Render()
-        {
-            throw new NotImplementedException();
+            //BoneRenderer.Render(args);
         }
     }
 }

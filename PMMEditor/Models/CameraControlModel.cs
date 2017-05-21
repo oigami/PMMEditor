@@ -5,7 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media.Media3D;
+using PMMEditor.ECS;
 using PMMEditor.MMDFileParser;
 using PMMEditor.MVVM;
 using Reactive.Bindings.Extensions;
@@ -15,7 +15,7 @@ namespace PMMEditor.Models
 {
 
 
-    public class CameraControlModel : BindableDisposableBase
+    public class CameraControlModel : Component
     {
         private Matrix4x4 _view;
         private float _distance;
@@ -43,6 +43,7 @@ namespace PMMEditor.Models
 
         private Vector3 _lookAt;
         private Matrix4x4 _perspective = Matrix4x4.CreatePerspectiveFieldOfView((float) Math.PI / 3, 1.4f, 1f, 100000f);
+        private FrameControlModel _frameControl;
 
         public float Distance
         {
@@ -124,24 +125,39 @@ namespace PMMEditor.Models
             IsUpdateRequired = true;
         }
 
-        public CameraControlModel(Model model)
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+        }
+
+        public CameraControlModel Initialize(Model model)
         {
             // 左手座標系に変換
             _perspective.M33 *= -1;
             _perspective.M34 *= -1;
             Clear();
-            model.FrameControlModel.ObserveProperty(_ => _.NowFrame).Subscribe(_ =>
-            {
-                if (BoneKeyList.Count == 0)
-                {
-                    return;
-                }
+            _frameControl = model.FrameControlModel;
+            return this;
+        }
 
-                BoneKeyFrame data = BoneKeyList[0].GetInterpolationData(_);
+        private int _nowFrame = -1;
+
+        public override void UpdateTask()
+        {
+            if (BoneKeyList.Count == 0)
+            {
+                return;
+            }
+
+            if (_nowFrame != _frameControl.NowFrame)
+            {
+                BoneKeyFrame data = BoneKeyList[0].GetInterpolationData(_frameControl.NowFrame);
                 Distance = -data.Distance;
                 Rotate = data.Rotation;
                 LookAt = data.Translation;
-            }).AddTo(CompositeDisposables);
+                Camera.Main.View = View;
+                _nowFrame = _frameControl.NowFrame;
+            }
         }
 
         public Matrix4x4 CreateProjection()

@@ -7,16 +7,19 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Reactive.Disposables;
+using System.Threading;
 using System.Windows;
 using System.Windows.Interactivity;
 using System.Windows.Media;
 using PMMEditor.Models.Graphics;
+using PMMEditor.Models.Thread;
 using Reactive.Bindings.Extensions;
 using SharpDX;
 using SharpDX.Mathematics.Interop;
 using AlphaMode = SharpDX.Direct2D1.AlphaMode;
 using Brush = SharpDX.Direct2D1.Brush;
 using Device = SharpDX.Direct3D11.Device;
+using DeviceContext = SharpDX.Direct3D11.DeviceContext;
 using Factory = SharpDX.Direct2D1.Factory;
 using Image = System.Windows.Controls.Image;
 using PixelFormat = SharpDX.Direct2D1.PixelFormat;
@@ -147,7 +150,7 @@ namespace PMMEditor.SharpDxControl
         }
     }
 
-    public abstract class SharpDxControl : Image, IDisposable
+    public class SharpDxControl : Image, IDisposable
     {
         private CompositeDisposable _d3DRenderTargetCompositeDisposable = new CompositeDisposable();
         protected readonly CompositeDisposable AllCompositeDisposable = new CompositeDisposable();
@@ -209,14 +212,21 @@ namespace PMMEditor.SharpDxControl
 
         #endregion
 
-        public RenderTarget D2DRenderTarget;
+        #region RenderTextureQueue
 
-        private Texture2D _renderTargetTexture;
+        public static readonly DependencyProperty RenderTextureQueueProperty = DependencyProperty.Register(
+            nameof(RenderTextureQueue), typeof(RenderTextureQueue), typeof(SharpDxControl),
+            new PropertyMetadata(default(RenderTextureQueue)));
+
+        public RenderTextureQueue RenderTextureQueue
+        {
+            get => (RenderTextureQueue) GetValue(RenderTextureQueueProperty);
+            set => SetValue(RenderTextureQueueProperty, value);
+        }
+
+        #endregion
+
         private D3D11Image _d3DSurface;
-        private Factory _d2DFactory;
-        private DepthStencilView _depthStencilView;
-        private DepthStencilState _depthStencilState;
-        private RenderTargetView _renderTarget;
         private float _actualWidth;
         private float _actualheight;
 
@@ -225,7 +235,6 @@ namespace PMMEditor.SharpDxControl
 
         private bool _isInitialized;
 
-        protected readonly ResourceManager<Brush> BrushManager = new ResourceManager<Brush>();
         private Query _query;
         private Texture2D _sharedTargetTexture;
 
@@ -237,12 +246,12 @@ namespace PMMEditor.SharpDxControl
         /// <summary>
         /// 遅延コンテキストが使えるかどうか
         /// </summary>
-        private bool _useDefferdContext = false;
+        private bool _useDefferdContext;
 
         protected static bool IsInDesignMode
             => (bool) DesignerProperties.IsInDesignModeProperty.GetMetadata(typeof(DependencyObject)).DefaultValue;
 
-        protected SharpDxControl()
+        public SharpDxControl()
         {
             if (!IsInDesignMode)
             {
@@ -265,11 +274,6 @@ namespace PMMEditor.SharpDxControl
             CreateAndBindTarget();
             StartRendering();
         }
-
-        protected abstract void Render();
-        protected abstract void Render2D();
-
-        protected virtual void ResetRenderTarget() { }
 
         private void OnRendering(object sender, EventArgs e)
         {
@@ -312,8 +316,6 @@ namespace PMMEditor.SharpDxControl
                 Disposable.Create(
                     () => _d3DSurface.IsFrontBufferAvailableChanged -= OnIsFrontBufferAvailableChanged));
 
-
-            _d2DFactory = new Factory().AddTo(AllCompositeDisposable);
             Source = _d3DSurface;
 
             CreateAndBindTarget();
@@ -354,12 +356,7 @@ namespace PMMEditor.SharpDxControl
             {
                 height = (int) D3DHeight;
             }
-            if (_renderTargetTexture != null &&
-                _renderTargetTexture.Description.Width == width &&
-                _renderTargetTexture.Description.Height == height)
-            {
-                return;
-            }
+
 
             _actualWidth = width;
             _actualheight = height;
@@ -381,53 +378,16 @@ namespace PMMEditor.SharpDxControl
                 CpuAccessFlags = CpuAccessFlags.None,
                 ArraySize = 1
             };
-
-            _renderTargetTexture = new Texture2D(device, renderDesc).AddTo(_d3DRenderTargetCompositeDisposable);
+            if (RenderTextureQueue != null)
+            {
+                RenderTextureQueue.Texture2DDescription = renderDesc;
+            }
             _sharedTargetTexture = new Texture2D(device, renderDesc).AddTo(_d3DRenderTargetCompositeDisposable);
-            Surface surface = _renderTargetTexture.QueryInterface<Surface>();
-
-            var rtp = new RenderTargetProperties(new PixelFormat(Format.Unknown, AlphaMode.Premultiplied));
-            D2DRenderTarget = new RenderTarget(_d2DFactory, surface, rtp).AddTo(_d3DRenderTargetCompositeDisposable);
-            BrushManager.UpdateRenderTarget(D2DRenderTarget);
 
             _d3DSurface.SetRenderTarget(_sharedTargetTexture);
 
-            // 深度バッファ
-            var zBufferTextureDescription = new Texture2DDescription
-            {
-                Format = Format.D32_Float,
-                ArraySize = 1,
-                MipLevels = 1,
-                Width = width,
-                Height = height,
-                SampleDescription = new SampleDescription(1, 0),
-                Usage = ResourceUsage.Default,
-                BindFlags = BindFlags.DepthStencil,
-                CpuAccessFlags = CpuAccessFlags.None,
-                OptionFlags = ResourceOptionFlags.None
-            };
-
-            using (var zBufferTexture = new Texture2D(device, zBufferTextureDescription))
-            {
-                _depthStencilView =
-                    new DepthStencilView(device, zBufferTexture).AddTo(_d3DRenderTargetCompositeDisposable);
-            }
-
-            _depthStencilState
-                = new DepthStencilState(device, new DepthStencilStateDescription
-                {
-                    IsDepthEnabled = true,
-                    DepthComparison = Comparison.Less,
-                    IsStencilEnabled = false,
-                    DepthWriteMask = DepthWriteMask.All
-                }).AddTo(_d3DRenderTargetCompositeDisposable);
-            _renderTarget = new RenderTargetView(device, _renderTargetTexture).AddTo(_d3DRenderTargetCompositeDisposable);
-
             device.ImmediateContext.Rasterizer.SetViewport(0, 0, width, height);
-
-            ResetRenderTarget();
         }
-
 
         private void StartRendering()
         {
@@ -453,41 +413,38 @@ namespace PMMEditor.SharpDxControl
 
         private void Rendering()
         {
-            SharpDX.Direct3D11.DeviceContext context = Device.ImmediateContext;
-
-            // 速度維持のために一つ前のフレームを描画する
-            context.Begin(_query);
-            context.ResolveSubresource(_renderTargetTexture, 0, _sharedTargetTexture, 0, Format.B8G8R8A8_UNorm);
-            context.End(_query);
-            context.Flush();
-
-            context.ClearDepthStencilView(_depthStencilView, DepthStencilClearFlags.Depth, 1.0f, 0);
-            context.ClearRenderTargetView(_renderTarget, new RawColor4(0, 0, 0, 0));
-            SetRenderTarget(context);
-
-            Render();
-            D2DRenderTarget.BeginDraw();
-            Render2D();
-            D2DRenderTarget.EndDraw();
-
-            while (true)
-            {
-                DataStream data = context.GetData(_query, AsynchronousFlags.DoNotFlush);
-                int isEnd = data.Read<int>();
-                if (isEnd == 1)
-                {
-                    break;
-                }
-            }
-        }
-
-        private void CallRender()
-        {
-            if (D2DRenderTarget == null)
+            ECS.RenderTexture queue = RenderTextureQueue?.DequeueTexture2D();
+            if (queue == null)
             {
                 return;
             }
 
+            DeviceContext context = GraphicsModel.Device.ImmediateContext;
+            lock (context)
+            {
+                context.Begin(_query);
+                context.ResolveSubresource(queue.ColorTexture, 0, _sharedTargetTexture, 0, Format.B8G8R8A8_UNorm);
+                //context.Flush();
+                context.End(_query);
+
+                while (true)
+                {
+                    using (DataStream data = context.GetData(_query, AsynchronousFlags.DoNotFlush))
+                    {
+                        int isEnd = data.Read<int>();
+                        if (isEnd == 1)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            RenderTextureQueue.EnqueueTexture2D(queue);
+        }
+
+        private void CallRender()
+        {
             if (_useConcurrentCreates)
             {
                 Rendering();
@@ -499,13 +456,6 @@ namespace PMMEditor.SharpDxControl
                     Rendering();
                 }
             }
-        }
-
-        protected void SetRenderTarget(SharpDX.Direct3D11.DeviceContext context)
-        {
-            context.Rasterizer.SetViewport(0, 0, _actualWidth, _actualheight);
-            context.OutputMerger.SetDepthStencilState(_depthStencilState);
-            context.OutputMerger.SetRenderTargets(_depthStencilView, _renderTarget);
         }
 
         protected virtual void Dispose(bool disposing)

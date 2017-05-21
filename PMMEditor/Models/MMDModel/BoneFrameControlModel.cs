@@ -31,7 +31,7 @@ namespace PMMEditor.Models.MMDModel
             _compositeDisposables.Dispose();
         }
 
-        public BoneFrameControlModel Initialize()
+        public override void Start()
         {
             _frameControlModel = GameObject.GetComponent<FrameControlFilter>().ControlModel;
             MmdModelModel model = GameObject.GetComponent<MmdModelModel>();
@@ -40,7 +40,6 @@ namespace PMMEditor.Models.MMDModel
 
             BoneCalculator = new MmdModelBoneCalculator(model);
             BoneCalculator.InitBoneCalc();
-            return this;
         }
 
         public override void Update()

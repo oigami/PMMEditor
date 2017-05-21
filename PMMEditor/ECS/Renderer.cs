@@ -54,7 +54,10 @@ namespace PMMEditor.ECS
 
         public Material[] SharedMaterials { get; set; }
 
-        internal abstract void Render();
+        internal abstract object DequeueRenderData();
+        internal abstract void EnqueueRenderData(object obj);
+
+        internal abstract void Render(ECSystem.RendererArgs p);
     }
 
 }

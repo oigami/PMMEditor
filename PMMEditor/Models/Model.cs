@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Text;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
@@ -18,16 +19,27 @@ namespace PMMEditor.Models
 {
     public class Model : BindableDisposableBase
     {
-        public static ECSystem System = new ECSystem();
+        public static readonly ECSystem System;
         public ILogger Logger { get; }
+
+        private Entity MainCamera { get; }
+
+        static Model()
+        {
+            ECSystem.Device = GraphicsModel.Device;
+            System = new ECSystem();
+        }
 
         public Model(ILogger logger)
         {
+            CompositeDisposables.Add(System);
             Logger = logger;
             FrameControlModel = new FrameControlModel();
             MmdModelList = new MmdModelList(Logger);
             GraphicsModel = new GraphicsModel(Logger, MmdModelList).AddTo(CompositeDisposables);
-            Camera = new CameraControlModel(this).AddTo(CompositeDisposables);
+            MainCamera = System.CreateEntity();
+            Camera = MainCamera.AddComponent<CameraControlModel>().Initialize(this);
+            CompositeDisposables.Add(Disposable.Create(() => ECObject.Destroy(MainCamera)));
         }
 
         #region ReadWriteFile

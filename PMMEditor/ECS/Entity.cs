@@ -51,6 +51,7 @@ namespace PMMEditor.ECS
         internal void RemoveComponent(Component component)
         {
             _components.Remove(component);
+            _system.RemoveComponent(component);
         }
 
         public Component GetComponent(Type type)

@@ -7,6 +7,7 @@ using System.Reactive.Disposables;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using PMMEditor.ECS;
 using PMMEditor.Models;
 using PMMEditor.Views.Graphics;
 using Reactive.Bindings.Extensions;
@@ -15,7 +16,7 @@ using Point = System.Windows.Point;
 
 namespace PMMEditor.Views.Behaviors
 {
-    internal class DefaultCameraMouseControlBehavior : BehaviorBase<RendererPanel>
+    internal class DefaultCameraMouseControlBehavior : BehaviorBase<SharpDxControl.SharpDxControl>
     {
         private CompositeDisposable _compositeDisposable;
 
@@ -66,7 +67,7 @@ namespace PMMEditor.Views.Behaviors
                                       0.0f);
                 rot /= 300.0f;
                 CameraControl.AddRotate(-rot);
-                AssociatedObject.View = CameraControl.View;
+                Camera.Main.View = CameraControl.View;
             }
             else if (e.LeftButton == MouseButtonState.Pressed)
             {
@@ -74,7 +75,7 @@ namespace PMMEditor.Views.Behaviors
                                          (float) (pos.Y - _startedPoint.Y));
                 lookat /= 10.0f;
                 CameraControl.Transform(lookat);
-                AssociatedObject.View = CameraControl.View;
+                Camera.Main.View = CameraControl.View;
             }
             _startedPoint = pos;
         }
@@ -87,7 +88,7 @@ namespace PMMEditor.Views.Behaviors
             }
 
             CameraControl.Distance -= e.Delta / 100.0f;
-            AssociatedObject.View = CameraControl.View;
+            Camera.Main.View = CameraControl.View;
         }
 
         public CameraControlModel CameraControl
@@ -119,10 +120,8 @@ namespace PMMEditor.Views.Behaviors
                 return;
             }
 
-            AssociatedObject.View = CameraControl.View;
-            AssociatedObject.Projection = CameraControl.CreateProjection();
-            CameraControl.ObserveProperty(_ => _.View).Subscribe(view => AssociatedObject.View = view)
-                         .AddTo(_compositeDisposable);
+            Camera.Main.View = CameraControl.View;
+            Camera.Main.Projection = CameraControl.CreateProjection();
         }
     }
 }
