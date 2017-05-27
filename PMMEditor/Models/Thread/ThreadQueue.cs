@@ -12,7 +12,7 @@ namespace PMMEditor.Models.Thread
     public class ThreadQueue : IDisposable
     {
 
-        private System.Threading.Thread _thread;
+        private readonly CancellationTokenSource _cancelToken;
         private DispatcherTimer _timer;
         private Action _queue;
         public void PushQueue(Action func)
@@ -22,7 +22,8 @@ namespace PMMEditor.Models.Thread
 
         public ThreadQueue()
         {
-            _thread = new System.Threading.Thread(() =>
+            _cancelToken = new CancellationTokenSource();
+            Task.Factory.StartNew(() =>
             {
                 _timer = new DispatcherTimer(DispatcherPriority.Normal, Dispatcher.CurrentDispatcher)
                 {
@@ -35,17 +36,12 @@ namespace PMMEditor.Models.Thread
                 {
                     Dispatcher.Run();
                 }
-            })
-            {
-                Priority = ThreadPriority.Highest
-            };
-            _thread.Start();
+            }, _cancelToken.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
-            Action action = _queue;
-            action?.Invoke();
+            _queue?.Invoke();
         }
 
         #region IDisposable Support
@@ -57,7 +53,7 @@ namespace PMMEditor.Models.Thread
             {
                 if (disposing)
                 {
-                    _thread.Abort();
+                    _cancelToken.Cancel();
                     _timer.Stop();
                 }
 

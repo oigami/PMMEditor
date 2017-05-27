@@ -163,14 +163,14 @@ namespace PMMEditor.ECS
                         return;
                     }
 
-                    foreach (var data in _rendererComponents)
+                    Parallel.ForEach(_rendererComponents, data =>
                     {
                         data.RenderData = data.UpdatedDataQueue.Dequeue();
                         data.Context.Rasterizer.SetViewport(0, 0, tex.Width, tex.Height);
                         data.Context.OutputMerger.SetRenderTargets(tex.DepthBuffer, tex.ColorBuffer);
                         data.Renderer.Render(data);
                         data.CommandList = data.Context.FinishCommandList(false);
-                    }
+                    });
 
                     DeviceContext context = device.ImmediateContext;
                     lock (context)

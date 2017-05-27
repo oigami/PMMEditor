@@ -43,14 +43,8 @@ namespace PMMEditor.SharpDxControl
             }
         }
 
-        public void InvalidateD3DImage()
+        public void UpdateAndUnlock()
         {
-            if (_renderTarget == null)
-            {
-                return;
-            }
-
-            Lock();
             AddDirtyRect(new Int32Rect(0, 0, PixelWidth, PixelHeight));
             Unlock();
         }
