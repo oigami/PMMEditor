@@ -225,11 +225,8 @@ namespace PMMEditor.SharpDxControl
 
         private readonly Stopwatch _renderTimer = new Stopwatch();
 
-        private bool _isInitialized;
-
         private Query _query;
         private Texture2D _sharedTargetTexture;
-        private readonly Entity _renderer;
 
         /// <summary>
         /// レンダリング時に同時にdeviceによるリソース作成が出来るかどうか
@@ -240,6 +237,8 @@ namespace PMMEditor.SharpDxControl
         /// 遅延コンテキストが使えるかどうか
         /// </summary>
         private bool _useDefferdContext;
+
+        private bool _nowUpdate;
 
         protected static bool IsInDesignMode
             => (bool) DesignerProperties.IsInDesignModeProperty.GetMetadata(typeof(DependencyObject)).DefaultValue;
@@ -253,28 +252,78 @@ namespace PMMEditor.SharpDxControl
                 Unloaded += OnUnloadedEventHandler;
                 AllCompositeDisposable.Add(Disposable.Create(() => Unloaded -= OnUnloadedEventHandler));
                 StartD3D();
-                _renderer = Model.System.CreateEntity();
-                _renderer.AddComponent<D3DRenderer>();
+
+                Model.System.EndRender += SystemOnEndRender;
+                AllCompositeDisposable.Add(Disposable.Create(() => Model.System.EndRender -= SystemOnEndRender));
+
+                Model.System.BeginRender += SystemOnBeginRender;
+                AllCompositeDisposable.Add(Disposable.Create(() => Model.System.BeginRender -= SystemOnBeginRender));
             }
             Stretch = Stretch.Fill;
         }
 
+        private void SystemOnBeginRender(object sender, EventArgs eventArgs)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                RenderTextureQueue renderQueue = RenderTextureQueue;
+                RenderTexture queue = renderQueue?.DequeueTexture2D();
+                if (queue == null)
+                {
+                    _nowUpdate = false;
+                    return;
+                }
+
+                _nowUpdate = _d3DSurface.TryLock(TimeSpan.FromMilliseconds(0));
+                if (_nowUpdate)
+                {
+                    DeviceContext context = GraphicsModel.Device.ImmediateContext;
+                    context.Begin(_query);
+                    context.ResolveSubresource(queue.ColorTexture, 0, _sharedTargetTexture, 0, Format.B8G8R8A8_UNorm);
+                    context.End(_query);
+                }
+                else
+                {
+                    _d3DSurface.Unlock();
+                }
+
+                renderQueue.EnqueueTexture2D(queue);
+            });
+        }
+
+        private void SystemOnEndRender(object sender, EventArgs eventArgs)
+        {
+            if (_nowUpdate == false)
+            {
+                return;
+            }
+
+            DeviceContext context = GraphicsModel.Device.ImmediateContext;
+            context.Flush();
+            while (true)
+            {
+                using (DataStream data = context.GetData(_query, AsynchronousFlags.DoNotFlush))
+                {
+                    int isEnd = data.Read<int>();
+                    if (isEnd == 1)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            Dispatcher.BeginInvoke((Action) (() => _d3DSurface.UpdateAndUnlock()));
+        }
+
         private void OnUnloadedEventHandler(object _, RoutedEventArgs __)
         {
-            _renderer.GetComponent<D3DRenderer>().Image = null;
             StopRendering();
         }
 
         private void OnLoadedEventHandler(object _, RoutedEventArgs __)
         {
-            _renderer.GetComponent<D3DRenderer>().Image = this;
             CreateAndBindTarget();
             StartRendering();
-        }
-
-        private void OnRendering(object sender, EventArgs e)
-        {
-            if (!_renderTimer.IsRunning || !IsLoaded || !_isInitialized) { }
         }
 
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
@@ -310,7 +359,6 @@ namespace PMMEditor.SharpDxControl
             Source = _d3DSurface;
 
             CreateAndBindTarget();
-            _isInitialized = true;
         }
 
         private void CreateAndBindTarget()
@@ -372,8 +420,6 @@ namespace PMMEditor.SharpDxControl
             _sharedTargetTexture = new Texture2D(device, renderDesc).AddTo(_d3DRenderTargetCompositeDisposable);
 
             _d3DSurface.SetRenderTarget(_sharedTargetTexture);
-
-            device.ImmediateContext.Rasterizer.SetViewport(0, 0, width, height);
         }
 
         private void StartRendering()
@@ -383,7 +429,6 @@ namespace PMMEditor.SharpDxControl
                 return;
             }
 
-            CompositionTarget.Rendering += OnRendering;
             _renderTimer.Start();
         }
 
@@ -395,66 +440,6 @@ namespace PMMEditor.SharpDxControl
             }
 
             _renderTimer.Stop();
-            CompositionTarget.Rendering -= OnRendering;
-        }
-
-        private void Rendering()
-        {
-            Dispatcher.Invoke(() =>
-            {
-                RenderTexture queue = RenderTextureQueue?.DequeueTexture2D();
-                if (queue == null)
-                {
-                    return;
-                }
-
-                if (_d3DSurface.TryLock(TimeSpan.FromMilliseconds(0)))
-                {
-                    DeviceContext context = GraphicsModel.Device.ImmediateContext;
-                    lock (context)
-                    {
-                        context.Begin(_query);
-                        context.ResolveSubresource(queue.ColorTexture, 0, _sharedTargetTexture, 0, Format.B8G8R8A8_UNorm);
-                        context.Flush();
-                        context.End(_query);
-
-                        while (true)
-                        {
-                            using (DataStream data = context.GetData(_query, AsynchronousFlags.DoNotFlush))
-                            {
-                                int isEnd = data.Read<int>();
-                                if (isEnd == 1)
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    _d3DSurface.UpdateAndUnlock();
-                }
-                else
-                {
-                    _d3DSurface.Unlock();
-                }
-
-                RenderTextureQueue.EnqueueTexture2D(queue);
-            });
-        }
-
-        public void CallRender()
-        {
-            if (_useConcurrentCreates)
-            {
-                Rendering();
-            }
-            else
-            {
-                lock (GraphicsModel.SyncObject)
-                {
-                    Rendering();
-                }
-            }
         }
 
         ~SharpDxControl()
@@ -470,30 +455,12 @@ namespace PMMEditor.SharpDxControl
                 _d3DRenderTargetCompositeDisposable.Dispose();
                 AllCompositeDisposable.Dispose();
             }
-            ECObject.Destroy(_renderer);
         }
 
 
         public void Dispose()
         {
             Dispose(true);
-        }
-    }
-
-    public class D3DRenderer : Renderer
-    {
-        public SharpDxControl Image { get; set; }
-
-        internal override object DequeueRenderData()
-        {
-            return null;
-        }
-
-        internal override void EnqueueRenderData(object obj) { }
-
-        internal override void Render(ECSystem.RendererArgs p)
-        {
-            Image?.CallRender();
         }
     }
 }

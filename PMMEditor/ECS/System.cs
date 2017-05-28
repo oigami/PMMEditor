@@ -16,6 +16,7 @@ namespace PMMEditor.ECS
     {
         internal static Device Device { get; set; }
 
+        private bool _requireRenderOrder;
         private readonly List<Entity> _entity = new List<Entity>();
 
         private readonly ThreadQueue _renderQueue = new ThreadQueue();
@@ -29,6 +30,43 @@ namespace PMMEditor.ECS
 
         public RenderTextureQueue RenderTextureQueue { get; } = new RenderTextureQueue();
 
+        private event EventHandler _beginRender;
+        internal event EventHandler BeginRender
+        {
+            add
+            {
+                lock (_rendererComponents)
+                {
+                    _beginRender += value;
+                }
+            }
+            remove
+            {
+                lock (_rendererComponents)
+                {
+                    _beginRender -= value;
+                }
+            }
+        }
+
+        private event EventHandler _endRender;
+        internal event EventHandler EndRender
+        {
+            add
+            {
+                lock (_rendererComponents)
+                {
+                    _endRender += value;
+                }
+            }
+            remove
+            {
+                lock (_rendererComponents)
+                {
+                    _endRender -= value;
+                }
+            }
+        }
         public ECSystem()
         {
             if (Device == null)
@@ -147,10 +185,8 @@ namespace PMMEditor.ECS
                 }
             }
         }
-
         public void Render()
         {
-
             Device device = Device;
 
             lock (_rendererComponents)
@@ -163,6 +199,12 @@ namespace PMMEditor.ECS
                         return;
                     }
 
+                    if (_requireRenderOrder)
+                    {
+                        _rendererComponents.Sort((a, b) => a.Renderer.SortingOrder - b.Renderer.SortingOrder);
+                        _requireRenderOrder = false;
+                    }
+                    _beginRender?.Invoke(this, new EventArgs());
                     Parallel.ForEach(_rendererComponents, data =>
                     {
                         data.RenderData = data.UpdatedDataQueue.Dequeue();
@@ -173,17 +215,15 @@ namespace PMMEditor.ECS
                     });
 
                     DeviceContext context = device.ImmediateContext;
-                    lock (context)
+                    context.ClearDepthStencilView(tex.DepthBuffer, DepthStencilClearFlags.Depth, 1.0f, 0);
+                    context.ClearRenderTargetView(tex.ColorBuffer, new RawColor4(0, 0, 0, 0));
+                    foreach (var command in _rendererComponents)
                     {
-                        context.ClearDepthStencilView(tex.DepthBuffer, DepthStencilClearFlags.Depth, 1.0f, 0);
-                        context.ClearRenderTargetView(tex.ColorBuffer, new RawColor4(0, 0, 0, 0));
-                        foreach (var command in _rendererComponents)
-                        {
-                            context.ExecuteCommandList(command.CommandList, false);
-                            command.CommandList.Dispose();
-                        }
+                        context.ExecuteCommandList(command.CommandList, false);
+                        command.CommandList.Dispose();
                     }
 
+                    _endRender?.Invoke(this, new EventArgs());
                     RenderTextureQueue.Enqueue(tex);
                 }
             }
@@ -236,5 +276,13 @@ namespace PMMEditor.ECS
             // GC.SuppressFinalize(this);
         }
         #endregion
+
+        public void UpdateRenderOrder()
+        {
+            lock (_rendererComponents)
+            {
+                _requireRenderOrder = true;
+            }
+        }
     }
 }

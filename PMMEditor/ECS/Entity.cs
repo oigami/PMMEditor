@@ -20,6 +20,9 @@ namespace PMMEditor.ECS
         public Entity As() => _isExsits ? this : null;
 
         private readonly ECSystem _system;
+
+        internal ECSystem System => _system;
+
         internal Entity(ECSystem system)
         {
             _system = system;

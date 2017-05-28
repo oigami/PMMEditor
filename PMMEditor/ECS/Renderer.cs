@@ -50,9 +50,21 @@ namespace PMMEditor.ECS
 
     public abstract class Renderer : Component
     {
+        private int _sortingOrder;
+
         internal Mesh Mesh { get; set; }
 
         public Material[] SharedMaterials { get; set; }
+
+        public int SortingOrder
+        {
+            get => _sortingOrder;
+            set
+            {
+                _sortingOrder = value;
+                GameObject.System.UpdateRenderOrder();
+            }
+        }
 
         internal abstract object DequeueRenderData();
         internal abstract void EnqueueRenderData(object obj);
