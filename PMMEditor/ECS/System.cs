@@ -26,6 +26,7 @@ namespace PMMEditor.ECS
 
         private readonly List<Component> _allComponents = new List<Component>();
         private readonly List<Component> _newComponents = new List<Component>();
+        private readonly List<Component> _newUpdateComponents = new List<Component>();
         private readonly List<Component> _deleteComponents = new List<Component>();
 
         public RenderTextureQueue RenderTextureQueue { get; } = new RenderTextureQueue();
@@ -67,6 +68,20 @@ namespace PMMEditor.ECS
                 }
             }
         }
+
+        public enum ThreadType
+        {
+            Single
+        }
+
+        public ECSystem(ThreadType type)
+        {
+            if (Device == null)
+            {
+                throw new ArgumentNullException(nameof(Device));
+            }
+        }
+
         public ECSystem()
         {
             if (Device == null)
@@ -126,22 +141,26 @@ namespace PMMEditor.ECS
                 _deleteComponents.Clear();
             }
 
-            lock (_newComponents)
-            {
-                if (_newComponents.Count != 0)
-                {
-                    lock (_rendererComponents)
-                    {
-                        foreach (var component in _newComponents)
-                        {
-                            _allComponents.Add(component);
-                            component.Start();
-                            if (component is Renderer x)
-                            {
-                                _rendererComponents.Add(new RendererArgs(x, Device));
-                            }
-                        }
+            bool isFirstUpdate = true;
 
+            while (true)
+            {
+                lock (_newComponents)
+                {
+                    if (_newComponents.Count == 0)
+                    {
+                        break;
+                    }
+
+                    _newUpdateComponents.Clear();
+                    _newUpdateComponents.AddRange(_newComponents);
+                    _newComponents.Clear();
+                }
+
+                lock (_rendererComponents)
+                {
+                    if (isFirstUpdate)
+                    {
                         foreach (var component in _rendererComponents)
                         {
                             foreach (var o in component.UpdatedDataQueue)
@@ -156,9 +175,19 @@ namespace PMMEditor.ECS
                             component.UpdatedDataQueue.Clear();
                         }
                     }
+
+                    foreach (var component in _newUpdateComponents)
+                    {
+                        _allComponents.Add(component);
+                        component.Start();
+                        if (component is Renderer x)
+                        {
+                            _rendererComponents.Add(new RendererArgs(x, Device));
+                        }
+                    }
                 }
 
-                _newComponents.Clear();
+                isFirstUpdate = false;
             }
 
             lock (_rendererComponents)
@@ -185,6 +214,7 @@ namespace PMMEditor.ECS
                 }
             }
         }
+
         public void Render()
         {
             Device device = Device;

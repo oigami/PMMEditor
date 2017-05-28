@@ -86,16 +86,12 @@ namespace PMMEditor.Models.Graphics
     public interface IMmdModelRendererSource
     {
         MmdModelModel Model { get; }
-
-        List<Direct3D11.ShaderResourceView> Textures { get; }
     }
 
     public sealed class MmdModelRendererSource : Component, IMmdModelRendererSource
     {
-        public void Initialize(ILogger logger, Direct3D11.Device device)
+        public override void Start()
         {
-            _device = device ?? throw new ArgumentNullException(nameof(device));
-            Model = GameObject.GetComponent<MmdModelModel>();
             if (GraphicsModel.FeatureThreading.supportsConcurrentResources)
             {
                 CreateData();
@@ -110,8 +106,6 @@ namespace PMMEditor.Models.Graphics
             IsInitialized = true;
         }
 
-        private Direct3D11.Device _device;
-
         #region IsInitialized変更通知プロパティ
 
         private bool _isInitialized;
@@ -124,9 +118,9 @@ namespace PMMEditor.Models.Graphics
 
         #endregion
 
-        public MmdModelModel Model { get; private set; }
+        private MmdModelModel _model;
+        public MmdModelModel Model => _model ?? (_model = GameObject.GetComponent<MmdModelModel>());
 
-        public List<Direct3D11.ShaderResourceView> Textures { get; } = new List<Direct3D11.ShaderResourceView>();
 
         private struct Vertex
         {
@@ -154,18 +148,6 @@ namespace PMMEditor.Models.Graphics
         {
             OnUnload();
 
-            // テクスチャ読み込み
-            foreach (var texturePath in Model.TextureFilePath)
-            {
-                BitmapSource bitmap =
-                    TextureLoader.LoadBitmap(Path.Combine(Path.GetDirectoryName(Model.FilePath) ?? "", texturePath));
-
-                Direct3D11.Texture2D texture = TextureLoader.CreateTexture2DFromBitmap(_device, bitmap);
-                var textureView = new Direct3D11.ShaderResourceView(_device, texture);
-                Textures.Add(textureView);
-            }
-
-            GameObject.AddComponent<MmdModelRenderer>();
             // メッシュ生成
             if (Model.Vertices.Count > 0)
             {
@@ -213,6 +195,16 @@ namespace PMMEditor.Models.Graphics
                 SubMeshCount = Model.Materials.Count
             };
 
+            // テクスチャ読み込み
+            Direct3D11.ShaderResourceView[] textures = Model.TextureFilePath.Select(texturePath =>
+            {
+                BitmapSource bitmap =
+                    TextureLoader.LoadBitmap(Path.Combine(Path.GetDirectoryName(Model.FilePath) ?? "", texturePath));
+
+                Direct3D11.Texture2D texture = TextureLoader.CreateTexture2DFromBitmap(GraphicsModel.Device, bitmap);
+                return new Direct3D11.ShaderResourceView(GraphicsModel.Device, texture);
+            }).ToArray();
+
             // 材質生成
             MmdModelRenderer renderer = GameObject.GetComponent<MmdModelRenderer>();
             var materials = new Material[Model.Materials.Count];
@@ -223,7 +215,7 @@ namespace PMMEditor.Models.Graphics
                                             material.Diffuse.B, material.Diffuse.A);
                 materials[i] = new Material
                 {
-                    MainTexture = material.TextureIndex != null ? Textures[(int) material.TextureIndex] : null,
+                    MainTexture = material.TextureIndex != null ? textures[(int) material.TextureIndex] : null,
                     Diffuse = diffuse
                 };
                 var faceCount = (int) material.FaceVertexCount;

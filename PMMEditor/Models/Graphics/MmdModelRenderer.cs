@@ -67,11 +67,10 @@ namespace PMMEditor.Models.Graphics
             _compositeDisposables.Dispose();
         }
 
-        public MmdModelBoneCalculatorSRV Initialize()
+        public override void Start()
         {
             _controller = GameObject.GetComponent<BoneFrameControlModel>();
             CreateData(GameObject.GetComponent(typeof(IMmdModelRendererSource)) as IMmdModelRendererSource);
-            return this;
         }
 
         private void CreateData(IMmdModelRendererSource model)
@@ -189,7 +188,7 @@ namespace PMMEditor.Models.Graphics
         {
             GameObject.AddComponent<FrameControlFilter>().ControlModel = _model.FrameControlModel;
             GameObject.AddComponent<BoneFrameControlModel>();
-            _boneCalculator = GameObject.AddComponent<MmdModelBoneCalculatorSRV>().Initialize();
+            _boneCalculator = GameObject.AddComponent<MmdModelBoneCalculatorSRV>();
             BoneRenderer = new BoneRenderer(ModelSource, _device).AddTo(_compositeDisposables);
 
             byte[] shaderSource = Resource1.TestShader;

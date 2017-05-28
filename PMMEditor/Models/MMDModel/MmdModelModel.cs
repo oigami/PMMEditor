@@ -29,9 +29,9 @@ namespace PMMEditor.Models.MMDModel
             private set { SetProperty(ref _isInitialized, value); }
         }
 
-        public void Initialize(ILogger logger)
+        public override void Start()
         {
-            _logger = logger;
+            _logger = GameObject.GetComponent<LoggerFilter>().Logger;
         }
 
         #region ボーン構造体

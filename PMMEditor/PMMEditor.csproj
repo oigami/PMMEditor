@@ -95,6 +95,7 @@
     <Compile Include="Models\FrameControlModel.cs" />
     <Compile Include="Models\Graphics\GraphicsModel.cs" />
     <Compile Include="Models\KeyFrameList.cs" />
+    <Compile Include="Models\LoggerFilter.cs" />
     <Compile Include="Models\MmdAccessoryList.cs" />
     <Compile Include="Models\MmdAccessoryModel.cs" />
     <Compile Include="Models\MmdLightModel.cs" />

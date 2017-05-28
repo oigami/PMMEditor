@@ -72,23 +72,20 @@ namespace PMMEditor.Models
             Task.Run(() =>
             {
                 Entity entity = Model.System.CreateEntity();
-                MmdModelModel model = entity.AddComponent<MmdModelModel>();
-                model.Initialize(_logger);
-                model.Set(blob);
-                MmdModelRendererSource rendererSource = entity.AddComponent<MmdModelRendererSource>();
-                rendererSource.Initialize(_logger, GraphicsModel.Device);
+                entity.AddComponent<LoggerFilter>().Logger = _logger;
+                entity.AddComponent<MmdModelModel>().Set(blob);
+                entity.AddComponent<MmdModelRendererSource>();
+                entity.AddComponent<MmdModelRenderer>();
 
-                if (model.IsInitialized)
+                lock (_syncObject)
                 {
-                    lock (_syncObject)
-                    {
-                        _list.Add(entity);
-                    }
+                    _list.Add(entity);
                 }
             }).ContinueOnlyOnFaultedErrorLog(_logger);
         }
 
         private CancellationTokenSource _tokenSource;
+
         public void Set(IEnumerable<PmmStruct.ModelData> list)
         {
             DispatcherHelper.UIDispatcher.Invoke(() =>
@@ -102,28 +99,26 @@ namespace PMMEditor.Models
             });
             CancellationToken token = _tokenSource.Token;
             Task.Run(() =>
-           {
-               var order = new SortedDictionary<int, int>();
-               _list.Clear();
-               foreach (var item in list.Select((data, i) => new { data, i }))
-               {
-                   Entity entity = Model.System.CreateEntity();
-                   MmdModelModel model = entity.AddComponent<MmdModelModel>();
-                   model.Initialize(_logger);
-                   model.Set(new FileBlob(item.data.Path), item.data);
-                   MmdModelRendererSource rendererSource = entity.AddComponent<MmdModelRendererSource>();
-                   rendererSource.Initialize(_logger, GraphicsModel.Device);
-                   _list.Add(entity);
-                   order.Add(item.data.DrawOrder, item.i);
-               }
-               foreach (var i in order)
-               {
-                   _drawOrder.Add(i.Value);
-               }
+            {
+                var order = new SortedDictionary<int, int>();
+                _list.Clear();
+                foreach (var (data, i) in list.Indexed())
+                {
+                    Entity entity = Model.System.CreateEntity();
+                    entity.AddComponent<LoggerFilter>().Logger = _logger;
+                    entity.AddComponent<MmdModelModel>().Set(new FileBlob(data.Path), data);
+                    entity.AddComponent<MmdModelRendererSource>();
+                    entity.AddComponent<MmdModelRenderer>();
+                    _list.Add(entity);
+                    order.Add(data.DrawOrder, i);
+                }
+                foreach (var i in order)
+                {
+                    _drawOrder.Add(i.Value);
+                }
 
-               DispatcherHelper.UIDispatcher.Invoke(() => _tokenSource = null);
-           }, token).ContinueOnlyOnFaultedErrorLog(_logger, "Charactor List Set error", () => _list.Clear());
+                DispatcherHelper.UIDispatcher.Invoke(() => _tokenSource = null);
+            }, token).ContinueOnlyOnFaultedErrorLog(_logger, "Charactor List Set error", () => _list.Clear());
         }
-
     }
 }
