@@ -15,7 +15,7 @@ namespace PMMEditor.SharpDxControl
             new Queue<RenderTexture>(QueueCount);
 
         private const int QueueCount = 5;
-        private int _UpdatedCount = 5;
+        private int _updatedCount = 5;
         private Texture2DDescription _texture2DDescription = new Texture2DDescription
         {
             BindFlags = BindFlags.RenderTarget | BindFlags.ShaderResource,
@@ -38,11 +38,11 @@ namespace PMMEditor.SharpDxControl
                 _texture2DDescription = value;
                 lock (_freeTexture2Ds)
                 {
-                    _UpdatedCount = 0;
+                    _updatedCount = 0;
                     while (_freeTexture2Ds.Count != 0)
                     {
                         _freeTexture2Ds.Dequeue().Release();
-                        _UpdatedCount++;
+                        _updatedCount++;
                     }
 
                     lock (_renderedQueue)
@@ -50,7 +50,7 @@ namespace PMMEditor.SharpDxControl
                         while (_renderedQueue.Count != 0)
                         {
                             _renderedQueue.Dequeue().Release();
-                            _UpdatedCount++;
+                            _updatedCount++;
                         }
 
                         CreateQueue();
@@ -86,14 +86,14 @@ namespace PMMEditor.SharpDxControl
 
             lock (_renderedQueue)
             {
-                if (_UpdatedCount == QueueCount)
+                if (_updatedCount == QueueCount)
                 {
                     _renderedQueue.Enqueue(texture);
                 }
                 else
                 {
                     texture.Release();
-                    _UpdatedCount++;
+                    _updatedCount++;
                 }
             }
         }
@@ -115,14 +115,14 @@ namespace PMMEditor.SharpDxControl
         {
             lock (_freeTexture2Ds)
             {
-                if (QueueCount <= _UpdatedCount)
+                if (QueueCount <= _updatedCount)
                 {
                     _freeTexture2Ds.Enqueue(tex);
                 }
                 else
                 {
                     tex.Release();
-                    _UpdatedCount++;
+                    _updatedCount++;
                 }
             }
         }
