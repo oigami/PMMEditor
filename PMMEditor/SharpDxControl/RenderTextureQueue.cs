@@ -15,6 +15,7 @@ namespace PMMEditor.SharpDxControl
             new Queue<RenderTexture>(QueueCount);
 
         private const int QueueCount = 5;
+        private int _UpdatedCount = 5;
         private Texture2DDescription _texture2DDescription = new Texture2DDescription
         {
             BindFlags = BindFlags.RenderTarget | BindFlags.ShaderResource,
@@ -37,9 +38,11 @@ namespace PMMEditor.SharpDxControl
                 _texture2DDescription = value;
                 lock (_freeTexture2Ds)
                 {
+                    _UpdatedCount = 0;
                     while (_freeTexture2Ds.Count != 0)
                     {
                         _freeTexture2Ds.Dequeue().Release();
+                        _UpdatedCount++;
                     }
 
                     lock (_renderedQueue)
@@ -47,6 +50,7 @@ namespace PMMEditor.SharpDxControl
                         while (_renderedQueue.Count != 0)
                         {
                             _renderedQueue.Dequeue().Release();
+                            _UpdatedCount++;
                         }
 
                         CreateQueue();
@@ -82,7 +86,15 @@ namespace PMMEditor.SharpDxControl
 
             lock (_renderedQueue)
             {
-                _renderedQueue.Enqueue(texture);
+                if (_UpdatedCount == QueueCount)
+                {
+                    _renderedQueue.Enqueue(texture);
+                }
+                else
+                {
+                    texture.Release();
+                    _UpdatedCount++;
+                }
             }
         }
 
@@ -103,7 +115,15 @@ namespace PMMEditor.SharpDxControl
         {
             lock (_freeTexture2Ds)
             {
-                _freeTexture2Ds.Enqueue(tex);
+                if (QueueCount <= _UpdatedCount)
+                {
+                    _freeTexture2Ds.Enqueue(tex);
+                }
+                else
+                {
+                    tex.Release();
+                    _UpdatedCount++;
+                }
             }
         }
 
@@ -116,7 +136,7 @@ namespace PMMEditor.SharpDxControl
                     Format = _texture2DDescription.Format,
                     Width = _texture2DDescription.Width,
                     Height = _texture2DDescription.Height,
-                    Depth = 32,
+                    Depth = 24,
                 });
             }
         }

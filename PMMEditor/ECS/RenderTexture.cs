@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Reactive.Bindings.Extensions;
+using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.Direct3D9;
 using SharpDX.DXGI;
@@ -108,6 +109,7 @@ namespace PMMEditor.ECS
         private bool _useMipMap = true;
         private DepthStencilView _depthBuffer;
         private RenderTargetView _colorBuffer;
+        private Texture2D _zBufferTexture;
 
         public bool Create()
         {
@@ -148,10 +150,11 @@ namespace PMMEditor.ECS
                 CpuAccessFlags = CpuAccessFlags.None,
                 OptionFlags = ResourceOptionFlags.None
             };
-            var zBufferTexture = new Texture2D(device, zBufferTextureDescription);
+
+            _zBufferTexture = new Texture2D(device, zBufferTextureDescription);
             {
                 DepthBuffer =
-                    new DepthStencilView(device, zBufferTexture, new DepthStencilViewDescription
+                    new DepthStencilView(device, _zBufferTexture, new DepthStencilViewDescription
                     {
                         Format = Depth == 24 ? Format.D24_UNorm_S8_UInt : zBufferTextureDescription.Format,
                         Dimension = DepthStencilViewDimension.Texture2D
@@ -166,14 +169,14 @@ namespace PMMEditor.ECS
 
         public void Release()
         {
-            _colorBuffer?.Dispose();
-            _colorBuffer = null;
+            Utilities.Dispose(ref _colorBuffer);
 
             ColorTexture?.Dispose();
             ColorTexture = null;
 
-            _depthBuffer?.Dispose();
-            _depthBuffer = null;
+            Utilities.Dispose(ref _depthBuffer);
+
+            Utilities.Dispose(ref _zBufferTexture);
 
             _isCreated = false;
         }
