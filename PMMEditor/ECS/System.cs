@@ -239,11 +239,11 @@ namespace PMMEditor.ECS
                     {
                         data.RenderData = data.UpdatedDataQueue.Dequeue();
                         data.Context.Rasterizer.SetViewport(0, 0, tex.Width, tex.Height);
-                        data.Renderer.Render(data);
                         lock (tex)
                         {
                             data.Context.OutputMerger.SetRenderTargets(tex.DepthBuffer, tex.ColorBuffer);
                         }
+                        data.Renderer.Render(data);
                         data.CommandList = data.Context.FinishCommandList(false);
                     });
 
