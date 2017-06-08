@@ -116,12 +116,14 @@ namespace PMMEditor.Views.Timeline
             foreach (var o in TimelineViewer.Items)
             {
                 var c = (ContentPresenter) TimelineViewer.ItemContainerGenerator.ContainerFromItem(o);
-                if (c == null)
+
+                var control = c?.ContentTemplate.FindName("TimelineControl", c) as TimelineControl;
+                if (control == null)
                 {
-                    yield break;
+                    continue;
                 }
 
-                yield return c.ContentTemplate.FindName("TimelineControl", c) as TimelineControl;
+                yield return control;
             }
         }
 
