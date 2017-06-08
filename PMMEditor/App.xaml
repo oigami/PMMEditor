@@ -4,5 +4,15 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   Startup="Application_Startup"
   StartupUri="Views\MainWindow.xaml">
-  <Application.Resources />
+  <Application.Resources>
+    <Style TargetType="Button">
+      <Setter Property="Focusable" Value="False" />
+      <Setter Property="Margin" Value="5" />
+      <Setter Property="MinWidth" Value="20" />
+    </Style>
+    <Style TargetType="ToggleButton">
+      <Setter Property="Focusable" Value="False" />
+    </Style>
+
+  </Application.Resources>
 </Application>
